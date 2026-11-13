@@ -45,7 +45,7 @@ def harness_report(run_id: str, set_name: str, iid: str):
     if not p.exists():
         if (d / "run_instance.log").exists():
             # The harness ran the instance but wrote no report. This happens when
-            # the patch could not be applied: the harness raises an error and
+            # the patch does not apply. The harness raises an error and
             # stops. The SWE-bench score for such an instance is unresolved.
             log = (d / "run_instance.log").read_text(errors="replace")
             apply_failed = "Patch Apply Failed" in log or "patch failed" in log.lower()
@@ -64,7 +64,7 @@ _pred_cache = {}
 
 
 def patch_is_empty(set_name: str, iid: str) -> bool:
-    """The harness writes no report for an empty patch; the protocol keeps it
+    """The harness writes no report for an empty patch. The protocol keeps it
     in the data as unresolved."""
     if set_name not in _pred_cache:
         f = ROOT / "predictions" / f"{set_name}.jsonl"

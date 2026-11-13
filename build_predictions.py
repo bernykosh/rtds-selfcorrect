@@ -4,7 +4,7 @@ Patch sets: a1, a2, a3 (from logs/first), S, T, ST (submitted patches).
 Each file is predictions/<set>.jsonl with one line per instance:
     {"instance_id": ..., "model_name_or_path": <set>, "model_patch": ...}
 
-The model_name_or_path field is set to the set name, so that the harness
+The model_name_or_path field holds the set name, so that the harness
 writes each set's reports into its own folder.
 """
 

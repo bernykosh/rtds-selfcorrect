@@ -2,7 +2,7 @@
 
 Code for the RTDS HT2026 research project. The study asks whether intrinsic
 self-correction adds value beyond running tests on real code projects, at an
-equal compute budget. The design is in the Phase 2 document; this folder
+equal compute budget. The Phase 2 document holds the design. This folder
 implements its protocol sheet step by step.
 
 ## What is in the folder
@@ -16,9 +16,9 @@ implements its protocol sheet step by step.
 | `run_conditions.py` | 3 to 6 | Runs condition `first` (a1, a2, a3), `S`, `T`, `ST`; one JSON log per instance per condition in `logs/` |
 | `build_predictions.py` | 7 | Writes six predictions files (a1, a2, a3, S, T, ST) into `predictions/` |
 | `run_eval.sh` | 7 | Runs the official harness on each predictions file |
-| `batch.sh` | 2 to 7 | Runs everything for a slice of instances, then removes their images (disk limit) |
+| `batch.sh` | 2 to 7 | Runs everything for a slice of instances, then removes their images to stay under the disk limit |
 | `analyze.py` | 8, 9 | Writes `results.json`, `results.md`, `coding.csv` |
-| `run_config.json` | protocol | Written by `run_conditions.py`: model, temperature, limits, swebench version, dates |
+| `run_config.json` | protocol | `run_conditions.py` writes it: model, temperature, limits, swebench version, dates |
 
 ## Setup (once)
 
@@ -30,17 +30,17 @@ docker info            # Docker Desktop must be running
 echo $DEEPINFRA_API_KEY | cut -c1-6   # key must be set in the shell
 ```
 
-Two settings are read from the environment and have defaults:
+The scripts read two settings from the environment. Both have defaults:
 
 - `STUDY_MODEL`, default `Qwen/Qwen3-Coder-480B-A35B-Instruct`
 - `DEEPINFRA_BASE_URL`, default `https://api.deepinfra.com/v1/openai`
 
-Check both against the DeepInfra model page before the first run. They are
-recorded in `run_config.json`.
+Check both against the DeepInfra model page before the first run. `run_conditions.py`
+records both in `run_config.json`.
 
 ### One check before anything else
 
-The `swebench` package installed by `requirements.txt` is version 5.0.2. It
+`requirements.txt` installs `swebench` version 5.0.2. It
 loads the dataset `SWE-bench/SWE-bench_Lite` and needs an `image` field on
 each instance. Run this once:
 
@@ -49,7 +49,7 @@ python -c "from common import load_lite_dataset; r=load_lite_dataset()[0]; print
 ```
 
 Expected: `300`, an instance ID, and an image name. If this fails, the dataset
-or harness version has moved; stop and report the error.
+or harness version has moved. Stop and report the error.
 
 ## Pilot run (first 50 instances)
 
@@ -65,8 +65,8 @@ python build_predictions.py --limit 50
 python analyze.py
 ```
 
-Every script can be stopped and rerun; instances with a complete log are
-skipped. Pass `--redo` to overwrite.
+You can stop and rerun every script. A rerun skips instances that already
+have a complete log. Pass `--redo` to overwrite them.
 
 ### Disk
 
@@ -80,8 +80,8 @@ slices and let `batch.sh` remove the images of a finished slice:
 python analyze.py
 ```
 
-Set `KEEP_IMAGES=1` to keep the images. Logs and harness reports are kept
-across slices; `analyze.py` reads them all.
+Set `KEEP_IMAGES=1` to keep the images. Slices do not remove logs or
+harness reports. `analyze.py` reads them all.
 
 ## What the harness produces
 
@@ -94,12 +94,12 @@ the same set names (`a1`, `a2`, `a3`, `S`, `T`, `ST`) as `model_name_or_path`.
 
 ## Rules that the scripts enforce
 
-- Hidden tests (`FAIL_TO_PASS`, `PASS_TO_PASS`) are never read by the study
-  scripts. Only the harness in step 7 runs them.
-- Exactly three model calls per instance per condition. A call that fails for
-  a network reason is retried with the same input; each retry is stored in
-  the log under `retries`.
-- A patch the extractor cannot read is stored as an empty patch.
+- The study scripts never read the hidden tests (`FAIL_TO_PASS`,
+  `PASS_TO_PASS`). Only the harness in step 7 runs them.
+- Exactly three model calls per instance per condition. The script retries a call
+  that fails for a network reason, with the same input. The log stores each
+  retry under `retries`.
+- The log stores a patch the extractor cannot read as an empty patch.
 - Condition B submits the first of a1, a2, a3 that passes `git apply --check`
   in the instance container. If none applies, B submits a1 and the log marks
   `b_none_applied`.
@@ -107,15 +107,15 @@ the same set names (`a1`, `a2`, `a3`, `S`, `T`, `ST`) as `model_name_or_path`.
   and after the patch (60 s timeout), and the repository test files whose
   name matches the changed module (`test_<module>.py`, `<module>_test.py`,
   `test_<module>s.py`; at most three files; 300 s timeout). For
-  `django/django` the matching files' test labels are run with
-  `tests/runtests.py`, because pytest cannot run Django's test suite. If no
+  `django/django`, `tests/runtests.py` runs the test labels of the matching
+  files, because pytest cannot run Django's test suite. If no
   matching file exists, the feedback says so. The first 60 lines of output,
   each cut at 200 characters, go to the model.
 
 ## Things to decide before the full run
 
-These are design points the Phase 2 document left for confirmation. The
-scripts implement the first option of each; change the flag or code if you
+The Phase 2 document left these design points for confirmation. The
+scripts implement the first option of each. Change the flag or code if you
 prefer the other.
 
 1. B selection rule: first attempt that applies (implemented) or a random

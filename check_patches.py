@@ -1,7 +1,7 @@
 """Check why patches fail to apply, without Docker.
 
-For every attempt in logs/first, a temporary git repository is built that
-holds only the oracle file at its path. Then:
+For every attempt in logs/first, the script builds a temporary git repository
+that holds only the oracle file at its path. Then:
   1. git apply --check on the patch as the model wrote it
   2. git apply --check on the patch after repair_hunk_headers()
 

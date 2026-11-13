@@ -31,7 +31,7 @@ ORACLE_DIR = DATA_DIR / "oracle_files"
 RUN_CONFIG_FILE = ROOT / "run_config.json"
 
 # The swebench 5.x harness loads this dataset name by default. The Phase 2
-# protocol named princeton-nlp/SWE-bench_Lite; the SWE-bench organisation now
+# protocol named princeton-nlp/SWE-bench_Lite. The SWE-bench organisation now
 # hosts the same 300 instances with the extra "image" field the harness needs.
 DATASET_NAME = os.environ.get("SWEBENCH_DATASET", "SWE-bench/SWE-bench_Lite")
 DATASET_SPLIT = "test"
@@ -54,7 +54,7 @@ MODEL_NAME = os.environ.get("STUDY_MODEL", "Qwen/Qwen3-Coder-480B-A35B-Instruct"
 API_BASE_URL = os.environ.get("DEEPINFRA_BASE_URL", "https://api.deepinfra.com/v1/openai")
 API_KEY_ENV = "DEEPINFRA_API_KEY"
 
-# SWE-bench images are built for amd64 only; on Apple Silicon Docker must be told so.
+# SWE-bench images exist for amd64 only. On Apple Silicon, Docker needs the platform flag.
 PLATFORM = os.environ.get("STUDY_DOCKER_PLATFORM", "linux/amd64")
 
 MAX_RETRIES = 5
@@ -74,8 +74,8 @@ def load_lite_dataset(instance_ids=None):
     """Load SWE-bench Lite through the swebench package.
 
     Returns a list of instance dicts. The swebench loader accepts both the
-    Hugging Face name and a local .json/.jsonl path, so a cached copy can be
-    pointed to with SWEBENCH_DATASET=path/to/file.json.
+    Hugging Face name and a local .json/.jsonl path, so SWEBENCH_DATASET=path/to/file.json
+    can point to a cached copy.
     """
     from swebench.harness.utils import load_swebench_dataset
 
@@ -98,8 +98,8 @@ def load_sampled_instances(limit=None):
 def oracle_file_path(instance) -> str:
     """Return the single file that the reference patch changes.
 
-    SWE-bench Lite instances edit exactly one file. The path is read from the
-    gold patch header. The gold patch content itself is never shown to the model.
+    SWE-bench Lite instances edit exactly one file. The function reads the path from
+    the gold patch header. The model never sees the gold patch content.
     """
     paths = re.findall(r"^diff --git a/(\S+) b/\S+", instance["patch"], flags=re.M)
     if not paths:
@@ -129,7 +129,7 @@ def load_prompt(name: str) -> str:
 
 def fill_prompt(template: str, **fields) -> str:
     """Fill {field} placeholders. str.format would break on braces in code,
-    so each placeholder is replaced one by one."""
+    so this replaces each placeholder one by one."""
     out = template
     for key, value in fields.items():
         out = out.replace("{" + key + "}", value if value is not None else "")
@@ -198,8 +198,8 @@ def extract_review(answer: str) -> str:
 
 
 def patches_equal(a: str, b: str) -> bool:
-    """Two patches count as the same when they match after trailing
-    whitespace on each line is removed."""
+    """Two patches count as the same when they match after stripping
+    trailing whitespace from each line."""
     norm = lambda s: "\n".join(line.rstrip() for line in (s or "").strip().split("\n"))
     return norm(a) == norm(b)
 
@@ -226,8 +226,8 @@ def get_client():
 def call_model(prompt: str, dry_run: bool = False) -> dict:
     """One model call. Returns a dict that goes straight into the log.
 
-    Retries only on transport or server errors, with the same input. Each
-    retry is recorded in the returned dict. The call still counts as one call.
+    Retries only on transport or server errors, with the same input. The
+    returned dict records each retry. The call still counts as one call.
     """
     record = {
         "model": MODEL_NAME,
@@ -283,7 +283,7 @@ def activation_line(instance) -> str:
     environment as the hidden tests. SWE-bench eval scripts activate in two
     steps (source .../activate, then conda activate testbed); both are kept.
 
-    The lines are joined with ";" and each one is silenced on its own. They
+    The function joins the lines with ";" and silences each one on its own. They
     must not run in a subshell, because a subshell cannot change the
     environment of the command that follows.
     """
@@ -304,10 +304,10 @@ def setup_commands(instance) -> list:
     SWE-bench images ship the repository but not its installed package: the
     eval script installs it (for example "python -m pip install -e .[test]"),
     which also brings in pytest. The feedback step needs the same environment,
-    so the same commands are run once per container.
+    so each container runs the same commands once.
 
-    Only lines before the test output marker are read. Lines that touch test
-    content are never taken: the test patch (a git apply heredoc), any git
+    The function reads only lines before the test output marker. It never takes
+    lines that touch test content: the test patch (a git apply heredoc), any git
     checkout of a test file, and the test command itself. This keeps the
     hidden tests out of the feedback step.
     """
@@ -401,7 +401,7 @@ class Container:
 
         Without this the repository package and pytest are missing, and every
         feedback command fails for a reason that has nothing to do with the
-        patch. The results are returned so that the log records them.
+        patch. Returns the results so that the log records them.
         """
         if self.prepared:
             return []
@@ -531,10 +531,10 @@ def repair_hunk_headers(patch: str) -> str:
     Models often write a correct diff body with wrong counts in the header
     (for example "@@ -10,7 +10,8 @@" when the body has 9 old lines). git
     rejects such a patch as corrupt without looking at the content. This
-    function rewrites only the counts; the start line of the old file is kept
-    and the start line of the new file is derived from the earlier hunks.
-    A blank line inside a hunk body is treated as an empty context line.
-    The content of the change is never altered.
+    function rewrites only the counts. It keeps the start line of the old file
+    and derives the start line of the new file from the earlier hunks.
+    It treats a blank line inside a hunk body as an empty context line.
+    It never alters the content of the change.
     """
     import re
 

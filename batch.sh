@@ -5,7 +5,7 @@
 #   ./batch.sh 0 20     # instances 0..19 in sampled order
 #   ./batch.sh 20 40
 #
-# Logs and harness reports accumulate across batches; analyze.py reads them all.
+# Logs and harness reports accumulate across batches. analyze.py reads them all.
 set -euo pipefail
 cd "$(dirname "$0")"
 START=$1; END=$2

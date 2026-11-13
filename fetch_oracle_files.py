@@ -1,12 +1,12 @@
 """Fetch the oracle file for every sampled instance.
 
 The oracle file is the one file the reference fix changed. Its path comes from
-the gold patch header; its content is read from the instance's Docker image,
-where /testbed is checked out at base_commit. This gives the exact text the
-hidden tests will patch against. The gold patch content is never used.
+the gold patch header. The script reads its content from the instance's Docker
+image, where /testbed is checked out at base_commit. This gives the exact text the
+hidden tests will patch against. The script never uses the gold patch content.
 
 Writes data/oracle_files/<instance_id>.txt and data/oracle_paths.json.
-Run with --limit 50 for the pilot. Already fetched files are skipped.
+Run with --limit 50 for the pilot. The script skips files it has already fetched.
 """
 
 import argparse

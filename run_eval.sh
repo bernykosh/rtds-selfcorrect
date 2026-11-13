@@ -6,7 +6,7 @@
 #   INSTANCE_IDS="id1 id2" ./run_eval.sh   # restrict to some instances (batching)
 #
 # The harness skips instances that already have a report for the same run_id,
-# so this script can be rerun after an interruption.
+# so you can rerun this script after an interruption.
 set -euo pipefail
 cd "$(dirname "$0")"
 

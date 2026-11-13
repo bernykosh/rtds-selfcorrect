@@ -6,14 +6,14 @@
     python run_conditions.py ST     [--limit 50]   # a1 -> two calls with both
 
 Condition B (budget-matched baseline) needs no model calls of its own: it
-submits the first of a1, a2, a3 that applies cleanly. The apply check is done
-at the end of the "first" run and stored in the same log.
+submits the first of a1, a2, a3 that applies cleanly. The "first" run does the
+apply check at its end and stores it in the same log.
 
 Every condition makes exactly three model calls per instance. S, T and ST
 reuse a1 from the "first" log as their first call, so they make two calls here.
 
 One JSON log per instance per condition goes to logs/<condition>/<id>.json.
-Instances with a complete log are skipped, so a run can be resumed.
+A run skips instances with a complete log, so you can resume it.
 """
 
 import argparse
@@ -97,7 +97,7 @@ def run_first(inst, dry_run, skip_apply_check):
 
 
 def apply_check(inst, log):
-    """git apply --check for a1, a2, a3 in the instance container; picks B."""
+    """git apply --check for a1, a2, a3 in the instance container. Picks B."""
     attempts = log["attempts"]
     with Container(inst, name_suffix="apply") as c:
         for a in attempts:
@@ -180,7 +180,7 @@ def test_command(inst, files: list) -> str:
 def execution_feedback(c: Container, inst, patch: str, repro: str) -> dict:
     """Apply the patch and run the reproduction script and matching tests.
 
-    The hidden FAIL_TO_PASS and PASS_TO_PASS tests are never run here.
+    This never runs the hidden FAIL_TO_PASS and PASS_TO_PASS tests.
     """
     fb = {"seconds_total": 0.0}
     c.reset()
