@@ -1,0 +1,26 @@
+You are fixing a bug in a Python repository.
+
+Repository: {repo}
+Base commit: {base_commit}
+
+Issue text:
+<issue>
+{problem_statement}
+</issue>
+
+The file below is the file you must change. Change no other file.
+<file path="{file_path}">
+{file_content}
+</file>
+
+Task:
+1. Write a patch that resolves the issue.
+2. Write a short Python script that reproduces the issue on the unpatched code. The script must print "REPRODUCED" when the bug is present and "NOT REPRODUCED" when it is absent. The script may import from the repository. It must not read or write other files.
+
+Output format. Use exactly these two blocks and nothing after them:
+<patch>
+(a unified diff against the file above, with paths relative to the repository root, that git apply accepts)
+</patch>
+<repro>
+(the Python script)
+</repro>

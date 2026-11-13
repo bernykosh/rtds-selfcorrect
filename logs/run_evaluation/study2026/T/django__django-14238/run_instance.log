@@ -1,0 +1,87 @@
+2026-10-21 21:29:38,591 - INFO - Creating container for django__django-14238...
+2026-10-21 21:29:38,617 - INFO - Container for django__django-14238 created: 62fa9dd3535b74d60d12b3c92ca0c14a0d7285047ccf31a09a9aa06acc665b75
+2026-10-21 21:29:38,691 - INFO - Container for django__django-14238 started: 62fa9dd3535b74d60d12b3c92ca0c14a0d7285047ccf31a09a9aa06acc665b75
+2026-10-21 21:29:38,692 - INFO - Intermediate patch for django__django-14238 written to logs/run_evaluation/study2026/T/django__django-14238/patch.diff, now applying to container...
+2026-10-21 21:29:38,838 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:29:40,775 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:29:41,205 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:29:41,486 - INFO - >>>>> Applied Patch:
+patching file django/db/models/fields/__init__.py
+Hunk #1 succeeded at 2519 with fuzz 3 (offset 71 lines).
+
+2026-10-21 21:29:41,599 - INFO - Git diff before:
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 0f53d9c30b..419a37e0f0 100755
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -2519,12 +2519,24 @@ class AutoFieldMeta(type):
+     @property
+     def _subclasses(self):
+         return (BigAutoField, SmallAutoField)
+-
++    
+     def __instancecheck__(self, instance):
+-        return isinstance(instance, self._subclasses) or super().__instancecheck__(instance)
++        if isinstance(instance, self._subclasses):
++            return True
++        # Check if instance is a subclass of any of the subclasses
++        for subclass in self._subclasses:
++            if isinstance(instance, subclass):
++                return True
++        return super().__instancecheck__(instance)
+ 
+     def __subclasscheck__(self, subclass):
+-        return subclass in self._subclasses or super().__subclasscheck__(subclass)
++        if subclass in self._subclasses:
++            return True
++        # Check if subclass is a subclass of any of the subclasses
++        for parent in self._subclasses:
++            if issubclass(subclass, parent):
++                return True
++        return super().__subclasscheck__(subclass)
+ 
+ 
+ class AutoField(AutoFieldMixin, IntegerField, metaclass=AutoFieldMeta):
+2026-10-21 21:29:41,601 - INFO - Eval script for django__django-14238 written to logs/run_evaluation/study2026/T/django__django-14238/eval.sh; copying to container...
+2026-10-21 21:29:49,851 - INFO - Test runtime: 8.19 seconds
+2026-10-21 21:29:49,852 - INFO - Test output for django__django-14238 written to logs/run_evaluation/study2026/T/django__django-14238/test_output.txt
+2026-10-21 21:29:49,962 - INFO - Git diff after:
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 0f53d9c30b..419a37e0f0 100755
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -2519,12 +2519,24 @@ class AutoFieldMeta(type):
+     @property
+     def _subclasses(self):
+         return (BigAutoField, SmallAutoField)
+-
++    
+     def __instancecheck__(self, instance):
+-        return isinstance(instance, self._subclasses) or super().__instancecheck__(instance)
++        if isinstance(instance, self._subclasses):
++            return True
++        # Check if instance is a subclass of any of the subclasses
++        for subclass in self._subclasses:
++            if isinstance(instance, subclass):
++                return True
++        return super().__instancecheck__(instance)
+ 
+     def __subclasscheck__(self, subclass):
+-        return subclass in self._subclasses or super().__subclasscheck__(subclass)
++        if subclass in self._subclasses:
++            return True
++        # Check if subclass is a subclass of any of the subclasses
++        for parent in self._subclasses:
++            if issubclass(subclass, parent):
++                return True
++        return super().__subclasscheck__(subclass)
+ 
+ 
+ class AutoField(AutoFieldMixin, IntegerField, metaclass=AutoFieldMeta):
+2026-10-21 21:29:49,962 - INFO - Grading answer for django__django-14238...
+2026-10-21 21:29:49,970 - INFO - report: {'django__django-14238': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_issubclass_of_autofield (model_fields.test_autofield.AutoFieldInheritanceTests)', 'test_default_auto_field_setting_bigautofield_subclass (model_options.test_default_pk.TestDefaultPK)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_isinstance_of_autofield (model_fields.test_autofield.AutoFieldInheritanceTests)', 'Backend specific ranges can be saved without corruption.', 'Backend specific ranges are enforced at the model validation level', 'test_coercing (model_fields.test_autofield.AutoFieldTests)', 'Values within the documented safe range pass validation, and can be', 'test_invalid_value (model_fields.test_autofield.AutoFieldTests)', 'If there are stricter validators than the ones from the database', 'test_rel_db_type (model_fields.test_autofield.AutoFieldTests)', 'test_types (model_fields.test_autofield.AutoFieldTests)', 'test_app_default_auto_field (model_options.test_default_pk.TestDefaultPK)', 'test_app_default_auto_field_non_auto (model_options.test_default_pk.TestDefaultPK)', 'test_app_default_auto_field_none (model_options.test_default_pk.TestDefaultPK)', 'test_app_default_auto_field_nonexistent (model_options.test_default_pk.TestDefaultPK)', 'test_default_auto_field_setting (model_options.test_default_pk.TestDefaultPK)', 'test_default_auto_field_setting_non_auto (model_options.test_default_pk.TestDefaultPK)', 'test_default_auto_field_setting_none (model_options.test_default_pk.TestDefaultPK)', 'test_default_auto_field_setting_nonexistent (model_options.test_default_pk.TestDefaultPK)', 'test_m2m_app_default_auto_field (model_options.test_default_pk.TestDefaultPK)', 'test_m2m_default_auto_field_setting (model_options.test_default_pk.TestDefaultPK)', 'test_coercing (model_fields.test_integerfield.SmallIntegerFieldTests)', 'test_invalid_value (model_fields.test_integerfield.SmallIntegerFieldTests)', 'test_rel_db_type (model_fields.test_integerfield.SmallIntegerFieldTests)', 'test_types (model_fields.test_integerfield.SmallIntegerFieldTests)', 'test_coercing (model_fields.test_integerfield.IntegerFieldTests)', 'test_invalid_value (model_fields.test_integerfield.IntegerFieldTests)', 'test_rel_db_type (model_fields.test_integerfield.IntegerFieldTests)', 'test_types (model_fields.test_integerfield.IntegerFieldTests)', 'test_coercing (model_fields.test_integerfield.BigIntegerFieldTests)', 'test_invalid_value (model_fields.test_integerfield.BigIntegerFieldTests)', 'test_rel_db_type (model_fields.test_integerfield.BigIntegerFieldTests)', 'test_types (model_fields.test_integerfield.BigIntegerFieldTests)', 'test_coercing (model_fields.test_autofield.SmallAutoFieldTests)', 'test_invalid_value (model_fields.test_autofield.SmallAutoFieldTests)', 'test_rel_db_type (model_fields.test_autofield.SmallAutoFieldTests)', 'test_types (model_fields.test_autofield.SmallAutoFieldTests)', 'test_coercing (model_fields.test_autofield.BigAutoFieldTests)', 'test_invalid_value (model_fields.test_autofield.BigAutoFieldTests)', 'test_rel_db_type (model_fields.test_autofield.BigAutoFieldTests)', 'test_types (model_fields.test_autofield.BigAutoFieldTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-14238: resolved: True
+2026-10-21 21:29:49,971 - INFO - Attempting to stop container sweb.eval.django__django-14238.study2026...
+2026-10-21 21:30:05,138 - INFO - Container sweb.eval.django__django-14238.study2026 stopped successfully.
+2026-10-21 21:30:05,138 - INFO - Attempting to remove container sweb.eval.django__django-14238.study2026...
+2026-10-21 21:30:05,242 - INFO - Container sweb.eval.django__django-14238.study2026 removed successfully.

@@ -1,0 +1,90 @@
+2026-10-21 12:01:18,620 - INFO - Creating container for django__django-12856...
+2026-10-21 12:01:18,673 - INFO - Container for django__django-12856 created: d22e84409da77f37077955ca6fecef1ae3e9aba1170ac2c97386238f63c314f5
+2026-10-21 12:01:18,830 - INFO - Container for django__django-12856 started: d22e84409da77f37077955ca6fecef1ae3e9aba1170ac2c97386238f63c314f5
+2026-10-21 12:01:18,831 - INFO - Intermediate patch for django__django-12856 written to logs/run_evaluation/study2026/a2/django__django-12856/patch.diff, now applying to container...
+2026-10-21 12:01:19,047 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:01:22,308 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:01:22,838 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:01:23,211 - INFO - >>>>> Applied Patch:
+patching file django/db/models/base.py
+Hunk #1 succeeded at 1294 with fuzz 3.
+Hunk #2 succeeded at 1880 (offset 569 lines).
+
+2026-10-21 12:01:23,345 - INFO - Git diff before:
+diff --git a/django/db/models/base.py b/django/db/models/base.py
+index 7bb3fa4706..f08c76b9eb 100755
+--- a/django/db/models/base.py
++++ b/django/db/models/base.py
+@@ -1294,6 +1294,20 @@ class Model(metaclass=ModelBase):
+             except ValueError:
+                 errors.append(
+                     checks.Error(
++    @classmethod
++    def _check_unique_constraints(cls):
++        """Check the fields of UniqueConstraint."""
++        errors = []
++        for constraint in cls._meta.constraints:
++            if isinstance(constraint, UniqueConstraint):
++                errors.extend(cls._check_local_fields(constraint.fields, "UniqueConstraint"))
++        return errors
++
++    @classmethod
++    def _check_constraints(cls, databases):
++        errors = []
++        errors.extend(cls._check_unique_constraints())
++        # ... rest of the original _check_constraints method
+                         "'%s' is not of the form 'app_label.app_name'." % cls._meta.swappable,
+                         id='models.E001',
+                     )
+@@ -1866,6 +1880,7 @@ class Model(metaclass=ModelBase):
+     @classmethod
+     def _check_constraints(cls, databases):
+         errors = []
++        errors.extend(cls._check_unique_constraints())
+         for db in databases:
+             if not router.allow_migrate_model(db, cls):
+                 continue
+2026-10-21 12:01:23,346 - INFO - Eval script for django__django-12856 written to logs/run_evaluation/study2026/a2/django__django-12856/eval.sh; copying to container...
+2026-10-21 12:01:43,047 - INFO - Test runtime: 19.63 seconds
+2026-10-21 12:01:43,048 - INFO - Test output for django__django-12856 written to logs/run_evaluation/study2026/a2/django__django-12856/test_output.txt
+2026-10-21 12:01:43,190 - INFO - Git diff after:
+diff --git a/django/db/models/base.py b/django/db/models/base.py
+index 7bb3fa4706..f08c76b9eb 100755
+--- a/django/db/models/base.py
++++ b/django/db/models/base.py
+@@ -1294,6 +1294,20 @@ class Model(metaclass=ModelBase):
+             except ValueError:
+                 errors.append(
+                     checks.Error(
++    @classmethod
++    def _check_unique_constraints(cls):
++        """Check the fields of UniqueConstraint."""
++        errors = []
++        for constraint in cls._meta.constraints:
++            if isinstance(constraint, UniqueConstraint):
++                errors.extend(cls._check_local_fields(constraint.fields, "UniqueConstraint"))
++        return errors
++
++    @classmethod
++    def _check_constraints(cls, databases):
++        errors = []
++        errors.extend(cls._check_unique_constraints())
++        # ... rest of the original _check_constraints method
+                         "'%s' is not of the form 'app_label.app_name'." % cls._meta.swappable,
+                         id='models.E001',
+                     )
+@@ -1866,6 +1880,7 @@ class Model(metaclass=ModelBase):
+     @classmethod
+     def _check_constraints(cls, databases):
+         errors = []
++        errors.extend(cls._check_unique_constraints())
+         for db in databases:
+             if not router.allow_migrate_model(db, cls):
+                 continue
+2026-10-21 12:01:43,190 - INFO - Grading answer for django__django-12856...
+2026-10-21 12:01:43,406 - INFO - report: {'django__django-12856': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for django__django-12856: resolved: False
+2026-10-21 12:01:43,406 - INFO - Attempting to stop container sweb.eval.django__django-12856.study2026...
+2026-10-21 12:01:59,304 - INFO - Container sweb.eval.django__django-12856.study2026 stopped successfully.
+2026-10-21 12:01:59,305 - INFO - Attempting to remove container sweb.eval.django__django-12856.study2026...
+2026-10-21 12:01:59,528 - INFO - Container sweb.eval.django__django-12856.study2026 removed successfully.

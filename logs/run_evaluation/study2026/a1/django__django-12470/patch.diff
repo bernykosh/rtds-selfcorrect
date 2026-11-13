@@ -1,0 +1,27 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 7f0a8f0000..c84e0a2c9e 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -234,7 +234,10 @@ class SQLCompiler:
+             ordering = []
+         if self.query.standard_ordering:
+             asc, desc = ORDER_DIR['ASC']
+-        else:
++        else:
++            # When not using standard ordering, we need to reverse the order
++            # For inherited models, we need to preserve the original ordering direction
++            # from meta ordering, so we swap asc and desc
+             asc, desc = ORDER_DIR['DESC']
+ 
+         order_by = []
+@@ -270,6 +273,10 @@ class SQLCompiler:
+                 continue
+ 
+             col, order = get_order_dir(field, asc)
++            # For inherited models, if we're using meta ordering and the field is from parent,
++            # we should respect the original ordering direction
++            if not self.query.standard_ordering and field.startswith('-'):
++                order = 'DESC'
+             descending = order == 'DESC'
+ 
+             if col in self.query.annotation_select:

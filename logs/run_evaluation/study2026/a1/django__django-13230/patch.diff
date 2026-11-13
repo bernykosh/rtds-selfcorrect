@@ -1,0 +1,73 @@
+diff --git a/django/contrib/syndication/views.py b/django/contrib/syndication/views.py
+index 9c1d1f8b7a..e8c9844c1d 100644
+--- a/django/contrib/syndication/views.py
++++ b/django/contrib/syndication/views.py
+@@ -148,67 +148,68 @@ class Feed:
+                 author_link=author_link,
+                 categories=self._get_dynamic_attr('item_categories', item),
+                 item_copyright=self._get_dynamic_attr('item_copyright', item),
++                comments=self._get_dynamic_attr('item_comments', item),
+                 **self.item_extra_kwargs(item)
+             )
+         return feed
+ </repro>
+ <repro>
+ import sys
+ from django.contrib.syndication.views import Feed
+ from django.http import HttpRequest
+ from django.contrib.sites.models import Site
+ import django
+ from django.conf import settings
+ 
+ # Configure Django settings
+ if not settings.configured:
+    settings.configure(
+        DEBUG=True,
+        USE_TZ=True,
+        SECRET_KEY='test-key',
+        INSTALLED_APPS=[
+            'django.contrib.sites',
+            'django.contrib.syndication',
+        ],
+        DATABASES={
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+            }
+        }
+    )
+    django.setup()
+ 
+ # Create a test feed with item_comments
+ class TestFeed(Feed):
+    def items(self):
+        return ['Item 1']
+    
+    def item_comments(self, item):
+        return 'http://example.com/comments'
+ 
+ # Try to generate the feed
+ try:
+    feed = TestFeed()
+    request = HttpRequest()
+    request.META = {'SERVER_NAME': 'testserver', 'SERVER_PORT': '80'}
+    request.path = '/'
+    
+    # Create a site for the current site functionality
+    site = Site(pk=1, domain='testserver', name='testserver')
+    site.save()
+    
+    response = feed(request)
+    
+    # If we get here without error, check if comments appear in output
+    if b'comments' in response.content.lower():
+        print("NOT REPRODUCED")
+    else:
+        print("REPRODUCED")
+ except Exception as e:
+    # If there's an error related to item_comments not being accepted
+    if 'item_comments' in str(e) or 'comments' in str(e):
+        print("REPRODUCED")
+    else:
+        print("NOT REPRODUCED")
+ </repro>

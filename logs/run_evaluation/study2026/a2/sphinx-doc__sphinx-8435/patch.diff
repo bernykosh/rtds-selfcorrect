@@ -1,0 +1,77 @@
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index 5d8d6275a..5d8d6275a 100644
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -1865,7 +1865,10 @@ class DataDocumenter(ModuleLevelDocumenter):
+            # obtain annotation for this data
+             try:
+                 annotations = get_type_hints(self.parent)
+-            except NameError:
++            except NameError:
++                # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
++                annotations = safe_getattr(self.parent, '__annotations__', {})
++            except Exception:
+                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                 annotations = safe_getattr(self.parent, '__annotations__', {})
+             except TypeError:
+@@ -1873,6 +1876,10 @@ class DataDocumenter(ModuleLevelDocumenter):
+             except KeyError:
+                 # a broken class found (refs: https://github.com/sphinx-doc/sphinx/issues/8084)
+                 annotations = {}
++            except Exception:
++                # Handle any other exception that might occur
++                annotations = {}
++
+             if self.objpath[-1] in annotations:
+                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+                 # Apply autodoc_type_aliases
+@@ -1880,6 +1887,14 @@ class DataDocumenter(ModuleLevelDocumenter):
+                     objrepr = objrepr.replace(alias, replacement)
+                 self.add_line('   :type: ' + objrepr, sourcename)
+             else:
++                key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
++                if self.analyzer and key in self.analyzer.annotations:
++                    objrepr = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to analyzer annotations too
++                    for alias, replacement in self.config.autodoc_type_aliases.items():
++                        objrepr = objrepr.replace(alias, replacement)
++                    self.add_line('   :type: ' + objrepr, sourcename)
++            else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+                     self.add_line('   :type: ' + self.analyzer.annotations[key],
+@@ -2090,7 +2105,13 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             # obtain type annotation for this attribute
+             try:
+                 annotations = get_type_hints(self.parent)
+-            except NameError:
++            except NameError:
++                # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
++                annotations = safe_getattr(self.parent, '__annotations__', {})
++            except Exception:
++                # Handle any other exception that might occur
++                annotations = {}
++
+             except TypeError:
+                 annotations = {}
+             except KeyError:
+@@ -2100,7 +2121,19 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             except AttributeError:
+                 # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
+                 annotations = {}
++
++            if self.objpath[-1] in annotations:
++                objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
++                # Apply autodoc_type_aliases
++                for alias, replacement in self.config.autodoc_type_aliases.items():
++                    objrepr = objrepr.replace(alias, replacement)
++                self.add_line('   :type: ' + objrepr, sourcename)
++            else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
++                    objrepr = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to analyzer annotations too
++                    for alias, replacement in self.config.autodoc_type_aliases.items():
++                        objrepr = objrepr.replace(alias, replacement)
+                     self.add_line('   :type: ' + self.analyzer.annotations[key],
+                                   sourcename)

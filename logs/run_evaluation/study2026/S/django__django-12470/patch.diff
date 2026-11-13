@@ -1,0 +1,49 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 7f0a8f0000..d7c4d3e9d1 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -483,6 +483,12 @@ class SQLCompiler:
+         field, targets, alias, joins, path, opts, transform_function = self._setup_joins(pieces, opts, alias)
+ 
+         # If we get to this point and the field is a relation to another model,
++        # and if the opts we are using (i.e., the model where the ordering is defined)
++        # is not the same as the query's main model, and we are processing meta ordering,
++        # we need to preserve the original ordering direction.
++        is_inherited_meta_ordering = (
++            self._meta_ordering is not None and opts != self.query.model._meta
++        )
+         # append the default ordering for that model unless the attribute name
+         # of the field is specified.
+         if field.is_relation and opts.ordering and getattr(field, 'attname', None) != name:
+@@ -490,13 +496,27 @@ class SQLCompiler:
+             already_seen = already_seen or set()
+             join_tuple = tuple(getattr(self.query.alias_map[j], 'join_cols', None) for j in joins)
+             if join_tuple in already_seen:
+-                raise FieldError('Infinite loop caused by ordering.')
++                raise FieldError('Infinite loop caused by ordering.')
+             already_seen.add(join_tuple)
+-
+             results = []
+             for item in opts.ordering:
+-                if hasattr(item, 'resolve_expression') and not isinstance(item, OrderBy):
+-                    item = item.desc() if descending else item.asc()
++                # Handle inherited meta ordering: preserve the original sign
++                # If the parent's ordering item is '-pk', it should remain '-pk'
++                # even if the child query reverses standard_ordering.
++                if is_inherited_meta_ordering:
++                    if not self.query.standard_ordering:
++                        # When not standard_ordering (i.e., reversed), we need to invert
++                        # the inherited meta ordering items to maintain correctness.
++                        if isinstance(item, str) and item.startswith('-'):
++                            item = item[1:]
++                        elif isinstance(item, str):
++                            item = '-' + item
++                        elif isinstance(item, OrderBy):
++                            # For OrderBy expressions, we need to reverse the ordering
++                            item = item.desc() if not item.descending else item.asc()
++                    # Apply the descending flag from the current context
++                    if not isinstance(item, OrderBy):
++                        item = item.desc() if descending else item.asc()
+                 if isinstance(item, OrderBy):
+                     results.append((item, False))
+                     continue

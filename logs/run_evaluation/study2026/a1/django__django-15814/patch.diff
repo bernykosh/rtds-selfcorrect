@@ -1,0 +1,67 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 0000000..0000000 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -1098,7 +1098,7 @@ class Query(BaseExpression):
+             opts = orig_opts
+             for name in parts[:-1]:
+                 old_model = cur_model
+-                if name in self._filtered_relations:
++                if name in self._filtered_relations:
+                     name = self._filtered_relations[name].relation_name
+                 source = opts.get_field(name)
+                 if is_reverse_o2o(source):
+@@ -1106,7 +1106,7 @@ class Query(BaseExpression):
+                 else:
+                     cur_model = source.remote_field.model
+                 opts = cur_model._meta
+-                # Even if we're "just passing through" this model, we must add
++                # Even if we're "just passing through" this model, we must add
+                 # both the current model's pk and the related reference field
+                 # (if it's not a reverse relation) to the things we select.
+                 if not is_reverse_o2o(source):
+@@ -1108,7 +1108,7 @@ class Query(BaseExpression):
+                 else:
+                     cur_model = source.remote_field.model
+                 opts = cur_model._meta
+-                # Even if we're "just passing through" this model, we must add
++                # Even if we're "just passing through" this model, we must add
+                 # both the current model's pk and the related reference field
+                 # (if it's not a reverse relation) to the things we select.
+                 if not is_reverse_o2o(source):
+@@ -1114,7 +1114,7 @@ class Query(BaseExpression):
+                 add_to_dict(must_include, cur_model, opts.pk)
+             field = opts.get_field(parts[-1])
+             is_reverse_object = field.auto_created and not field.concrete
+-            model = field.related_model if is_reverse_object else field.model
++            model = field.related_model if is_reverse_object else field.model
+             model = model._meta.concrete_model
+             if model == opts.model:
+                 model = cur_model
+@@ -1126,7 +1126,7 @@ class Query(BaseExpression):
+                 add_to_dict(seen, model, field)
+ 
+         if defer:
+-            # We need to load all fields for each model, except those that
++            # We need to load all fields for each model, except those that
+             # appear in "seen" (for all models that appear in "seen"). The only
+             # slight complexity here is handling fields that exist on parent
+             # models.
+@@ -1147,7 +1147,7 @@ class Query(BaseExpression):
+                 target[model] = {f.attname for f in fields}
+         else:
+             for model, values in must_include.items():
+-                if model in seen:
++                if model in seen:
+                     seen[model].update(values)
+                 else:
+                     # As we've passed through this model, but not explicitly
+@@ -1162,7 +1162,7 @@ class Query(BaseExpression):
+             for model, fields in seen.items():
+                 target[model] = {f.attname for f in fields}
+ 
+-    def table_alias(self, table_name, create=False, filtered_relation=None):
++    def table_alias(self, table_name, create=False, filtered_relation=None):
+         """
+         Return a table alias for the given table_name and whether this is a
+         new alias or not.

@@ -1,0 +1,41 @@
+2026-10-21 12:11:06,449 - INFO - Creating container for django__django-13757...
+2026-10-21 12:11:06,651 - INFO - Container for django__django-13757 created: 6a7701c12f40464e07dd21d60a439dae866bd610a917dc5398c2aee81cdf76b4
+2026-10-21 12:11:07,038 - INFO - Container for django__django-13757 started: 6a7701c12f40464e07dd21d60a439dae866bd610a917dc5398c2aee81cdf76b4
+2026-10-21 12:11:07,043 - INFO - Intermediate patch for django__django-13757 written to logs/run_evaluation/study2026/a2/django__django-13757/patch.diff, now applying to container...
+2026-10-21 12:11:07,528 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:11:27,863 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:11:28,313 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:11:28,723 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 12:11:28,827 - INFO - >>>>> Patch Apply Failed:
+can't find file to patch at input line 3
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|--- django/db/models/fields/json.py
+|+++ django/db/models/fields/json.py
+--------------------------
+No file to patch.  Skipping patch.
+1 out of 1 hunk ignored
+
+2026-10-21 12:11:28,829 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-13757: >>>>> Patch Apply Failed:
+can't find file to patch at input line 3
+Perhaps you used the wrong -p or --strip option?
+The text leading up to this was:
+--------------------------
+|--- django/db/models/fields/json.py
+|+++ django/db/models/fields/json.py
+--------------------------
+No file to patch.  Skipping patch.
+1 out of 1 hunk ignored
+
+Check (logs/run_evaluation/study2026/a2/django__django-13757/run_instance.log) for more information.
+
+2026-10-21 12:11:28,829 - INFO - Attempting to stop container sweb.eval.django__django-13757.study2026...
+2026-10-21 12:11:44,316 - INFO - Container sweb.eval.django__django-13757.study2026 stopped successfully.
+2026-10-21 12:11:44,317 - INFO - Attempting to remove container sweb.eval.django__django-13757.study2026...
+2026-10-21 12:11:44,559 - INFO - Container sweb.eval.django__django-13757.study2026 removed successfully.

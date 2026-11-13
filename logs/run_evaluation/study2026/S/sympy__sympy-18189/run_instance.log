@@ -1,0 +1,78 @@
+2026-10-21 13:08:55,318 - INFO - Creating container for sympy__sympy-18189...
+2026-10-21 13:08:55,344 - INFO - Container for sympy__sympy-18189 created: ab2372e66a05caadb54ada9b722dc567942de340c025cbabc27642df040c34fa
+2026-10-21 13:08:55,449 - INFO - Container for sympy__sympy-18189 started: ab2372e66a05caadb54ada9b722dc567942de340c025cbabc27642df040c34fa
+2026-10-21 13:08:55,450 - INFO - Intermediate patch for sympy__sympy-18189 written to logs/run_evaluation/study2026/S/sympy__sympy-18189/patch.diff, now applying to container...
+2026-10-21 13:08:55,615 - INFO - >>>>> Applied Patch:
+Checking patch sympy/solvers/diophantine.py...
+warning: sympy/solvers/diophantine.py has type 100755, expected 100644
+Hunk #1 succeeded at 180 (offset -42 lines).
+Applied patch sympy/solvers/diophantine.py cleanly.
+
+2026-10-21 13:08:56,107 - INFO - Git diff before:
+diff --git a/sympy/solvers/diophantine.py b/sympy/solvers/diophantine.py
+index 6092e35dab..d33e6b0f5b 100755
+--- a/sympy/solvers/diophantine.py
++++ b/sympy/solvers/diophantine.py
+@@ -180,9 +180,20 @@ def diophantine(eq, param=symbols("t", integer=True), syms=None,
+                     'syms should be given as a sequence, e.g. a list')
+             syms = [i for i in syms if i in var]
+             if syms != var:
+-                dict_sym_index = dict(zip(syms, range(len(syms))))
+-                return {tuple([t[dict_sym_index[i]] for i in var])
+-                            for t in diophantine(eq, param)}
++                # Handle syms parameter properly - need to reorder solutions
++                # according to the syms order, not the default variable order
++                dict_var_index = dict(zip(var, range(len(var))))
++                n, d = eq.as_numer_denom()
++                if n.is_number:
++                    return set()
++                if not d.is_number:
++                    dsol = diophantine(d, syms=syms, permute=permute)
++                    good = diophantine(n, syms=syms, permute=permute) - dsol
++                    result = {s for s in good if _mexpand(d.subs(zip(var, s)))}
++                else:
++                    result = diophantine(n, param=param, syms=syms, permute=permute)
++                # Reorder the result tuples to match the syms order
++                return {tuple([t[dict_var_index[s]] for s in syms]) for t in result}
+         n, d = eq.as_numer_denom()
+         if n.is_number:
+             return set()
+2026-10-21 13:08:56,107 - INFO - Eval script for sympy__sympy-18189 written to logs/run_evaluation/study2026/S/sympy__sympy-18189/eval.sh; copying to container...
+2026-10-21 13:09:30,108 - INFO - Test runtime: 33.92 seconds
+2026-10-21 13:09:30,109 - INFO - Test output for sympy__sympy-18189 written to logs/run_evaluation/study2026/S/sympy__sympy-18189/test_output.txt
+2026-10-21 13:09:30,229 - INFO - Git diff after:
+diff --git a/sympy/solvers/diophantine.py b/sympy/solvers/diophantine.py
+index 6092e35dab..d33e6b0f5b 100755
+--- a/sympy/solvers/diophantine.py
++++ b/sympy/solvers/diophantine.py
+@@ -180,9 +180,20 @@ def diophantine(eq, param=symbols("t", integer=True), syms=None,
+                     'syms should be given as a sequence, e.g. a list')
+             syms = [i for i in syms if i in var]
+             if syms != var:
+-                dict_sym_index = dict(zip(syms, range(len(syms))))
+-                return {tuple([t[dict_sym_index[i]] for i in var])
+-                            for t in diophantine(eq, param)}
++                # Handle syms parameter properly - need to reorder solutions
++                # according to the syms order, not the default variable order
++                dict_var_index = dict(zip(var, range(len(var))))
++                n, d = eq.as_numer_denom()
++                if n.is_number:
++                    return set()
++                if not d.is_number:
++                    dsol = diophantine(d, syms=syms, permute=permute)
++                    good = diophantine(n, syms=syms, permute=permute) - dsol
++                    result = {s for s in good if _mexpand(d.subs(zip(var, s)))}
++                else:
++                    result = diophantine(n, param=param, syms=syms, permute=permute)
++                # Reorder the result tuples to match the syms order
++                return {tuple([t[dict_var_index[s]] for s in syms]) for t in result}
+         n, d = eq.as_numer_denom()
+         if n.is_number:
+             return set()
+2026-10-21 13:09:30,229 - INFO - Grading answer for sympy__sympy-18189...
+2026-10-21 13:09:30,233 - INFO - report: {'sympy__sympy-18189': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_diophantine']}, 'PASS_TO_PASS': {'success': ['test_input_format', 'test_univariate', 'test_classify_diop', 'test_linear', 'test_quadratic_simple_hyperbolic_case', 'test_quadratic_elliptical_case', 'test_quadratic_parabolic_case', 'test_quadratic_perfect_square', 'test_quadratic_non_perfect_square', 'test_issue_9106', 'test_issue_18138', 'test_DN', 'test_bf_pell', 'test_length', 'test_transformation_to_pell', 'test_find_DN', 'test_ldescent', 'test_diop_ternary_quadratic_normal', 'test_transformation_to_normal', 'test_diop_ternary_quadratic', 'test_square_factor', 'test_parametrize_ternary_quadratic', 'test_no_square_ternary_quadratic', 'test_descent', 'test_general_pythagorean', 'test_diop_general_sum_of_squares_quick', 'test_diop_partition', 'test_prime_as_sum_of_two_squares', 'test_sum_of_three_squares', 'test_sum_of_four_squares', 'test_power_representation', 'test_assumptions', 'test_diopcoverage', 'test_holzer', 'test_issue_9539', 'test_issue_8943', 'test_diop_sum_of_even_powers', 'test_sum_of_squares_powers', 'test__can_do_sum_of_squares', 'test_diophantine_permute_sign'], 'failure': ['test_issue_9538']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-18189: resolved: False
+2026-10-21 13:09:30,234 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18189.study2026...
+2026-10-21 13:09:45,441 - INFO - Container sweb.eval.sympy__sympy-18189.study2026 stopped successfully.
+2026-10-21 13:09:45,442 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18189.study2026...
+2026-10-21 13:09:45,488 - INFO - Container sweb.eval.sympy__sympy-18189.study2026 removed successfully.

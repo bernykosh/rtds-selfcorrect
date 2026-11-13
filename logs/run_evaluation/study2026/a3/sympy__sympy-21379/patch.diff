@@ -1,0 +1,37 @@
+diff --git a/sympy/core/mod.py b/sympy/core/mod.py
+index 1234567..89abcde 100644
+--- a/sympy/core/mod.py
++++ b/sympy/core/mod.py
+@@ -1,5 +1,7 @@
++from __future__ import division
++
+ from sympy.core.numbers import nan
+-from .function import Function
++from .function import Function, PoleError
+ from .kind import NumberKind
+ 
+ 
+@@ -65,6 +67,10 @@ class Mod(Function):
+             if q.is_zero:
+                 raise ZeroDivisionError("Modulo by zero")
+             if p.is_finite is False or q.is_finite is False or p is nan or q is nan:
++                return None
++            # Handle case where p or q contains Piecewise with incompatible assumptions
++            if (hasattr(p, 'atoms') and hasattr(q, 'atoms') and
++                (p.atoms(Piecewise) or q.atoms(Piecewise))):
+                 return nan
+             if p is S.Zero or p == q or p == -q or (p.is_integer and q == 1):
+                 return S.Zero
+@@ -72,6 +78,12 @@ class Mod(Function):
+             if q.is_Number:
+                 if p.is_Number:
+                     return p%q
++                # Check if we're dealing with problematic Piecewise expressions
++                if hasattr(p, 'has') and p.has(Piecewise):
++                    try:
++                        return p%q
++                    except (PoleError, PolynomialError):
++                        return None
+                 if q == 2:
+                     if p.is_even:
+                         return S.Zero

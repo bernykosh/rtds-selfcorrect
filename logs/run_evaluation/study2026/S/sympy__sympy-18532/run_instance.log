@@ -1,0 +1,61 @@
+2026-10-21 13:09:27,405 - INFO - Creating container for sympy__sympy-18532...
+2026-10-21 13:09:27,430 - INFO - Container for sympy__sympy-18532 created: 8eeadcd2ed1a93a8e33107606e4f820109a9a42879c94c6daf5b150eef535e42
+2026-10-21 13:09:27,507 - INFO - Container for sympy__sympy-18532 started: 8eeadcd2ed1a93a8e33107606e4f820109a9a42879c94c6daf5b150eef535e42
+2026-10-21 13:09:27,508 - INFO - Intermediate patch for sympy__sympy-18532 written to logs/run_evaluation/study2026/S/sympy__sympy-18532/patch.diff, now applying to container...
+2026-10-21 13:09:27,680 - INFO - >>>>> Applied Patch:
+Checking patch sympy/core/basic.py...
+Hunk #1 succeeded at 499 (offset -505 lines).
+Applied patch sympy/core/basic.py cleanly.
+
+2026-10-21 13:09:28,160 - INFO - Git diff before:
+diff --git a/sympy/core/basic.py b/sympy/core/basic.py
+index 6866648d4e..c193ba9c60 100755
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -504,10 +504,14 @@ def atoms(self, *types):
+             types = tuple(
+                 [t if isinstance(t, type) else type(t) for t in types])
+         else:
+-            types = (Atom,)
++            def has_no_args(expr):
++                return not expr.args
++            types = (has_no_args,)
++        else:
+         result = set()
+         for expr in preorder_traversal(self):
+-            if isinstance(expr, types):
++            if (isinstance(types[0], type) and isinstance(expr, types)) or \
++               (callable(types[0]) and types[0](expr)):
+                 result.add(expr)
+         return result
+2026-10-21 13:09:28,161 - INFO - Eval script for sympy__sympy-18532 written to logs/run_evaluation/study2026/S/sympy__sympy-18532/eval.sh; copying to container...
+2026-10-21 13:09:31,951 - INFO - Test runtime: 3.73 seconds
+2026-10-21 13:09:31,952 - INFO - Test output for sympy__sympy-18532 written to logs/run_evaluation/study2026/S/sympy__sympy-18532/test_output.txt
+2026-10-21 13:09:32,056 - INFO - Git diff after:
+diff --git a/sympy/core/basic.py b/sympy/core/basic.py
+index 6866648d4e..c193ba9c60 100755
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -504,10 +504,14 @@ def atoms(self, *types):
+             types = tuple(
+                 [t if isinstance(t, type) else type(t) for t in types])
+         else:
+-            types = (Atom,)
++            def has_no_args(expr):
++                return not expr.args
++            types = (has_no_args,)
++        else:
+         result = set()
+         for expr in preorder_traversal(self):
+-            if isinstance(expr, types):
++            if (isinstance(types[0], type) and isinstance(expr, types)) or \
++               (callable(types[0]) and types[0](expr)):
+                 result.add(expr)
+         return result
+2026-10-21 13:09:32,056 - INFO - Grading answer for sympy__sympy-18532...
+2026-10-21 13:09:32,124 - INFO - report: {'sympy__sympy-18532': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for sympy__sympy-18532: resolved: False
+2026-10-21 13:09:32,124 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18532.study2026...
+2026-10-21 13:09:47,312 - INFO - Container sweb.eval.sympy__sympy-18532.study2026 stopped successfully.
+2026-10-21 13:09:47,312 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18532.study2026...
+2026-10-21 13:09:47,346 - INFO - Container sweb.eval.sympy__sympy-18532.study2026 removed successfully.

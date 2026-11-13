@@ -1,0 +1,82 @@
+2026-10-21 12:41:27,648 - INFO - Creating container for scikit-learn__scikit-learn-13779...
+2026-10-21 12:41:27,693 - INFO - Container for scikit-learn__scikit-learn-13779 created: 971fffc495cdec889b0313cc72c322198843e5ce30498cf3d325567ec1e37bd6
+2026-10-21 12:41:27,836 - INFO - Container for scikit-learn__scikit-learn-13779 started: 971fffc495cdec889b0313cc72c322198843e5ce30498cf3d325567ec1e37bd6
+2026-10-21 12:41:27,837 - INFO - Intermediate patch for scikit-learn__scikit-learn-13779 written to logs/run_evaluation/study2026/a3/scikit-learn__scikit-learn-13779/patch.diff, now applying to container...
+2026-10-21 12:41:28,015 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:41:28,750 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:41:29,138 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:41:29,515 - INFO - >>>>> Applied Patch:
+patching file sklearn/ensemble/voting.py
+Hunk #1 succeeded at 31 with fuzz 1 (offset -45 lines).
+Hunk #2 succeeded at 78 (offset -28 lines).
+
+2026-10-21 12:41:29,623 - INFO - Git diff before:
+diff --git a/sklearn/ensemble/voting.py b/sklearn/ensemble/voting.py
+index 7afa7180c..a1f3a5ee5 100755
+--- a/sklearn/ensemble/voting.py
++++ b/sklearn/ensemble/voting.py
+@@ -31,7 +31,7 @@ def _parallel_fit_estimator(estimator, X, y, sample_weight=None):
+     """Private function used to fit an estimator within a job."""
+     if sample_weight is not None:
+         estimator.fit(X, y, sample_weight=sample_weight)
+-    else:
++    elif estimator is not None:
+         estimator.fit(X, y)
+     return estimator
+ 
+@@ -78,10 +78,12 @@ class _BaseVoting(_BaseComposition, TransformerMixin):
+ 
+         if sample_weight is not None:
+             for name, step in self.estimators:
+-                if not has_fit_parameter(step, 'sample_weight'):
+-                    raise ValueError('Underlying estimator \'%s\' does not'
+-                                     ' support sample weights.' % name)
+-
++                if step is not None:
++                    if not has_fit_parameter(step, 'sample_weight'):
++                        raise ValueError('Underlying estimator \'%s\' does not'
++                                         ' support sample weights.' % name)
++        else:
++            pass
+         names, clfs = zip(*self.estimators)
+         self._validate_names(names)
+2026-10-21 12:41:29,624 - INFO - Eval script for scikit-learn__scikit-learn-13779 written to logs/run_evaluation/study2026/a3/scikit-learn__scikit-learn-13779/eval.sh; copying to container...
+2026-10-21 12:47:16,544 - INFO - Test runtime: 346.84 seconds
+2026-10-21 12:47:16,545 - INFO - Test output for scikit-learn__scikit-learn-13779 written to logs/run_evaluation/study2026/a3/scikit-learn__scikit-learn-13779/test_output.txt
+2026-10-21 12:47:16,667 - INFO - Git diff after:
+diff --git a/sklearn/ensemble/voting.py b/sklearn/ensemble/voting.py
+index 7afa7180c..a1f3a5ee5 100755
+--- a/sklearn/ensemble/voting.py
++++ b/sklearn/ensemble/voting.py
+@@ -31,7 +31,7 @@ def _parallel_fit_estimator(estimator, X, y, sample_weight=None):
+     """Private function used to fit an estimator within a job."""
+     if sample_weight is not None:
+         estimator.fit(X, y, sample_weight=sample_weight)
+-    else:
++    elif estimator is not None:
+         estimator.fit(X, y)
+     return estimator
+ 
+@@ -78,10 +78,12 @@ class _BaseVoting(_BaseComposition, TransformerMixin):
+ 
+         if sample_weight is not None:
+             for name, step in self.estimators:
+-                if not has_fit_parameter(step, 'sample_weight'):
+-                    raise ValueError('Underlying estimator \'%s\' does not'
+-                                     ' support sample weights.' % name)
+-
++                if step is not None:
++                    if not has_fit_parameter(step, 'sample_weight'):
++                        raise ValueError('Underlying estimator \'%s\' does not'
++                                         ' support sample weights.' % name)
++        else:
++            pass
+         names, clfs = zip(*self.estimators)
+         self._validate_names(names)
+2026-10-21 12:47:16,667 - INFO - Grading answer for scikit-learn__scikit-learn-13779...
+2026-10-21 12:47:16,670 - INFO - report: {'scikit-learn__scikit-learn-13779': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['sklearn/ensemble/tests/test_voting.py::test_none_estimator_with_weights[X0-y0-voter0]', 'sklearn/ensemble/tests/test_voting.py::test_none_estimator_with_weights[X1-y1-voter1]'], 'failure': []}, 'PASS_TO_PASS': {'success': ['sklearn/ensemble/tests/test_voting.py::test_estimator_init', 'sklearn/ensemble/tests/test_voting.py::test_predictproba_hardvoting', 'sklearn/ensemble/tests/test_voting.py::test_notfitted', 'sklearn/ensemble/tests/test_voting.py::test_majority_label_iris', 'sklearn/ensemble/tests/test_voting.py::test_tie_situation', 'sklearn/ensemble/tests/test_voting.py::test_weights_iris', 'sklearn/ensemble/tests/test_voting.py::test_weights_regressor', 'sklearn/ensemble/tests/test_voting.py::test_predict_on_toy_problem', 'sklearn/ensemble/tests/test_voting.py::test_predict_proba_on_toy_problem', 'sklearn/ensemble/tests/test_voting.py::test_multilabel', 'sklearn/ensemble/tests/test_voting.py::test_gridsearch', 'sklearn/ensemble/tests/test_voting.py::test_parallel_fit', 'sklearn/ensemble/tests/test_voting.py::test_sample_weight', 'sklearn/ensemble/tests/test_voting.py::test_sample_weight_kwargs', 'sklearn/ensemble/tests/test_voting.py::test_set_params', 'sklearn/ensemble/tests/test_voting.py::test_set_estimator_none', 'sklearn/ensemble/tests/test_voting.py::test_estimator_weights_format', 'sklearn/ensemble/tests/test_voting.py::test_transform'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for scikit-learn__scikit-learn-13779: resolved: True
+2026-10-21 12:47:16,671 - INFO - Attempting to stop container sweb.eval.scikit-learn__scikit-learn-13779.study2026...
+2026-10-21 12:47:31,896 - INFO - Container sweb.eval.scikit-learn__scikit-learn-13779.study2026 stopped successfully.
+2026-10-21 12:47:31,897 - INFO - Attempting to remove container sweb.eval.scikit-learn__scikit-learn-13779.study2026...
+2026-10-21 12:47:32,032 - INFO - Container sweb.eval.scikit-learn__scikit-learn-13779.study2026 removed successfully.

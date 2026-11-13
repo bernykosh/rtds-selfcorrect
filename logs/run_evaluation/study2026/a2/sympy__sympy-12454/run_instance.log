@@ -1,0 +1,47 @@
+2026-10-21 12:22:54,714 - INFO - Creating container for sympy__sympy-12454...
+2026-10-21 12:22:54,758 - INFO - Container for sympy__sympy-12454 created: 2279c9c4a7a4017d961b182634e9b10267e7977d781e27e32878e745a084bc18
+2026-10-21 12:22:54,846 - INFO - Container for sympy__sympy-12454 started: 2279c9c4a7a4017d961b182634e9b10267e7977d781e27e32878e745a084bc18
+2026-10-21 12:22:54,847 - INFO - Intermediate patch for sympy__sympy-12454 written to logs/run_evaluation/study2026/a2/sympy__sympy-12454/patch.diff, now applying to container...
+2026-10-21 12:22:55,042 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:22:55,690 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:22:56,048 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:22:56,434 - INFO - >>>>> Applied Patch:
+patching file sympy/matrices/matrices.py
+Hunk #1 succeeded at 1111 with fuzz 3 (offset 1 line).
+
+2026-10-21 12:22:56,543 - INFO - Git diff before:
+diff --git a/sympy/matrices/matrices.py b/sympy/matrices/matrices.py
+index 90ea232fa..3544759fb 100755
+--- a/sympy/matrices/matrices.py
++++ b/sympy/matrices/matrices.py
+@@ -1112,6 +1112,7 @@ def is_upper(self):
+         """
+         return all(self[i, j].is_zero
+                    for i in range(1, self.rows)
++                   for j in range(min(i, self.cols)))
+                    for j in range(i))
+ 
+     @property
+2026-10-21 12:22:56,543 - INFO - Eval script for sympy__sympy-12454 written to logs/run_evaluation/study2026/a2/sympy__sympy-12454/eval.sh; copying to container...
+2026-10-21 12:23:00,614 - INFO - Test runtime: 3.99 seconds
+2026-10-21 12:23:00,618 - INFO - Test output for sympy__sympy-12454 written to logs/run_evaluation/study2026/a2/sympy__sympy-12454/test_output.txt
+2026-10-21 12:23:00,725 - INFO - Git diff after:
+diff --git a/sympy/matrices/matrices.py b/sympy/matrices/matrices.py
+index 90ea232fa..3544759fb 100755
+--- a/sympy/matrices/matrices.py
++++ b/sympy/matrices/matrices.py
+@@ -1112,6 +1112,7 @@ def is_upper(self):
+         """
+         return all(self[i, j].is_zero
+                    for i in range(1, self.rows)
++                   for j in range(min(i, self.cols)))
+                    for j in range(i))
+ 
+     @property
+2026-10-21 12:23:00,725 - INFO - Grading answer for sympy__sympy-12454...
+2026-10-21 12:23:00,778 - INFO - report: {'sympy__sympy-12454': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for sympy__sympy-12454: resolved: False
+2026-10-21 12:23:00,779 - INFO - Attempting to stop container sweb.eval.sympy__sympy-12454.study2026...
+2026-10-21 12:23:15,975 - INFO - Container sweb.eval.sympy__sympy-12454.study2026 stopped successfully.
+2026-10-21 12:23:15,976 - INFO - Attempting to remove container sweb.eval.sympy__sympy-12454.study2026...
+2026-10-21 12:23:16,025 - INFO - Container sweb.eval.sympy__sympy-12454.study2026 removed successfully.

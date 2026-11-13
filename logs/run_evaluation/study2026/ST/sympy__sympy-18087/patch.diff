@@ -1,0 +1,39 @@
+diff --git a/sympy/core/exprtools.py b/sympy/core/exprtools.py
+index 7f0d4e21cb..1a8f0c8d34 100644
+--- a/sympy/core/exprtools.py
++++ b/sympy/core/exprtools.py
+@@ -1122,7 +1122,7 @@ def _factor_sum_int(expr, **kwargs):
+ 
+ 
+ def factor_terms(expr, radical=False, clear=False, fraction=False, sign=True):
+-    """Remove common factors from terms in all arguments without
++    r"""Remove common factors from terms in all arguments without
+     changing the underlying structure of the expr. No expansion or
+     simplification (and no processing of non-commutatives) is performed.
+ 
+@@ -1174,10 +1174,25 @@ def do(expr):
+                 list_args = [-a for a in list_args]
+             # watch out for exp(-(x+2)) which gcd_terms will change to exp(-x-2)
+             special = {}
++            # Track arguments that have been temporarily replaced
++            # This prevents incorrect simplifications of expressions like sqrt(sin(x)**2)
++            # which should not be simplified as sin(x) for complex x
+             for i, a in enumerate(list_args):
+                 b, e = a.as_base_exp()
++                # Preserve the structure of powers that might be incorrectly simplified
++                # Specifically handle cases where we have symbolic powers that shouldn't
++                # be flattened during the factoring process
+                 if e.is_Mul and e != Mul(*e.args):
++                    # Replace with dummy to prevent structural changes
+                     list_args[i] = Dummy()
+                     special[list_args[i]] = a
++                # Additional protection for expressions involving Abs or sqrt of squares
++                elif a.is_Pow and a.exp.is_Rational and a.exp.q == 2:
++                    # For square roots, don't allow restructuring that loses sign information
++                    base, exp = a.as_base_exp()
++                    if base.is_Pow and base.exp == 2:
++                        list_args[i] = Dummy()
++                        special[list_args[i]] = a
+             
+             # rebuild p not worrying about the order which gcd_terms will fix
++            # We need to preserve the structure of expressions like sqrt(sin(x)**2)

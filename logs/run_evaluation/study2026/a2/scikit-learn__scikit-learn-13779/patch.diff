@@ -1,0 +1,15 @@
+diff --git a/sklearn/ensemble/voting.py b/sklearn/ensemble/voting.py
+index 1c7d8e2..b6e9d8f 100644
+--- a/sklearn/ensemble/voting.py
++++ b/sklearn/ensemble/voting.py
+@@ -65,8 +65,8 @@ def fit(self, X, y, sample_weight=None):
+ 
+         if sample_weight is not None:
+             for name, step in self.estimators:
+-                if not has_fit_parameter(step, 'sample_weight'):
+-                    raise ValueError('Underlying estimator \'%s\' does not'
++                if step is not None and not has_fit_parameter(step, 'sample_weight'):
++                    raise ValueError('Underlying estimator \'%s\' does not'
+                                      ' support sample weights.' % name)
+ 
+         names, clfs = zip(*self.estimators)

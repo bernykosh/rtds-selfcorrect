@@ -1,0 +1,35 @@
+2026-10-21 21:26:11,192 - INFO - Creating container for django__django-12470...
+2026-10-21 21:26:11,248 - INFO - Container for django__django-12470 created: 81b154bec77c1dd809ec26c47bfd2981ce770225cea2aa778351f569d315730f
+2026-10-21 21:26:11,432 - INFO - Container for django__django-12470 started: 81b154bec77c1dd809ec26c47bfd2981ce770225cea2aa778351f569d315730f
+2026-10-21 21:26:11,433 - INFO - Intermediate patch for django__django-12470 written to logs/run_evaluation/study2026/T/django__django-12470/patch.diff, now applying to container...
+2026-10-21 21:26:11,798 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:26:14,929 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:26:15,366 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:26:15,664 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 21:26:15,747 - INFO - >>>>> Patch Apply Failed:
+patching file django/db/models/sql/compiler.py
+Hunk #1 FAILED at 270.
+1 out of 1 hunk FAILED -- saving rejects to file django/db/models/sql/compiler.py.rej
+patching file django/db/models/sql/compiler.py
+Hunk #1 succeeded at 284 (offset 50 lines).
+Hunk #2 succeeded at 305 (offset 35 lines).
+
+2026-10-21 21:26:15,750 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-12470: >>>>> Patch Apply Failed:
+patching file django/db/models/sql/compiler.py
+Hunk #1 FAILED at 270.
+1 out of 1 hunk FAILED -- saving rejects to file django/db/models/sql/compiler.py.rej
+patching file django/db/models/sql/compiler.py
+Hunk #1 succeeded at 284 (offset 50 lines).
+Hunk #2 succeeded at 305 (offset 35 lines).
+
+Check (logs/run_evaluation/study2026/T/django__django-12470/run_instance.log) for more information.
+
+2026-10-21 21:26:15,750 - INFO - Attempting to stop container sweb.eval.django__django-12470.study2026...
+2026-10-21 21:26:30,974 - INFO - Container sweb.eval.django__django-12470.study2026 stopped successfully.
+2026-10-21 21:26:30,974 - INFO - Attempting to remove container sweb.eval.django__django-12470.study2026...
+2026-10-21 21:26:31,073 - INFO - Container sweb.eval.django__django-12470.study2026 removed successfully.

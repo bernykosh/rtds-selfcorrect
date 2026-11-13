@@ -1,0 +1,35 @@
+diff --git a/django/db/models/query_utils.py b/django/db/models/query_utils.py
+index 466920f6d7..d8e0f8b1a2 100644
+--- a/django/db/models/query_utils.py
++++ b/django/db/models/query_utils.py
+@@ -70,6 +70,10 @@ class Q(tree.Node):
+     def _combine(self, other, conn):
+         if not isinstance(other, Q):
+-            raise TypeError(other)
+-
++            # Handle combination with expression objects like Exists
++            if hasattr(other, 'resolve_expression') and getattr(other, 'conditional', False):
++                # Wrap conditional expressions in Q
++                other = Q(other)
++            else:
++                raise TypeError(other)
+         # If the other Q() is empty, ignore it and just use `self`.
+         if not other:
+@@ -89,7 +93,17 @@ class Q(tree.Node):
+     def __and__(self, other):
+         return self._combine(other, self.AND)
+ 
++    def __rand__(self, other):
++        # Handle reverse & operation (other & self)
++        # This makes Q() & Exists() commutative
++        return self._combine(other, self.AND)
++
+     def __or__(self, other):
+         return self._combine(other, self.OR)
+ 
++    def __ror__(self, other):
++        # Handle reverse | operation (other | self)
++        # This makes Q() | Exists() commutative
++        return self._combine(other, self.OR)
++
+     def __invert__(self, other):

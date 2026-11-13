@@ -1,0 +1,34 @@
+diff --git a/sympy/solvers/diophantine.py b/sympy/solvers/diophantine.py
+index 7e47b7a7e3..1f2b54e4f1 100644
+--- a/sympy/solvers/diophantine.py
++++ b/sympy/solvers/diophantine.py
+@@ -222,14 +222,25 @@ def diophantine(eq, param=symbols("t", integer=True), syms=None,
+                     'syms should be given as a sequence, e.g. a list')
+             syms = [i for i in syms if i in var]
+             if syms != var:
+-                dict_sym_index = dict(zip(syms, range(len(syms))))
+-                return {tuple([t[dict_sym_index[i]] for i in var])
+-                            for t in diophantine(eq, param)}
++                # Pass the equation with symbols in the order specified by syms
++                # This ensures that the internal processing respects the syms order
++                eq = eq.subs(list(zip(var, [Symbol(str(s), **s.assumptions0) for s in syms])))
++                # Get the solutions with the new symbol order
++                result = diophantine(eq, param=param, syms=None, permute=permute)
++                # Create mapping from old symbols to new symbols
++                sym_map = dict(zip(syms, [Symbol(str(s), **s.assumptions0) for s in syms]))
++                inv_sym_map = {v: k for k, v in sym_map.items()}
++                # Convert back to original symbols maintaining the syms order
++                final_result = set()
++                for sol in result:
++                    mapped_sol = tuple([sol[i].xreplace(inv_sym_map) for i in range(len(sol))])
++                    final_result.add(mapped_sol)
++                return final_result
+         n, d = eq.as_numer_denom()
+         if n.is_number:
+             return set()
+         if not d.is_number:
+-            dsol = diophantine(d)
++            dsol = diophantine(d, syms=syms, permute=permute)
+             good = diophantine(n, syms=syms, permute=permute) - dsol
+             return {s for s in good if _mexpand(d.subs(zip(var, s)))}
+         else:

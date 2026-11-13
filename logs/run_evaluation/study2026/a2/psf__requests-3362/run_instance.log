@@ -1,0 +1,45 @@
+2026-10-21 12:19:17,475 - INFO - Creating container for psf__requests-3362...
+2026-10-21 12:19:17,506 - INFO - Container for psf__requests-3362 created: fcfcafb953dd6939764a1ff890af7e5b251846a334c716ba7e2a04a275d54a20
+2026-10-21 12:19:17,591 - INFO - Container for psf__requests-3362 started: fcfcafb953dd6939764a1ff890af7e5b251846a334c716ba7e2a04a275d54a20
+2026-10-21 12:19:17,593 - INFO - Intermediate patch for psf__requests-3362 written to logs/run_evaluation/study2026/a2/psf__requests-3362/patch.diff, now applying to container...
+2026-10-21 12:19:17,772 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:19:18,113 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:19:18,364 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:19:18,607 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 12:19:18,681 - INFO - >>>>> Patch Apply Failed:
+patching file requests/utils.py
+Hunk #1 FAILED at 342.
+1 out of 1 hunk FAILED -- saving rejects to file requests/utils.py.rej
+patching file requests/utils.py
+Hunk #1 FAILED at 340.
+1 out of 1 hunk FAILED -- saving rejects to file requests/utils.py.rej
+patching file requests/utils.py
+Hunk #1 succeeded at 360 with fuzz 5 (offset 25 lines).
+patching file requests/utils.py
+Hunk #1 FAILED at 335.
+1 out of 1 hunk FAILED -- saving rejects to file requests/utils.py.rej
+
+2026-10-21 12:19:18,684 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for psf__requests-3362: >>>>> Patch Apply Failed:
+patching file requests/utils.py
+Hunk #1 FAILED at 342.
+1 out of 1 hunk FAILED -- saving rejects to file requests/utils.py.rej
+patching file requests/utils.py
+Hunk #1 FAILED at 340.
+1 out of 1 hunk FAILED -- saving rejects to file requests/utils.py.rej
+patching file requests/utils.py
+Hunk #1 succeeded at 360 with fuzz 5 (offset 25 lines).
+patching file requests/utils.py
+Hunk #1 FAILED at 335.
+1 out of 1 hunk FAILED -- saving rejects to file requests/utils.py.rej
+
+Check (logs/run_evaluation/study2026/a2/psf__requests-3362/run_instance.log) for more information.
+
+2026-10-21 12:19:18,684 - INFO - Attempting to stop container sweb.eval.psf__requests-3362.study2026...
+2026-10-21 12:19:33,862 - INFO - Container sweb.eval.psf__requests-3362.study2026 stopped successfully.
+2026-10-21 12:19:33,863 - INFO - Attempting to remove container sweb.eval.psf__requests-3362.study2026...
+2026-10-21 12:19:33,948 - INFO - Container sweb.eval.psf__requests-3362.study2026 removed successfully.

@@ -1,0 +1,26 @@
+diff --git a/lib/matplotlib/offsetbox.py b/lib/matplotlib/offsetbox.py
+index 1a2b3c4..5d6e7f8 100644
+--- a/lib/matplotlib/offsetbox.py
++++ b/lib/matplotlib/offsetbox.py
+@@ -2049,6 +2049,21 @@ class DraggableBase:
+     def finalize_offset(self):
+         pass
+ 
++    def __getstate__(self):
++        # Don't pickle the canvas or callbacks
++        state = self.__dict__.copy()
++        state['canvas'] = None
++        state['cids'] = []
++        # Remove _c1 if it exists (set in on_pick)
++        if '_c1' in state:
++            del state['_c1']
++        # Remove background if it exists (used in blitting)
++        if 'background' in state:
++            del state['background']
++        # Ensure ref_artist is handled properly
++        state['ref_artist'] = None
++        return state
++
+ 
+ class DraggableOffsetBox(DraggableBase):
+     def __init__(self, ref_artist, offsetbox, use_blit=False):

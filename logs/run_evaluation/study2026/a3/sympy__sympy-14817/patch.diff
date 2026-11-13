@@ -1,0 +1,22 @@
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index 8b8f8ab..d5c0fc9 100644
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -825,10 +825,14 @@ def _print_MatAdd(self, expr):
+         s = None
+         for item in expr.args:
+             pform = self._print(item)
+-            if s is None:
+-                s = pform     # First element
++            if s is None: 
++                s = pform  # First element
+             else:
+-                if S(item.args[0]).is_negative:
++                # Check if the first argument of item is a negative expression
++                # We avoid using sympify by checking the structure directly
++                first_arg_negative = False
++                if hasattr(item, 'args') and len(item.args) > 0:
++                    first_arg_negative = _coeff_isneg(item.args[0])
+                     s = prettyForm(*stringPict.next(s, ' '))
+                     pform = self._print(item)
+                 else:

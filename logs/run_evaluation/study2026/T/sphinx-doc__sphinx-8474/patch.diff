@@ -1,0 +1,16 @@
+diff --git a/sphinx/domains/std.py b/sphinx/domains/std.py
+index 4d8c4cb0d..c2f4f8b1e 100644
+--- a/sphinx/domains/std.py
++++ b/sphinx/domains/std.py
+@@ -1192,7 +1192,10 @@ def _resolve_numref_xref(self, env: "BuildEnvironment", fromdocname: str,
+             if fignumber is None:
+                 return contnode
+         except ValueError:
+-            logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
++            # Don't warn for tables without captions when numfig is False
++            if not (figtype == 'table' and env.config.numfig is False):
++                logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
++                               location=node)
+             return contnode
+ 
+         try:

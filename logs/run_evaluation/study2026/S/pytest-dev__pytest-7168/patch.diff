@@ -1,0 +1,36 @@
+diff --git a/src/_pytest/_io/saferepr.py b/src/_pytest/_io/saferepr.py
+index 8d5f8e1..b3e4d4a 100644
+--- a/src/_pytest/_io/saferepr.py
++++ b/src/_pytest/_io/saferepr.py
+@@ -15,10 +15,27 @@ def _try_repr_or_str(obj):
+         return '{}("{}")'.format(type(obj).__name__, obj)
+ 
+ 
++def _safe_get_class_name(obj: Any) -> str:
++    try:
++        return obj.__class__.__name__
++    except (KeyboardInterrupt, SystemExit):
++        raise
++    except BaseException:
++        return type(obj).__name__
++
++
+ def _format_repr_exception(exc: BaseException, obj: Any) -> str:
++    # Handle case where exc is not actually an active exception
++    if str(exc) == "No active exception to reraise":
++        exc_info = "RuntimeError: No active exception to reraise"
++    else:
++        try:
++            exc_info = _try_repr_or_str(exc)
++        except (KeyboardInterrupt, SystemExit):
++            raise
++        except BaseException as inner_exc:
++            exc_info = "unpresentable exception ({})".format(_try_repr_or_str(inner_exc))
++    class_name = _safe_get_class_name(obj)
+     return "<[{} raised in repr()] {} object at 0x{:x}>".format(
+-        exc_info, obj.__class__.__name__, id(obj)
++        exc_info, class_name, id(obj)
+     )
+-
+-
+-class SafeRepr(reprlib.Repr):

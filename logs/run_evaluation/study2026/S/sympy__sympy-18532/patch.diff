@@ -1,0 +1,23 @@
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -1004,14 +1004,18 @@ def atoms(self, *types):
+         >>> (1 + x + 2*sin(y + I*pi)).atoms(Mul)
+         {I*pi, 2*sin(y + I*pi)}
+ 
+         """
+         if types:
+             types = tuple(
+                 [t if isinstance(t, type) else type(t) for t in types])
++        else:
++            def has_no_args(expr):
++                return not expr.args
++            types = (has_no_args,)
+         else:
+-            types = (Atom,)
+         result = set()
+         for expr in preorder_traversal(self):
+-            if isinstance(expr, types):
++            if (isinstance(types[0], type) and isinstance(expr, types)) or \
++               (callable(types[0]) and types[0](expr)):
+                 result.add(expr)
+         return result

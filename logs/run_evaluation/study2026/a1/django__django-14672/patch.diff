@@ -1,0 +1,26 @@
+diff --git a/django/db/models/fields/reverse_related.py b/django/db/models/fields/reverse_related.py
+index 7d7d7d7d7d..8e8e8e8e8e 100644
+--- a/django/db/models/fields/reverse_related.py
++++ b/django/db/models/fields/reverse_related.py
+@@ -137,7 +137,7 @@ class ForeignObjectRel(FieldCacheMixin):
+     @property
+     def identity(self):
+         return (
+-            self.field,
++            self.field,
+             self.model,
+             self.related_name,
+             self.related_query_name,
+@@ -242,9 +242,9 @@ class ManyToManyRel(ForeignObjectRel):
+     @property
+     def identity(self):
+         return super().identity + (
+-            self.through,
+-            self.through_fields,
+-            self.db_constraint,
++            self.through,
++            make_hashable(self.through_fields),
++            self.db_constraint,
+         )
+ 
+     def get_related_field(self):

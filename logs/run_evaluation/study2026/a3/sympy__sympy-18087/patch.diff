@@ -1,0 +1,50 @@
+diff --git a/sympy/core/exprtools.py b/sympy/core/exprtools.py
+index 4d6d8bf4cb..c6c1c8a8f9 100644
+--- a/sympy/core/exprtools.py
++++ b/sympy/core/exprtools.py
+@@ -1,4 +1,5 @@
+ """Tools for manipulating of large commutative expressions. """
+ 
++
+ from __future__ import print_function, division
+ 
+@@ -1234,7 +1235,7 @@ def _factor_sum_int(expr, **kwargs):
+ 
+ 
+ def factor_terms(expr, radical=False, clear=False, fraction=False, sign=True):
+-    """Remove common factors from terms in all arguments without
++    r"""Remove common factors from terms in all arguments without
+     changing the underlying structure of the expr. No expansion or
+     simplification (and no processing of non-commutatives) is performed.
+ 
+@@ -1296,12 +1297,17 @@ def do(expr):
+             # watch out for exp(-(x+2)) which gcd_terms will change to exp(-x-2)
+             special = {}
+             for i, a in enumerate(list_args):
+-                b, e = a.as_base_exp()
+-                if e.is_Mul and e != Mul(*e.args):
+-                    list_args[i] = Dummy()
+-                    special[list_args[i]] = a
++                if not a.is_commutative:
++                    continue
++                b, e = a.as_base_exp()
++                if e.is_Mul and e != Mul(*e.args):
++                    list_args[i] = Dummy()
++                    special[list_args[i]] = a
+             # rebuild p not worrying about the order which gcd_terms will fix
+             p = Add._from_args(list_args)
++            # Only pass special to xreplace if it's not empty to avoid unnecessary operations
++            if special:
++                p = p.xreplace(special)
+             p = gcd_terms(p,
+                 isprimitive=True,
+                 clear=clear,
+@@ -1310,7 +1316,7 @@ def do(expr):
+         elif p.args:
+             p = p.func(
+                 *[do(a) for a in p.args])
+-        rv = _keep_coeff(cont, p, clear=clear, sign=sign)
++        rv = _keep_coeff(cont, p, clear=clear, sign=sign) if cont else p
+         return rv
+     expr = sympify(expr)
+     return do(expr)

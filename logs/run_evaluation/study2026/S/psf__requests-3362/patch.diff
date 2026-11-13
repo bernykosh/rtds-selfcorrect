@@ -1,0 +1,22 @@
+diff --git a/requests/utils.py b/requests/utils.py
+index 9c89f7a..e0de787 100644
+--- a/requests/utils.py
++++ b/requests/utils.py
+@@ -328,12 +328,15 @@ def stream_decode_response_unicode(iterator, r):
+ def iter_slices(string, slice_length):
+     """Iterate over slices of a string."""
+     pos = 0
+-    while pos < len(string):
++    if slice_length is None or slice_length <= 0:
++        yield string
++        return
++    while pos < len(string):
+         yield string[pos:pos + slice_length]
+         pos += slice_length
+ 
+ 
+ def get_unicode_from_response(r):
+-    """Returns the requested content back in unicode.
++    """Returns the requested content back in unicode.
+ 
+     :param r: Response object to get unicode content from.

@@ -1,0 +1,47 @@
+diff --git a/django/db/models/base.py b/django/db/models/base.py
+index 8328811f04..8328811f04 100644
+--- a/django/db/models/base.py
++++ b/django/db/models/base.py
+@@ -1098,6 +1098,35 @@ class Model(metaclass=ModelBase):
+                 )
+         return errors
+ 
++    @classmethod
++    def _check_unique_constraints(cls):
++        """Check the fields of UniqueConstraint."""
++        errors = []
++        for constraint in cls._meta.constraints:
++            if isinstance(constraint, UniqueConstraint):
++                fields = constraint.fields
++                # Use the same checking logic as _check_local_fields
++                forward_fields_map = {}
++                for field in cls._meta._get_fields(reverse=False):
++                    forward_fields_map[field.name] = field
++                    if hasattr(field, 'attname'):
++                        forward_fields_map[field.attname] = field
++
++                for field_name in fields:
++                    try:
++                        field = forward_fields_map[field_name]
++                    except KeyError:
++                        errors.append(
++                            checks.Error(
++                                "'constraints' refers to the nonexistent field '%s'." % field_name,
++                                obj=cls,
++                                id='models.E012',
++                            )
++                        )
++                    else:
++                        errors.extend(cls._check_local_fields([field_name], "constraints"))
++        return errors
++
+     @classmethod
+     def _check_constraints(cls, databases):
+         errors = []
+@@ -1146,4 +1175,6 @@ class Model(metaclass=ModelBase):
+                         id='models.W038',
+                     )
+                 )
++        errors.extend(cls._check_unique_constraints())
++
+         return errors

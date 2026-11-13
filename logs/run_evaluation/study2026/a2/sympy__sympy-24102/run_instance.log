@@ -1,0 +1,37 @@
+2026-10-21 12:25:11,296 - INFO - Creating container for sympy__sympy-24102...
+2026-10-21 12:25:11,325 - INFO - Container for sympy__sympy-24102 created: a9b3954047a9d6506d31a3adaf2958e060ef3572651b78d218ebfc3cf934f4f3
+2026-10-21 12:25:11,429 - INFO - Container for sympy__sympy-24102 started: a9b3954047a9d6506d31a3adaf2958e060ef3572651b78d218ebfc3cf934f4f3
+2026-10-21 12:25:11,430 - INFO - Intermediate patch for sympy__sympy-24102 written to logs/run_evaluation/study2026/a2/sympy__sympy-24102/patch.diff, now applying to container...
+2026-10-21 12:25:11,600 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:25:12,503 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:25:12,886 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:25:13,241 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 12:25:13,345 - INFO - >>>>> Patch Apply Failed:
+patching file sympy/parsing/mathematica.py
+Hunk #1 FAILED at 1140.
+Hunk #2 succeeded at 614 (offset -543 lines).
+Hunk #3 succeeded at 625 (offset -542 lines).
+Hunk #4 succeeded at 658 (offset -533 lines).
+Hunk #5 succeeded at 673 with fuzz 3 (offset -533 lines).
+1 out of 5 hunks FAILED -- saving rejects to file sympy/parsing/mathematica.py.rej
+
+2026-10-21 12:25:13,350 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for sympy__sympy-24102: >>>>> Patch Apply Failed:
+patching file sympy/parsing/mathematica.py
+Hunk #1 FAILED at 1140.
+Hunk #2 succeeded at 614 (offset -543 lines).
+Hunk #3 succeeded at 625 (offset -542 lines).
+Hunk #4 succeeded at 658 (offset -533 lines).
+Hunk #5 succeeded at 673 with fuzz 3 (offset -533 lines).
+1 out of 5 hunks FAILED -- saving rejects to file sympy/parsing/mathematica.py.rej
+
+Check (logs/run_evaluation/study2026/a2/sympy__sympy-24102/run_instance.log) for more information.
+
+2026-10-21 12:25:13,350 - INFO - Attempting to stop container sweb.eval.sympy__sympy-24102.study2026...
+2026-10-21 12:25:28,577 - INFO - Container sweb.eval.sympy__sympy-24102.study2026 stopped successfully.
+2026-10-21 12:25:28,578 - INFO - Attempting to remove container sweb.eval.sympy__sympy-24102.study2026...
+2026-10-21 12:25:28,650 - INFO - Container sweb.eval.sympy__sympy-24102.study2026 removed successfully.

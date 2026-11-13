@@ -1,0 +1,22 @@
+diff --git a/requests/models.py b/requests/models.py
+index 1f2d8a0..b6e3d1f 100644
+--- a/requests/models.py
++++ b/requests/models.py
+@@ -180,4 +180,16 @@ class Request(object):
+         for event in HOOKS:
+             self.hooks[event] = []
+ 
+-        hooks = hooks or {}
++        hooks = hooks or {}
++
++        # Process hooks dictionary, allowing list values
++        processed_hooks = {}
++        for (k, v) in list(hooks.items()):
++            if isinstance(v, list):
++                processed_hooks[k] = v
++            else:
++                processed_hooks[k] = [v]
++
++        for (k, v) in list(processed_hooks.items()):
++            for hook in v:
++                self.register_hook(event=k, hook=hook)

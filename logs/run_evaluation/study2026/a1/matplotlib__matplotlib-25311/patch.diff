@@ -1,0 +1,18 @@
+diff --git a/lib/matplotlib/offsetbox.py b/lib/matplotlib/offsetbox.py
+index 1a2b3c4..5d6e7f8 100644
+--- a/lib/matplotlib/offsetbox.py
++++ b/lib/matplotlib/offsetbox.py
+@@ -2049,6 +2049,13 @@ class DraggableBase:
+     def finalize_offset(self):
+         pass
+ 
++    def __getstate__(self):
++        # Don't pickle the canvas or callbacks
++        state = self.__dict__.copy()
++        state['canvas'] = None
++        state['cids'] = []
++        return state
++
+ 
+ class DraggableOffsetBox(DraggableBase):
+     def __init__(self, ref_artist, offsetbox, use_blit=False):

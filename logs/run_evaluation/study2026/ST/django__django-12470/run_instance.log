@@ -1,0 +1,84 @@
+2026-10-21 21:45:12,808 - INFO - Creating container for django__django-12470...
+2026-10-21 21:45:12,834 - INFO - Container for django__django-12470 created: 5a6a8d7b786faa1b0499bea907b82b11b1ffa9388ecc9a8249023b899869a9d8
+2026-10-21 21:45:12,927 - INFO - Container for django__django-12470 started: 5a6a8d7b786faa1b0499bea907b82b11b1ffa9388ecc9a8249023b899869a9d8
+2026-10-21 21:45:12,928 - INFO - Intermediate patch for django__django-12470 written to logs/run_evaluation/study2026/ST/django__django-12470/patch.diff, now applying to container...
+2026-10-21 21:45:13,080 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:45:15,154 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:45:15,650 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:45:15,951 - INFO - >>>>> Applied Patch:
+patching file django/db/models/sql/compiler.py
+Hunk #1 succeeded at 219 with fuzz 3 (offset -15 lines).
+Hunk #2 succeeded at 310 (offset 35 lines).
+
+2026-10-21 21:45:16,079 - INFO - Git diff before:
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 92213a4e67..42bdb8ab72 100755
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -220,6 +220,11 @@ class SQLCompiler:
+         if self.query.default_cols:
+             cols = self.get_default_columns()
+         else:
++            # When not using standard ordering, we need to reverse the default directions
++            # but we must preserve the original intent of meta.ordering
++            asc, desc = ORDER_DIR['DESC']
++
++        order_by = []
+             # self.query.select is a special case. These columns never go to
+             # any model.
+             cols = self.query.select
+@@ -305,6 +310,13 @@ class SQLCompiler:
+                 continue
+ 
+             col, order = get_order_dir(field, asc)
++            # Special handling for meta ordering in inherited models:
++            # If we have a meta-defined ordering (not user-specified) and it's negative,
++            # we must keep the DESC direction even when standard_ordering is False
++            if (not self.query.extra_order_by and 
++                self._meta_ordering is not None and 
++                field in self._meta_ordering and field.startswith('-')):
++                order = 'DESC'
+             descending = order == 'DESC'
+ 
+             if col in self.query.annotation_select:
+2026-10-21 21:45:16,079 - INFO - Eval script for django__django-12470 written to logs/run_evaluation/study2026/ST/django__django-12470/eval.sh; copying to container...
+2026-10-21 21:45:31,855 - INFO - Test runtime: 15.72 seconds
+2026-10-21 21:45:31,857 - INFO - Test output for django__django-12470 written to logs/run_evaluation/study2026/ST/django__django-12470/test_output.txt
+2026-10-21 21:45:31,984 - INFO - Git diff after:
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 92213a4e67..42bdb8ab72 100755
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -220,6 +220,11 @@ class SQLCompiler:
+         if self.query.default_cols:
+             cols = self.get_default_columns()
+         else:
++            # When not using standard ordering, we need to reverse the default directions
++            # but we must preserve the original intent of meta.ordering
++            asc, desc = ORDER_DIR['DESC']
++
++        order_by = []
+             # self.query.select is a special case. These columns never go to
+             # any model.
+             cols = self.query.select
+@@ -305,6 +310,13 @@ class SQLCompiler:
+                 continue
+ 
+             col, order = get_order_dir(field, asc)
++            # Special handling for meta ordering in inherited models:
++            # If we have a meta-defined ordering (not user-specified) and it's negative,
++            # we must keep the DESC direction even when standard_ordering is False
++            if (not self.query.extra_order_by and 
++                self._meta_ordering is not None and 
++                field in self._meta_ordering and field.startswith('-')):
++                order = 'DESC'
+             descending = order == 'DESC'
+ 
+             if col in self.query.annotation_select:
+2026-10-21 21:45:31,985 - INFO - Grading answer for django__django-12470...
+2026-10-21 21:45:32,185 - INFO - report: {'django__django-12470': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for django__django-12470: resolved: False
+2026-10-21 21:45:32,185 - INFO - Attempting to stop container sweb.eval.django__django-12470.study2026...
+2026-10-21 21:45:47,692 - INFO - Container sweb.eval.django__django-12470.study2026 stopped successfully.
+2026-10-21 21:45:47,692 - INFO - Attempting to remove container sweb.eval.django__django-12470.study2026...
+2026-10-21 21:45:48,299 - INFO - Container sweb.eval.django__django-12470.study2026 removed successfully.

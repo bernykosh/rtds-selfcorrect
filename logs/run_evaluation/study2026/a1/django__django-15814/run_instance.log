@@ -1,0 +1,29 @@
+2026-10-21 11:48:29,430 - INFO - Creating container for django__django-15814...
+2026-10-21 11:48:29,497 - INFO - Container for django__django-15814 created: e7b94e47e2e080fe355fa8db9ac6c32f3bce7fb858ff874c394b9d15af6aa9c7
+2026-10-21 11:48:29,598 - INFO - Container for django__django-15814 started: e7b94e47e2e080fe355fa8db9ac6c32f3bce7fb858ff874c394b9d15af6aa9c7
+2026-10-21 11:48:29,599 - INFO - Intermediate patch for django__django-15814 written to logs/run_evaluation/study2026/a1/django__django-15814/patch.diff, now applying to container...
+2026-10-21 11:48:29,761 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 11:48:32,438 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 11:48:32,789 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 11:48:33,117 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 11:48:33,194 - INFO - >>>>> Patch Apply Failed:
+The next patch would create the file django/db/models/sql/query.py,
+which already exists!  Skipping patch.
+7 out of 7 hunks ignored
+
+2026-10-21 11:48:33,195 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-15814: >>>>> Patch Apply Failed:
+The next patch would create the file django/db/models/sql/query.py,
+which already exists!  Skipping patch.
+7 out of 7 hunks ignored
+
+Check (logs/run_evaluation/study2026/a1/django__django-15814/run_instance.log) for more information.
+
+2026-10-21 11:48:33,195 - INFO - Attempting to stop container sweb.eval.django__django-15814.study2026...
+2026-10-21 11:48:48,534 - INFO - Container sweb.eval.django__django-15814.study2026 stopped successfully.
+2026-10-21 11:48:48,535 - INFO - Attempting to remove container sweb.eval.django__django-15814.study2026...
+2026-10-21 11:48:48,708 - INFO - Container sweb.eval.django__django-15814.study2026 removed successfully.

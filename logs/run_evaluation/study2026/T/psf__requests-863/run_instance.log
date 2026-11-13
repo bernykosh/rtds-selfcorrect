@@ -1,0 +1,29 @@
+2026-10-21 21:39:02,659 - INFO - Creating container for psf__requests-863...
+2026-10-21 21:39:02,686 - INFO - Container for psf__requests-863 created: 5d918e8d293c59cf30f89f2c6a335aaf7feab9840340dc5db224ed37701ec55c
+2026-10-21 21:39:02,766 - INFO - Container for psf__requests-863 started: 5d918e8d293c59cf30f89f2c6a335aaf7feab9840340dc5db224ed37701ec55c
+2026-10-21 21:39:02,767 - INFO - Intermediate patch for psf__requests-863 written to logs/run_evaluation/study2026/T/psf__requests-863/patch.diff, now applying to container...
+2026-10-21 21:39:02,918 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:39:03,204 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:39:03,444 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:39:03,679 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 21:39:03,752 - INFO - >>>>> Patch Apply Failed:
+patching file requests/models.py
+Hunk #1 FAILED at 180.
+1 out of 1 hunk FAILED -- saving rejects to file requests/models.py.rej
+
+2026-10-21 21:39:03,755 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for psf__requests-863: >>>>> Patch Apply Failed:
+patching file requests/models.py
+Hunk #1 FAILED at 180.
+1 out of 1 hunk FAILED -- saving rejects to file requests/models.py.rej
+
+Check (logs/run_evaluation/study2026/T/psf__requests-863/run_instance.log) for more information.
+
+2026-10-21 21:39:03,755 - INFO - Attempting to stop container sweb.eval.psf__requests-863.study2026...
+2026-10-21 21:39:18,892 - INFO - Container sweb.eval.psf__requests-863.study2026 stopped successfully.
+2026-10-21 21:39:18,892 - INFO - Attempting to remove container sweb.eval.psf__requests-863.study2026...
+2026-10-21 21:39:18,920 - INFO - Container sweb.eval.psf__requests-863.study2026 removed successfully.

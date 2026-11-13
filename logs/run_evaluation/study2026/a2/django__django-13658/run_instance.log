@@ -1,0 +1,57 @@
+2026-10-21 12:10:44,038 - INFO - Creating container for django__django-13658...
+2026-10-21 12:10:44,094 - INFO - Container for django__django-13658 created: 669ba8efcb16f038725d5c92b49029303796d7e3f20235c6c7f445a056d80031
+2026-10-21 12:10:44,640 - INFO - Container for django__django-13658 started: 669ba8efcb16f038725d5c92b49029303796d7e3f20235c6c7f445a056d80031
+2026-10-21 12:10:44,643 - INFO - Intermediate patch for django__django-13658 written to logs/run_evaluation/study2026/a2/django__django-13658/patch.diff, now applying to container...
+2026-10-21 12:10:45,276 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:11:26,930 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:11:27,496 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:11:28,012 - INFO - >>>>> Applied Patch:
+patching file django/core/management/__init__.py
+Hunk #1 succeeded at 344 with fuzz 3 (offset 116 lines).
+
+2026-10-21 12:11:28,231 - INFO - Git diff before:
+diff --git a/django/core/management/__init__.py b/django/core/management/__init__.py
+index 1ba093e51f..98f69ff089 100755
+--- a/django/core/management/__init__.py
++++ b/django/core/management/__init__.py
+@@ -344,7 +344,11 @@ class ManagementUtility:
+         # Preprocess options to extract --settings and --pythonpath.
+         # These options could affect the commands that are available, so they
+         # must be processed early.
+-        parser = CommandParser(usage='%(prog)s subcommand [options] [args]', add_help=False, allow_abbrev=False)
++        parser = CommandParser(
++            prog=self.prog_name,
++            usage='%(prog)s subcommand [options] [args]',
++            add_help=False,
++            allow_abbrev=False,
+         parser.add_argument('--settings')
+         parser.add_argument('--pythonpath')
+         parser.add_argument('args', nargs='*')  # catch-all
+2026-10-21 12:11:28,233 - INFO - Eval script for django__django-13658 written to logs/run_evaluation/study2026/a2/django__django-13658/eval.sh; copying to container...
+2026-10-21 12:11:52,616 - INFO - Test runtime: 24.31 seconds
+2026-10-21 12:11:52,620 - INFO - Test output for django__django-13658 written to logs/run_evaluation/study2026/a2/django__django-13658/test_output.txt
+2026-10-21 12:11:52,751 - INFO - Git diff after:
+diff --git a/django/core/management/__init__.py b/django/core/management/__init__.py
+index 1ba093e51f..98f69ff089 100755
+--- a/django/core/management/__init__.py
++++ b/django/core/management/__init__.py
+@@ -344,7 +344,11 @@ class ManagementUtility:
+         # Preprocess options to extract --settings and --pythonpath.
+         # These options could affect the commands that are available, so they
+         # must be processed early.
+-        parser = CommandParser(usage='%(prog)s subcommand [options] [args]', add_help=False, allow_abbrev=False)
++        parser = CommandParser(
++            prog=self.prog_name,
++            usage='%(prog)s subcommand [options] [args]',
++            add_help=False,
++            allow_abbrev=False,
+         parser.add_argument('--settings')
+         parser.add_argument('--pythonpath')
+         parser.add_argument('args', nargs='*')  # catch-all
+2026-10-21 12:11:52,752 - INFO - Grading answer for django__django-13658...
+2026-10-21 12:11:53,005 - INFO - report: {'django__django-13658': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for django__django-13658: resolved: False
+2026-10-21 12:11:53,005 - INFO - Attempting to stop container sweb.eval.django__django-13658.study2026...
+2026-10-21 12:12:08,327 - INFO - Container sweb.eval.django__django-13658.study2026 stopped successfully.
+2026-10-21 12:12:08,328 - INFO - Attempting to remove container sweb.eval.django__django-13658.study2026...
+2026-10-21 12:12:08,525 - INFO - Container sweb.eval.django__django-13658.study2026 removed successfully.

@@ -1,0 +1,53 @@
+2026-10-21 21:59:19,063 - INFO - Creating container for sphinx-doc__sphinx-8474...
+2026-10-21 21:59:19,086 - INFO - Container for sphinx-doc__sphinx-8474 created: a70aee350b49d19788234d54154d0aab0cf5b18edbce8a54ba0674bb29073193
+2026-10-21 21:59:19,175 - INFO - Container for sphinx-doc__sphinx-8474 started: a70aee350b49d19788234d54154d0aab0cf5b18edbce8a54ba0674bb29073193
+2026-10-21 21:59:19,176 - INFO - Intermediate patch for sphinx-doc__sphinx-8474 written to logs/run_evaluation/study2026/ST/sphinx-doc__sphinx-8474/patch.diff, now applying to container...
+2026-10-21 21:59:19,330 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:59:20,145 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:59:20,529 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:59:20,835 - INFO - >>>>> Applied Patch:
+patching file sphinx/domains/std.py
+Hunk #1 succeeded at 852 with fuzz 3 (offset -340 lines).
+
+2026-10-21 21:59:20,943 - INFO - Git diff before:
+diff --git a/sphinx/domains/std.py b/sphinx/domains/std.py
+index 4bde57930..293fd645c 100755
+--- a/sphinx/domains/std.py
++++ b/sphinx/domains/std.py
+@@ -852,7 +852,10 @@ class StandardDomain(Domain):
+             if fignumber is None:
+                 return contnode
+         except ValueError:
+-            logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
++            # Don't warn for tables without captions when numfig is False
++            if not (figtype == 'table' and env.config.numfig is False):
++                logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
++                               location=node)
+                            location=node)
+             return contnode
+2026-10-21 21:59:20,944 - INFO - Eval script for sphinx-doc__sphinx-8474 written to logs/run_evaluation/study2026/ST/sphinx-doc__sphinx-8474/eval.sh; copying to container...
+2026-10-21 21:59:26,918 - INFO - Test runtime: 5.90 seconds
+2026-10-21 21:59:26,919 - INFO - Test output for sphinx-doc__sphinx-8474 written to logs/run_evaluation/study2026/ST/sphinx-doc__sphinx-8474/test_output.txt
+2026-10-21 21:59:27,093 - INFO - Git diff after:
+diff --git a/sphinx/domains/std.py b/sphinx/domains/std.py
+index 4bde57930..293fd645c 100755
+--- a/sphinx/domains/std.py
++++ b/sphinx/domains/std.py
+@@ -852,7 +852,10 @@ class StandardDomain(Domain):
+             if fignumber is None:
+                 return contnode
+         except ValueError:
+-            logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
++            # Don't warn for tables without captions when numfig is False
++            if not (figtype == 'table' and env.config.numfig is False):
++                logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
++                               location=node)
+                            location=node)
+             return contnode
+2026-10-21 21:59:27,093 - INFO - Grading answer for sphinx-doc__sphinx-8474...
+2026-10-21 21:59:27,160 - INFO - report: {'sphinx-doc__sphinx-8474': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for sphinx-doc__sphinx-8474: resolved: False
+2026-10-21 21:59:27,160 - INFO - Attempting to stop container sweb.eval.sphinx-doc__sphinx-8474.study2026...
+2026-10-21 21:59:42,330 - INFO - Container sweb.eval.sphinx-doc__sphinx-8474.study2026 stopped successfully.
+2026-10-21 21:59:42,330 - INFO - Attempting to remove container sweb.eval.sphinx-doc__sphinx-8474.study2026...
+2026-10-21 21:59:42,388 - INFO - Container sweb.eval.sphinx-doc__sphinx-8474.study2026 removed successfully.

@@ -1,0 +1,38 @@
+diff --git a/requests/models.py b/requests/models.py
+index 1f3a0d1..c8f0b8e 100644
+--- a/requests/models.py
++++ b/requests/models.py
+@@ -144,9 +144,16 @@ class Request(object):
+         for event in HOOKS:
+             self.hooks[event] = []
+ 
++        def _ensure_callable(hook):
++            if hasattr(hook, '__call__'):
++                return hook
++            elif hasattr(hook, '__iter__'):
++                return [_ensure_callable(item) for item in hook]
++            else:
++                return hook
++
+         hooks = hooks or {}
+-
+-        for (k, v) in list(hooks.items()):
++        for (k, v) in list(hooks.items()):
+             self.register_hook(event=k, hook=v)
+ 
+         #: Session.
+@@ -262,6 +269,12 @@ class Request(object):
+     def register_hook(self, event, hook):
+         """Properly register a hook."""
+-
+-        self.hooks[event].append(hook)
++        if hasattr(hook, '__iter__') and not hasattr(hook, '__call__'):
++            try:
++                for h in hook:
++                    self.hooks[event].append(h)
++            except TypeError:
++                self.hooks[event].append(hook)
++        else:
++            self.hooks[event].append(hook)
+ 
+     def deregister_hook(self, event, hook):

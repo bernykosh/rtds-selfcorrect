@@ -1,0 +1,40 @@
+You are fixing a bug in a Python repository.
+
+Repository: {repo}
+Base commit: {base_commit}
+
+Issue text:
+<issue>
+{problem_statement}
+</issue>
+
+The file below is the file you must change. Change no other file.
+<file path="{file_path}">
+{file_content}
+</file>
+
+A patch for this issue was written earlier:
+<patch>
+{previous_patch}
+</patch>
+
+The patch was applied and run. This is the output:
+<feedback>
+Apply result: {apply_result}
+Reproduction script before the patch: {repro_before}
+Reproduction script after the patch: {repro_after}
+Test output for the changed file (cut to 60 lines):
+{test_output}
+</feedback>
+
+Task:
+1. Review the patch carefully. Look for errors, missed cases, and parts of the issue it does not resolve. Use the output above as well as your own judgement.
+2. Write a corrected patch. If you find no error and the output reports no failure, return the patch unchanged.
+
+Output format. Use exactly these two blocks and nothing after them:
+<review>
+(your review of the patch, at most 10 lines)
+</review>
+<patch>
+(the corrected unified diff, with paths relative to the repository root, that git apply accepts)
+</patch>

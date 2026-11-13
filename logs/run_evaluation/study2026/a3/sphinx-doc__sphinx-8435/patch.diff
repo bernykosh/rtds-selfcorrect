@@ -1,0 +1,28 @@
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/audodoc/__init__.py
+index 94f0a1400..b8dc7231d 100644
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -1932,7 +1932,10 @@ class DataDocumenter(ModuleLevelDocumenter):
+             if self.objpath[-1] in annotations:
+                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+                 self.add_line('   :type: ' + objrepr, sourcename)
+-            else:
++            else:
++                # Apply autodoc_type_aliases to forward references
++                annotation = annotations.get(self.objpath[-1])
++                if annotation and hasattr(annotation, '__forward_arg__'):
+                     key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                     if self.analyzer and key in self.analyzer.annotations:
+                         objrepr = self.analyzer.annotations[key]
+@@ -2152,7 +2155,10 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             if self.objpath[-1] in annotations:
+                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+                 self.add_line('   :type: ' + objrepr, sourcename)
+-            else:
++            else:
++                # Apply autodoc_type_aliases to forward references
++                annotation = annotations.get(self.objpath[-1])
++                if annotation and hasattr(annotation, '__forward_arg__'):
+                     key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                     if self.analyzer and key in self.analyzer.annotations:
+                         self.add_line('   :type: ' + self.analyzer.annotations[key],

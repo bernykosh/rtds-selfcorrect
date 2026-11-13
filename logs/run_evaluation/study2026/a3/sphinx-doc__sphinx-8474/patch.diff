@@ -1,0 +1,23 @@
+diff --git a/sphinx/domains/std.py b/sphinx/domains/std.py
+index 1f0a8c84d..b0d8c8f7e 100644
+--- a/sphinx/domains/std.py
++++ b/sphinx/domains/std.py
+@@ -1092,10 +1092,15 @@ class StandardDomain(Domain):
+         try:
+             fignumber = self.get_fignumber(env, builder, figtype, docname, target_node)
+             if fignumber is None:
+-                return contnode
++                # Don't warn for missing fignumbers in non-numbering builders
++                if builder.name not in ('latex', 'singlehtml') or not env.config.numfig:
++                    return contnode
++                logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
++                               location=node)
+         except ValueError:
+-            logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
+-                           location=node)
++            # Don't warn for missing fignumbers in non-numbering builders
++            if builder.name not in ('latex', 'singlehtml') or not env.config.numfig:
++                return contnode
+             logger.warning(__("no number is assigned for %s: %s"), figtype, labelid,
+                            location=node)
+ 

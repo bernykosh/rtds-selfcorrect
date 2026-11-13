@@ -1,0 +1,24 @@
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 1234567..89abcde 100644
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -2450,10 +2450,16 @@ class Query(BaseExpression):
+         """
+         existing, defer = self.deferred_loading
+         if defer:
+-            # Add to existing deferred names.
+-            self.deferred_loading = existing.union(field_names), True
++            # When we're already in defer mode, we need to check if any field_names
++            # were previously marked as immediate loading. If so, we should remove
++            # them from the deferred set.
++            new_deferred = set(existing)
++            for field_name in field_names:
++                if field_name in new_deferred:
++                    new_deferred.remove(field_name)
++            self.deferred_loading = frozenset(new_deferred), True
+         else:
+-            # Remove names from the set of any existing "immediate load" names.
++            # When we're in immediate load mode, remove names from the set of immediate load names.
+             self.deferred_loading = existing.difference(field_names), False
+ 
+     def add_immediate_loading(self, field_names):

@@ -1,0 +1,29 @@
+2026-10-21 11:44:28,743 - INFO - Creating container for django__django-13230...
+2026-10-21 11:44:28,848 - INFO - Container for django__django-13230 created: f7c9fd8ae168e4c4a8a0120b05c775c3241cfce87740d30b60218c68c5d37b70
+2026-10-21 11:44:29,060 - INFO - Container for django__django-13230 started: f7c9fd8ae168e4c4a8a0120b05c775c3241cfce87740d30b60218c68c5d37b70
+2026-10-21 11:44:29,061 - INFO - Intermediate patch for django__django-13230 written to logs/run_evaluation/study2026/a1/django__django-13230/patch.diff, now applying to container...
+2026-10-21 11:44:29,284 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 11:44:35,181 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 11:44:35,669 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 11:44:36,035 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 11:44:36,126 - INFO - >>>>> Patch Apply Failed:
+patching file django/contrib/syndication/views.py
+Hunk #1 FAILED at 148.
+1 out of 1 hunk FAILED -- saving rejects to file django/contrib/syndication/views.py.rej
+
+2026-10-21 11:44:36,130 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-13230: >>>>> Patch Apply Failed:
+patching file django/contrib/syndication/views.py
+Hunk #1 FAILED at 148.
+1 out of 1 hunk FAILED -- saving rejects to file django/contrib/syndication/views.py.rej
+
+Check (logs/run_evaluation/study2026/a1/django__django-13230/run_instance.log) for more information.
+
+2026-10-21 11:44:36,130 - INFO - Attempting to stop container sweb.eval.django__django-13230.study2026...
+2026-10-21 11:44:53,457 - INFO - Container sweb.eval.django__django-13230.study2026 stopped successfully.
+2026-10-21 11:44:53,459 - INFO - Attempting to remove container sweb.eval.django__django-13230.study2026...
+2026-10-21 11:44:53,682 - INFO - Container sweb.eval.django__django-13230.study2026 removed successfully.

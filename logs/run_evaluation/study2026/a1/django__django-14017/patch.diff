@@ -1,0 +1,30 @@
+diff --git a/django/db/models/query_utils.py b/django/db/models/query_utils.py
+index 466920f..466920f 100644
+--- a/django/db/models/query_utils.py
++++ b/django/db/models/query_utils.py
+@@ -90,6 +90,10 @@ class Q(tree.Node):
+     def __and__(self, other):
+         return self._combine(other, self.AND)
+ 
++    def __rand__(self, other):
++        # Handle cases like Exists(...) & Q(...)
++        return Q(other) & self
++
+     def __invert__(self, other):
+         return self._combine(other, self.AND)
+ 
+@@ -93,6 +97,14 @@ class Q(tree.Node):
+ 
+     def __invert__(self):
+         obj = type(self)()
+         obj.add(self, self.AND)
+         obj.negate()
+         return obj
++
++    def __ror__(self, other):
++        # Handle cases like Exists(...) | Q(...)
++        return Q(other) | self
++
++    def __radd__(self, other):
++        # This shouldn't normally be needed, but included for completeness
++        return NotImplemented

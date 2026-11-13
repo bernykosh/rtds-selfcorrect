@@ -1,0 +1,45 @@
+diff --git a/lib/matplotlib/cbook.py b/lib/matplotlib/cbook.py
+index 8d5d5bcda1..c6c79c13a8 100644
+--- a/lib/matplotlib/cbook.py
++++ b/lib/matplotlib/cbook.py
+@@ -293,6 +293,8 @@ class CallbackRegistry:
+     def __getstate__(self):
+         return {
+             **vars(self),
++            "_func_cid_map": {s: {proxy: cid for proxy, cid in d.items()} 
++                              for s, d in self._func_cid_map.items()},
+             # In general, callbacks may not be pickled, so we just drop them,
+             # unless directed otherwise by self._pickled_cids.
+             "callbacks": {s: {cid: proxy() for cid, proxy in d.items()
+@@ -302,13 +304,21 @@ class CallbackRegistry:
+             # It is simpler to reconstruct this from callbacks in __setstate__.
+             "_func_cid_map": None,
+         }
+-
+-    def __setstate__(self, state):
+-        vars(self).update(state)
+-        self.callbacks = {
+-            s: {cid: _weak_or_strong_ref(func, self._remove_proxy)
+-                for cid, func in d.items()}
+-            for s, d in self.callbacks.items()}
+-        self._func_cid_map = {
+-            s: {proxy: cid for cid, proxy in d.items()}
+-            for s, d in self.callbacks.items()}
++    def __setstate__(self, state):
++        # Reconstruct _func_cid_map from the persisted version
++        vars(self).update(state)
++        if self._func_cid_map is not None:
++            # Convert the persisted _func_cid_map back to the proper format
++            self._func_cid_map = {
++                s: {proxy: cid for proxy, cid in d.items()}
++                for s, d in self._func_cid_map.items()}
++        else:
++            # Recreate _func_cid_map from callbacks
++            self._func_cid_map = {
++                s: {proxy: cid for cid, proxy in d.items()}
++                for s, d in self.callbacks.items()}
++        # Recreate callbacks with proper proxy objects
++        self.callbacks = {
++            s: {cid: _weak_or_strong_ref(func, self._remove_proxy)
++                for cid, func in d.items()}
++            for s, d in self.callbacks.items()}

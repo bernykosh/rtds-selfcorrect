@@ -1,0 +1,31 @@
+diff --git a/src/_pytest/_io/saferepr.py b/src/_pytest/_io/saferepr.py
+index 8d5f8e1..b8e0c4a 100644
+--- a/src/_pytest/_io/saferepr.py
++++ b/src/_pytest/_io/saferepr.py
+@@ -20,11 +20,15 @@ def _format_repr_exception(exc: BaseException, obj: Any) -> str:
+     except BaseException as exc:
+         exc_info = "unpresentable exception ({})".format(_try_repr_or_str(exc))
+     return "<[{} raised in repr()] {} object at 0x{:x}>".format(
+-        exc_info, obj.__class__.__name__, id(obj)
++        exc_info, _try_repr_or_str_class_name(obj), id(obj)
+     )
+ 
+ 
+-def _format_repr_exception(exc: BaseException, obj: Any) -> str:
++def _try_repr_or_str_class_name(obj):
++    return getattr(obj, "__class__", type(obj)).__name__
++
++
++def _format_repr_exception(exc: BaseException, obj: Any) -> str:
+     try:
+         exc_info = _try_repr_or_str(exc)
+     except (KeyboardInterrupt, SystemExit):
+@@ -32,7 +36,7 @@ def _format_repr_exception(exc: BaseException, obj: Any) -> str:
+         exc_info = "unpresentable exception ({})".format(_try_repr_or_str(exc))
+     return "<[{} raised in repr()] {} object at 0x{:x}>".format(
+         exc_info, _try_repr_or_str_class_name(obj), id(obj)
+-    )
++    )
+ 
+ 
+ def _ellipsize(s: str, maxsize: int) -> str:

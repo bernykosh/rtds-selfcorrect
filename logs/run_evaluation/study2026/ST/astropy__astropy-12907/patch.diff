@@ -1,0 +1,19 @@
+diff --git a/astropy/modeling/separable.py b/astropy/modeling/separable.py
+index 9e2b5ab2e..b2168d5d4 100644
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -186,8 +186,12 @@ def _cstack(left, right):
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+         cright[-right.shape[0]:, -right.shape[1]:] = 1
+-
+-    return np.hstack([cleft, cright])
++    # When right is already a coord_matrix (ndarray), we should not set all elements to 1
++    # but instead use the actual right matrix values
++    if not isinstance(right, Model):
++        cright[-right.shape[0]:, -right.shape[1]:] = right
++        
++    return np.hstack((cleft, cright))
+ 
+ 
+ def _cdot(left, right):

@@ -1,0 +1,107 @@
+2026-10-21 21:42:48,757 - INFO - Creating container for sympy__sympy-21055...
+2026-10-21 21:42:48,784 - INFO - Container for sympy__sympy-21055 created: d8cbff1339b63effb6b07d64093716b61446c78e63400434cf6adf2ae2220c6f
+2026-10-21 21:42:48,870 - INFO - Container for sympy__sympy-21055 started: d8cbff1339b63effb6b07d64093716b61446c78e63400434cf6adf2ae2220c6f
+2026-10-21 21:42:48,871 - INFO - Intermediate patch for sympy__sympy-21055 written to logs/run_evaluation/study2026/T/sympy__sympy-21055/patch.diff, now applying to container...
+2026-10-21 21:42:49,017 - INFO - >>>>> Applied Patch:
+Checking patch sympy/assumptions/refine.py...
+warning: sympy/assumptions/refine.py has type 100755, expected 100644
+Hunk #1 succeeded at 350 (offset 152 lines).
+Hunk #2 succeeded at 399 (offset 166 lines).
+Applied patch sympy/assumptions/refine.py cleanly.
+
+2026-10-21 21:42:49,556 - INFO - Git diff before:
+diff --git a/sympy/assumptions/refine.py b/sympy/assumptions/refine.py
+index e1f97190c0..f1ae446e68 100755
+--- a/sympy/assumptions/refine.py
++++ b/sympy/assumptions/refine.py
+@@ -350,6 +350,29 @@ def refine_sign(expr, assumptions):
+     return expr
+ 
+ 
++def refine_arg(expr, assumptions):
++    """
++    Handler for arg.
++
++    Examples
++    ========
++
++    >>> from sympy.assumptions.refine import refine_arg
++    >>> from sympy import Q, arg
++    >>> from sympy.abc import x
++    >>> refine_arg(arg(x), Q.positive(x))
++    0
++    >>> refine_arg(arg(x), Q.negative(x))
++    pi
++    """
++    arg = expr.args[0]
++    if ask(Q.positive(arg), assumptions):
++        return S.Zero
++    if ask(Q.negative(arg), assumptions):
++        return S.Pi
++    return expr
++
++
+ def refine_matrixelement(expr, assumptions):
+     """
+     Handler for symmetric part.
+@@ -377,6 +400,7 @@ def refine_matrixelement(expr, assumptions):
+     'Abs': refine_abs,
+     'Pow': refine_Pow,
+     'atan2': refine_atan2,
++    'arg': refine_arg,
+     're': refine_re,
+     'im': refine_im,
+     'sign': refine_sign,
+2026-10-21 21:42:49,559 - INFO - Eval script for sympy__sympy-21055 written to logs/run_evaluation/study2026/T/sympy__sympy-21055/eval.sh; copying to container...
+2026-10-21 21:42:57,692 - INFO - Test runtime: 8.07 seconds
+2026-10-21 21:42:57,693 - INFO - Test output for sympy__sympy-21055 written to logs/run_evaluation/study2026/T/sympy__sympy-21055/test_output.txt
+2026-10-21 21:42:57,798 - INFO - Git diff after:
+diff --git a/sympy/assumptions/refine.py b/sympy/assumptions/refine.py
+index e1f97190c0..f1ae446e68 100755
+--- a/sympy/assumptions/refine.py
++++ b/sympy/assumptions/refine.py
+@@ -350,6 +350,29 @@ def refine_sign(expr, assumptions):
+     return expr
+ 
+ 
++def refine_arg(expr, assumptions):
++    """
++    Handler for arg.
++
++    Examples
++    ========
++
++    >>> from sympy.assumptions.refine import refine_arg
++    >>> from sympy import Q, arg
++    >>> from sympy.abc import x
++    >>> refine_arg(arg(x), Q.positive(x))
++    0
++    >>> refine_arg(arg(x), Q.negative(x))
++    pi
++    """
++    arg = expr.args[0]
++    if ask(Q.positive(arg), assumptions):
++        return S.Zero
++    if ask(Q.negative(arg), assumptions):
++        return S.Pi
++    return expr
++
++
+ def refine_matrixelement(expr, assumptions):
+     """
+     Handler for symmetric part.
+@@ -377,6 +400,7 @@ def refine_matrixelement(expr, assumptions):
+     'Abs': refine_abs,
+     'Pow': refine_Pow,
+     'atan2': refine_atan2,
++    'arg': refine_arg,
+     're': refine_re,
+     'im': refine_im,
+     'sign': refine_sign,
+2026-10-21 21:42:57,798 - INFO - Grading answer for sympy__sympy-21055...
+2026-10-21 21:42:57,801 - INFO - report: {'sympy__sympy-21055': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_arg'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_Abs', 'test_pow1', 'test_pow2', 'test_exp', 'test_Piecewise', 'test_atan2', 'test_re', 'test_im', 'test_complex', 'test_sign', 'test_func_args', 'test_eval_refine', 'test_refine_issue_12724'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-21055: resolved: True
+2026-10-21 21:42:57,802 - INFO - Attempting to stop container sweb.eval.sympy__sympy-21055.study2026...
+2026-10-21 21:43:12,961 - INFO - Container sweb.eval.sympy__sympy-21055.study2026 stopped successfully.
+2026-10-21 21:43:12,962 - INFO - Attempting to remove container sweb.eval.sympy__sympy-21055.study2026...
+2026-10-21 21:43:12,997 - INFO - Container sweb.eval.sympy__sympy-21055.study2026 removed successfully.

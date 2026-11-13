@@ -1,0 +1,16 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index d0a7c0c000..c8f8f8b8f8 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -1048,6 +1048,11 @@ class SQLCompiler:
+             for item in opts.ordering:
+                 if hasattr(item, 'resolve_expression') and not isinstance(item, OrderBy):
+                     item = item.desc() if descending else item.asc()
++                elif isinstance(item, str) and item.startswith('-'):
++                    if descending:
++                        item = item[1:]
++                    else:
++                        item = '-' + item[1:] if item.startswith('-') else item
+                 if isinstance(item, OrderBy):
+                     results.append((item, False))
+                     continue

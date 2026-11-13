@@ -1,0 +1,64 @@
+2026-10-21 12:57:22,441 - INFO - Creating container for django__django-14667...
+2026-10-21 12:57:22,476 - INFO - Container for django__django-14667 created: 2ff4d9de492e064be3b5768053d0cd7d9bfa3ff6d36bc9e00cdb84d0c47f4d89
+2026-10-21 12:57:22,581 - INFO - Container for django__django-14667 started: 2ff4d9de492e064be3b5768053d0cd7d9bfa3ff6d36bc9e00cdb84d0c47f4d89
+2026-10-21 12:57:22,582 - INFO - Intermediate patch for django__django-14667 written to logs/run_evaluation/study2026/S/django__django-14667/patch.diff, now applying to container...
+2026-10-21 12:57:22,779 - INFO - >>>>> Applied Patch:
+Checking patch django/db/models/sql/query.py...
+warning: django/db/models/sql/query.py has type 100755, expected 100644
+Hunk #1 succeeded at 2073 (offset 212 lines).
+Applied patch django/db/models/sql/query.py cleanly.
+
+2026-10-21 12:57:24,867 - INFO - Git diff before:
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 8837881579..d94118f2de 100755
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -2076,6 +2076,16 @@ class Query(BaseExpression):
+         are deferred (or removed from any existing field names that are marked
+         as the only ones for immediate loading).
+         """
++        # Handle the case where we're switching from immediate loading to deferred loading
++        # This happens when .only() is followed by .defer()
++        existing, defer = self.deferred_loading
++        if not defer and existing:
++            # If we're switching from only mode to defer mode, we need to calculate
++            # which fields should be deferred based on the existing only fields
++            field_names = set(field_names)
++            self.deferred_loading = existing.union(field_names), True
++            return
++
+         # Fields on related models are stored in the literal double-underscore
+         # format, so that we can use a set datastructure. We do the foo__bar
+         # splitting and handling when computing the SQL column names (as part of
+2026-10-21 12:57:24,868 - INFO - Eval script for django__django-14667 written to logs/run_evaluation/study2026/S/django__django-14667/eval.sh; copying to container...
+2026-10-21 12:57:34,551 - INFO - Test runtime: 9.59 seconds
+2026-10-21 12:57:34,554 - INFO - Test output for django__django-14667 written to logs/run_evaluation/study2026/S/django__django-14667/test_output.txt
+2026-10-21 12:57:34,704 - INFO - Git diff after:
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 8837881579..d94118f2de 100755
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -2076,6 +2076,16 @@ class Query(BaseExpression):
+         are deferred (or removed from any existing field names that are marked
+         as the only ones for immediate loading).
+         """
++        # Handle the case where we're switching from immediate loading to deferred loading
++        # This happens when .only() is followed by .defer()
++        existing, defer = self.deferred_loading
++        if not defer and existing:
++            # If we're switching from only mode to defer mode, we need to calculate
++            # which fields should be deferred based on the existing only fields
++            field_names = set(field_names)
++            self.deferred_loading = existing.union(field_names), True
++            return
++
+         # Fields on related models are stored in the literal double-underscore
+         # format, so that we can use a set datastructure. We do the foo__bar
+         # splitting and handling when computing the SQL column names (as part of
+2026-10-21 12:57:34,704 - INFO - Grading answer for django__django-14667...
+2026-10-21 12:57:34,722 - INFO - report: {'django__django-14667': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_defer_only_chaining (defer.tests.DeferTests)']}, 'PASS_TO_PASS': {'success': ['test_custom_refresh_on_deferred_loading (defer.tests.TestDefer2)', 'When an inherited model is fetched from the DB, its PK is also fetched.', 'Ensure select_related together with only on a proxy model behaves', 'test_eq (defer.tests.TestDefer2)', 'test_refresh_not_loading_deferred_fields (defer.tests.TestDefer2)', 'test_defer_baseclass_when_subclass_has_added_field (defer.tests.BigChildDeferTests)', 'test_defer_subclass (defer.tests.BigChildDeferTests)', 'test_defer_subclass_both (defer.tests.BigChildDeferTests)', 'test_only_baseclass_when_subclass_has_added_field (defer.tests.BigChildDeferTests)', 'test_only_subclass (defer.tests.BigChildDeferTests)', 'test_defer (defer.tests.DeferTests)', 'test_defer_baseclass_when_subclass_has_no_added_fields (defer.tests.DeferTests)', 'test_defer_extra (defer.tests.DeferTests)', 'test_defer_foreign_keys_are_deferred_and_not_traversed (defer.tests.DeferTests)', 'test_defer_none_to_clear_deferred_set (defer.tests.DeferTests)', 'test_defer_of_overridden_scalar (defer.tests.DeferTests)', 'test_defer_on_an_already_deferred_field (defer.tests.DeferTests)', 'test_defer_select_related_raises_invalid_query (defer.tests.DeferTests)', 'test_defer_values_does_not_defer (defer.tests.DeferTests)', 'test_defer_with_select_related (defer.tests.DeferTests)', 'test_get (defer.tests.DeferTests)', 'test_only (defer.tests.DeferTests)', 'test_only_baseclass_when_subclass_has_no_added_fields (defer.tests.DeferTests)', 'test_only_none_raises_error (defer.tests.DeferTests)', 'test_only_select_related_raises_invalid_query (defer.tests.DeferTests)', 'test_only_values_does_not_defer (defer.tests.DeferTests)', 'test_only_with_select_related (defer.tests.DeferTests)', 'test_saving_object_with_deferred_field (defer.tests.DeferTests)'], 'failure': ['test_defer_only_clear (defer.tests.DeferTests)']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-14667: resolved: False
+2026-10-21 12:57:34,724 - INFO - Attempting to stop container sweb.eval.django__django-14667.study2026...
+2026-10-21 12:57:50,200 - INFO - Container sweb.eval.django__django-14667.study2026 stopped successfully.
+2026-10-21 12:57:50,201 - INFO - Attempting to remove container sweb.eval.django__django-14667.study2026...
+2026-10-21 12:57:50,257 - INFO - Container sweb.eval.django__django-14667.study2026 removed successfully.

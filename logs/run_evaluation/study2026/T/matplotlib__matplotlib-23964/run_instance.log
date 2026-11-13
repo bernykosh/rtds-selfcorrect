@@ -1,0 +1,51 @@
+2026-10-21 21:32:56,991 - INFO - Creating container for matplotlib__matplotlib-23964...
+2026-10-21 21:32:57,045 - INFO - Container for matplotlib__matplotlib-23964 created: 949910dea1ef9ea520edc3deac8855fefeaad20c4f5970fb2b101c643fcf5cf7
+2026-10-21 21:32:57,180 - INFO - Container for matplotlib__matplotlib-23964 started: 949910dea1ef9ea520edc3deac8855fefeaad20c4f5970fb2b101c643fcf5cf7
+2026-10-21 21:32:57,181 - INFO - Intermediate patch for matplotlib__matplotlib-23964 written to logs/run_evaluation/study2026/T/matplotlib__matplotlib-23964/patch.diff, now applying to container...
+2026-10-21 21:32:57,349 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:32:59,148 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:33:00,228 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:33:00,602 - INFO - >>>>> Applied Patch:
+patching file lib/matplotlib/backends/backend_ps.py
+Hunk #1 succeeded at 666 with fuzz 3.
+
+2026-10-21 21:33:00,743 - INFO - Git diff before:
+diff --git a/lib/matplotlib/backends/backend_ps.py b/lib/matplotlib/backends/backend_ps.py
+index f209e811f1..f5dc1dbb18 100755
+--- a/lib/matplotlib/backends/backend_ps.py
++++ b/lib/matplotlib/backends/backend_ps.py
+@@ -666,6 +666,9 @@ grestore
+                     (item.x, item.ft_object.get_glyph_name(item.glyph_idx))
+                 )
+             # append the last entry
++            # append the last entry
++            if curr_stream:
++                stream.append(curr_stream)
+             stream.append(curr_stream)
+ 
+         self.set_color(*gc.get_rgb())
+2026-10-21 21:33:00,743 - INFO - Eval script for matplotlib__matplotlib-23964 written to logs/run_evaluation/study2026/T/matplotlib__matplotlib-23964/eval.sh; copying to container...
+2026-10-21 21:35:43,552 - INFO - Test runtime: 162.73 seconds
+2026-10-21 21:35:43,554 - INFO - Test output for matplotlib__matplotlib-23964 written to logs/run_evaluation/study2026/T/matplotlib__matplotlib-23964/test_output.txt
+2026-10-21 21:35:43,684 - INFO - Git diff after:
+diff --git a/lib/matplotlib/backends/backend_ps.py b/lib/matplotlib/backends/backend_ps.py
+index f209e811f1..f5dc1dbb18 100755
+--- a/lib/matplotlib/backends/backend_ps.py
++++ b/lib/matplotlib/backends/backend_ps.py
+@@ -666,6 +666,9 @@ grestore
+                     (item.x, item.ft_object.get_glyph_name(item.glyph_idx))
+                 )
+             # append the last entry
++            # append the last entry
++            if curr_stream:
++                stream.append(curr_stream)
+             stream.append(curr_stream)
+ 
+         self.set_color(*gc.get_rgb())
+2026-10-21 21:35:43,685 - INFO - Grading answer for matplotlib__matplotlib-23964...
+2026-10-21 21:35:43,691 - INFO - report: {'matplotlib__matplotlib-23964': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['lib/matplotlib/tests/test_backend_ps.py::test_empty_line']}, 'PASS_TO_PASS': {'success': ['lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[ps-portrait]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[ps-landscape]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[ps', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[eps-portrait]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[eps-landscape]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[eps', 'lib/matplotlib/tests/test_backend_ps.py::test_patheffects', 'lib/matplotlib/tests/test_backend_ps.py::test_transparency[eps]', 'lib/matplotlib/tests/test_backend_ps.py::test_bbox', 'lib/matplotlib/tests/test_backend_ps.py::test_failing_latex', 'lib/matplotlib/tests/test_backend_ps.py::test_text_clip[eps]', 'lib/matplotlib/tests/test_backend_ps.py::test_d_glyph', 'lib/matplotlib/tests/test_backend_ps.py::test_fonttype[3]', 'lib/matplotlib/tests/test_backend_ps.py::test_fonttype[42]', 'lib/matplotlib/tests/test_backend_ps.py::test_linedash'], 'failure': ['lib/matplotlib/tests/test_backend_ps.py::test_no_duplicate_definition']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-23964: resolved: False
+2026-10-21 21:35:43,691 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-23964.study2026...
+2026-10-21 21:35:59,007 - INFO - Container sweb.eval.matplotlib__matplotlib-23964.study2026 stopped successfully.
+2026-10-21 21:35:59,008 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-23964.study2026...
+2026-10-21 21:35:59,156 - INFO - Container sweb.eval.matplotlib__matplotlib-23964.study2026 removed successfully.

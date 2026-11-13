@@ -1,0 +1,39 @@
+diff --git a/sympy/solvers/diophantine.py b/sympy/solvers/diophantine.py
+index 7e47b7a7e3..c6747c8161 100644
+--- a/sympy/solvers/diophantine.py
++++ b/sympy/solvers/diophantine.py
+@@ -222,14 +222,6 @@ def diophantine(eq, param=symbols("t", integer=True), syms=None,
+                     'syms should be given as a sequence, e.g. a list')
+             syms = [i for i in syms if i in var]
+             if syms != var:
+-                dict_sym_index = dict(zip(syms, range(len(syms))))
+-                return {tuple([t[dict_sym_index[i]] for i in var])
+-                            for t in diophantine(eq, param)}
+-        n, d = eq.as_numer_denom()
+-        if n.is_number:
+-            return set()
+-        if not d.is_number:
+-            dsol = diophantine(d)
+             good = diophantine(n) - dsol
+             return {s for s in good if _mexpand(d.subs(zip(var, s)))}
+         else:
+@@ -223,6 +215,19 @@ def diophantine(eq, param=symbols("t", integer=True), syms=None,
+                     'syms should be given as a sequence, e.g. a list')
+             syms = [i for i in syms if i in var]
+             if syms != var:
++                # Handle syms parameter properly - need to reorder solutions
++                # according to the syms order, not the default variable order
++                dict_var_index = dict(zip(var, range(len(var))))
++                result = diophantine(eq, param=param, permute=permute)
++                reordered_result = set()
++                for sol in result:
++                    # Create a mapping from variable to its position in original equation
++                    sol_dict = dict(zip(var, sol))
++                    # Reorder according to syms
++                    reordered_sol = tuple([sol_dict[s] for s in syms])
++                    reordered_result.add(reordered_sol)
++                return reordered_result
++        n, d = eq.as_numer_denom()
+         if n.is_number:
+             return set()
+         if not d.is_number:

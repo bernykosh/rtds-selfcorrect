@@ -1,0 +1,14 @@
+diff --git a/lib/matplotlib/figure.py b/lib/matplotlib/figure.py
+index 7a5c4f10e5..d7a5e4d1f9 100644
+--- a/lib/matplotlib/figure.py
++++ b/lib/matplotlib/figure.py
+@@ -1194,7 +1194,8 @@ class FigureBase(Artist):
+             as a fraction of the average Axes height.
+         """
+         if (self.get_layout_engine() is not None and
+-                not self.get_layout_engine().adjust_compatible):
++                not self.get_layout_engine().adjust_compatible and
++                not isinstance(self.get_layout_engine(), PlaceHolderLayoutEngine)):
+             _api.warn_external(
+                 "This figure was using a layout engine that is "
+                 "incompatible with subplots_adjust and/or tight_layout; "

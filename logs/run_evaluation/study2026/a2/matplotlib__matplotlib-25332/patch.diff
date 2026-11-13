@@ -1,0 +1,12 @@
+diff --git a/lib/matplotlib/cbook.py b/lib/matplotlib/cbook.py
+index 1f8e459ef4..b6c2b1720d 100644
+--- a/lib/matplotlib/cbook.py
++++ b/lib/matplotlib/cbook.py
+@@ -225,6 +225,7 @@ class CallbackRegistry:
+         return {
+             **vars(self),
+             # In general, callbacks may not be pickled, so we just drop them,
++            "_pickled_cids": set(),  # Ensure _pickled_cids is always present
+             # unless directed otherwise by self._pickled_cids.
+             "callbacks": {s: {cid: proxy() for cid, proxy in d.items()
+                               if cid in self._pickled_cids}

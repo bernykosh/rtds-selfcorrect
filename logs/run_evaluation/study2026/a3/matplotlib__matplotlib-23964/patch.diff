@@ -1,0 +1,13 @@
+diff --git a/lib/matplotlib/backends/backend_ps.py b/lib/matplotlib/backends/backend_ps.py
+index 4b6a1a85c..2b4d1f1a9 100644
+--- a/lib/matplotlib/backends/backend_ps.py
++++ b/lib/matplotlib/backends/backend_ps.py
+@@ -669,6 +669,8 @@ class RendererPS(_backend_pdf_ps.RendererPDFPSBase):
+                 curr_stream[1].append(
+                     (item.x, item.ft_object.get_glyph_name(item.glyph_idx))
+                 )
++            # Handle the case where curr_stream might be None
++            if curr_stream:
+             # append the last entry
+             stream.append(curr_stream)
+ 

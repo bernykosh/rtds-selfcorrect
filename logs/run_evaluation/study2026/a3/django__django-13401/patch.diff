@@ -1,0 +1,35 @@
+diff --git a/django/db/models/fields/__init__.py b/django/db/models/fields/__init__.py
+index 4a0d3b32..f0b3c1d4 100644
+--- a/django/db/models/fields/__init__.py
++++ b/django/db/models/fields/__init__.py
+@@ -446,12 +446,22 @@ class Field(RegisterLookupMixin):
+         # Needed for @total_ordering
+         if isinstance(other, Field):
+             return self.creation_counter == other.creation_counter
++        return NotImplemented
+ 
+-    def __lt__(self, other):
+-        # This is needed because bisect does not take a comparison function.
+-        if isinstance(other, Field):
+-            return self.creation_counter < other.creation_counter
+-        return NotImplemented
+-
+-    def __hash__(self):
+-        return hash(self.creation_counter)
++    def __lt__(self, other):
++        # This is needed because bisect does not take a comparison function.
++        if isinstance(other, Field):
++            if self.creation_counter != other.creation_counter:
++                return self.creation_counter < other.creation_counter
++            # If creation_counter is the same, compare by model to ensure consistent ordering
++            if hasattr(self, 'model') and hasattr(other, 'model'):
++                return (self.model._meta.app_label, self.model._meta.model_name) < (other.model._meta.app_label, other.model._meta.model_name)
++            # If one has a model and the other doesn't, the one with model comes first
++            elif hasattr(self, 'model'):
++                return True
++            elif hasattr(other, 'model'):
++                return False
++        return NotImplemented
++
++    def __hash__(self):
++        return hash((self.creation_counter, getattr(self, 'model', None)))

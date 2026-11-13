@@ -1,0 +1,69 @@
+2026-10-21 12:15:29,454 - INFO - Creating container for matplotlib__matplotlib-23964...
+2026-10-21 12:15:29,487 - INFO - Container for matplotlib__matplotlib-23964 created: cdd82dba5e804437462977feee826b82a0f4897717aac707ae619fa7a3a9b193
+2026-10-21 12:15:29,582 - INFO - Container for matplotlib__matplotlib-23964 started: cdd82dba5e804437462977feee826b82a0f4897717aac707ae619fa7a3a9b193
+2026-10-21 12:15:29,589 - INFO - Intermediate patch for matplotlib__matplotlib-23964 written to logs/run_evaluation/study2026/a2/matplotlib__matplotlib-23964/patch.diff, now applying to container...
+2026-10-21 12:15:29,755 - INFO - >>>>> Applied Patch:
+Checking patch lib/matplotlib/backends/backend_ps.py...
+warning: lib/matplotlib/backends/backend_ps.py has type 100755, expected 100644
+Hunk #1 succeeded at 665 (offset -4 lines).
+Hunk #2 succeeded at 674 (offset -2 lines).
+Applied patch lib/matplotlib/backends/backend_ps.py cleanly.
+
+2026-10-21 12:15:31,213 - INFO - Git diff before:
+diff --git a/lib/matplotlib/backends/backend_ps.py b/lib/matplotlib/backends/backend_ps.py
+index f209e811f1..8887e8b704 100755
+--- a/lib/matplotlib/backends/backend_ps.py
++++ b/lib/matplotlib/backends/backend_ps.py
+@@ -665,12 +665,18 @@ grestore
+                 curr_stream[1].append(
+                     (item.x, item.ft_object.get_glyph_name(item.glyph_idx))
+                 )
++            # Handle case where curr_stream might be None
++            if curr_stream is None:
++                continue
+             # append the last entry
+             stream.append(curr_stream)
+ 
+         self.set_color(*gc.get_rgb())
+ 
+         for ps_name, xs_names in stream:
++            # Skip None streams that could result from empty lines
++            if ps_name is None or xs_names is None:
++                continue
+             self.set_font(ps_name, prop.get_size_in_points(), False)
+             thetext = "\n".join(f"{x:g} 0 m /{name:s} glyphshow"
+                                 for x, name in xs_names)
+2026-10-21 12:15:31,214 - INFO - Eval script for matplotlib__matplotlib-23964 written to logs/run_evaluation/study2026/a2/matplotlib__matplotlib-23964/eval.sh; copying to container...
+2026-10-21 12:16:07,655 - INFO - Test runtime: 36.37 seconds
+2026-10-21 12:16:07,663 - INFO - Test output for matplotlib__matplotlib-23964 written to logs/run_evaluation/study2026/a2/matplotlib__matplotlib-23964/test_output.txt
+2026-10-21 12:16:07,798 - INFO - Git diff after:
+diff --git a/lib/matplotlib/backends/backend_ps.py b/lib/matplotlib/backends/backend_ps.py
+index f209e811f1..8887e8b704 100755
+--- a/lib/matplotlib/backends/backend_ps.py
++++ b/lib/matplotlib/backends/backend_ps.py
+@@ -665,12 +665,18 @@ grestore
+                 curr_stream[1].append(
+                     (item.x, item.ft_object.get_glyph_name(item.glyph_idx))
+                 )
++            # Handle case where curr_stream might be None
++            if curr_stream is None:
++                continue
+             # append the last entry
+             stream.append(curr_stream)
+ 
+         self.set_color(*gc.get_rgb())
+ 
+         for ps_name, xs_names in stream:
++            # Skip None streams that could result from empty lines
++            if ps_name is None or xs_names is None:
++                continue
+             self.set_font(ps_name, prop.get_size_in_points(), False)
+             thetext = "\n".join(f"{x:g} 0 m /{name:s} glyphshow"
+                                 for x, name in xs_names)
+2026-10-21 12:16:07,798 - INFO - Grading answer for matplotlib__matplotlib-23964...
+2026-10-21 12:16:07,815 - INFO - report: {'matplotlib__matplotlib-23964': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['lib/matplotlib/tests/test_backend_ps.py::test_empty_line']}, 'PASS_TO_PASS': {'success': [], 'failure': ['lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[ps-portrait]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[ps-landscape]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[ps', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[eps-portrait]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[eps-landscape]', 'lib/matplotlib/tests/test_backend_ps.py::test_savefig_to_stringio[eps', 'lib/matplotlib/tests/test_backend_ps.py::test_patheffects', 'lib/matplotlib/tests/test_backend_ps.py::test_transparency[eps]', 'lib/matplotlib/tests/test_backend_ps.py::test_bbox', 'lib/matplotlib/tests/test_backend_ps.py::test_failing_latex', 'lib/matplotlib/tests/test_backend_ps.py::test_text_clip[eps]', 'lib/matplotlib/tests/test_backend_ps.py::test_d_glyph', 'lib/matplotlib/tests/test_backend_ps.py::test_fonttype[3]', 'lib/matplotlib/tests/test_backend_ps.py::test_fonttype[42]', 'lib/matplotlib/tests/test_backend_ps.py::test_linedash', 'lib/matplotlib/tests/test_backend_ps.py::test_no_duplicate_definition']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for matplotlib__matplotlib-23964: resolved: False
+2026-10-21 12:16:07,817 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-23964.study2026...
+2026-10-21 12:16:23,245 - INFO - Container sweb.eval.matplotlib__matplotlib-23964.study2026 stopped successfully.
+2026-10-21 12:16:23,246 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-23964.study2026...
+2026-10-21 12:16:23,294 - INFO - Container sweb.eval.matplotlib__matplotlib-23964.study2026 removed successfully.

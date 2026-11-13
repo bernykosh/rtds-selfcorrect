@@ -1,0 +1,38 @@
+diff --git a/sympy/core/exprtools.py b/sympy/core/exprtools.py
+index 7f0d4e21cb..85ebf03731 100644
+--- a/sympy/core/exprtools.py
++++ b/sympy/core/exprtools.py
+@@ -1122,7 +1122,7 @@ def _factor_sum_int(expr, **kwargs):
+ 
+ 
+ def factor_terms(expr, radical=False, clear=False, fraction=False, sign=True):
+-    """Remove common factors from terms in all arguments without
++    r"""Remove common factors from terms in all arguments without
+     changing the underlying structure of the expr. No expansion or
+     simplification (and no processing of non-commutatives) is performed.
+ 
+@@ -1174,9 +1174,23 @@ def do(expr):
+                 list_args = [-a for a in list_args]
+             # watch out for exp(-(x+2)) which gcd_terms will change to exp(-x-2)
+             special = {}
++            # Track arguments that have been temporarily replaced to prevent
++            # incorrect simplifications like sqrt(sin(x)**2) -> sin(x)
+             for i, a in enumerate(list_args):
+                 b, e = a.as_base_exp()
+-                if e.is_Mul and e != Mul(*e.args):
++                # Check for expressions that could be incorrectly simplified
++                # Specifically look for Pow expressions with rational exponents
++                # where the base might be negative for complex values
++                if (isinstance(a, Pow) and e.is_Rational and e.q != 1) or \
++                   (e.is_Mul and e != Mul(*e.args)) or \
++                   (hasattr(e, 'is_Pow') and e.is_Pow):
++                    # For expressions like sqrt(sin(x)**2), protect the structure
++                    # by temporarily replacing with a dummy variable
++                    if any(isinstance(arg, Pow) and 
++                           arg.exp.is_Rational and 
++                           arg.exp.q != 1 for arg in preorder_traversal(a)):
++                        list_args[i] = Dummy()
++                        special[list_args[i]] = a
+             # rebuild p not worrying about the order which gcd_terms will fix
+             p = Add._from_args(list_args)
+             p = gcd_terms(p,

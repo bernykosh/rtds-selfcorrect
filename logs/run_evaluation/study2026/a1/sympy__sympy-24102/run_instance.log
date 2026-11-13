@@ -1,0 +1,43 @@
+2026-10-21 11:58:32,892 - INFO - Creating container for sympy__sympy-24102...
+2026-10-21 11:58:32,916 - INFO - Container for sympy__sympy-24102 created: ad827c68b36670bb542968e8a947d4bfe8f1bacdf4b06c2e194ad032c56f3b7b
+2026-10-21 11:58:32,996 - INFO - Container for sympy__sympy-24102 started: ad827c68b36670bb542968e8a947d4bfe8f1bacdf4b06c2e194ad032c56f3b7b
+2026-10-21 11:58:32,997 - INFO - Intermediate patch for sympy__sympy-24102 written to logs/run_evaluation/study2026/a1/sympy__sympy-24102/patch.diff, now applying to container...
+2026-10-21 11:58:33,148 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 11:58:33,807 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 11:58:34,246 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 11:58:34,486 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 11:58:34,559 - INFO - >>>>> Patch Apply Failed:
+patching file sympy/parsing/mathematica.py
+Hunk #1 FAILED at 1088.
+Hunk #2 succeeded at 607 (offset -489 lines).
+Hunk #3 succeeded at 615 (offset -492 lines).
+Hunk #4 succeeded at 625 (offset -490 lines).
+Hunk #5 succeeded at 679 with fuzz 3 (offset -490 lines).
+Hunk #6 succeeded at 697 with fuzz 3 (offset -490 lines).
+Hunk #7 succeeded at 734 with fuzz 3 (offset -490 lines).
+Hunk #8 succeeded at 914 (offset -480 lines).
+1 out of 8 hunks FAILED -- saving rejects to file sympy/parsing/mathematica.py.rej
+
+2026-10-21 11:58:34,560 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for sympy__sympy-24102: >>>>> Patch Apply Failed:
+patching file sympy/parsing/mathematica.py
+Hunk #1 FAILED at 1088.
+Hunk #2 succeeded at 607 (offset -489 lines).
+Hunk #3 succeeded at 615 (offset -492 lines).
+Hunk #4 succeeded at 625 (offset -490 lines).
+Hunk #5 succeeded at 679 with fuzz 3 (offset -490 lines).
+Hunk #6 succeeded at 697 with fuzz 3 (offset -490 lines).
+Hunk #7 succeeded at 734 with fuzz 3 (offset -490 lines).
+Hunk #8 succeeded at 914 (offset -480 lines).
+1 out of 8 hunks FAILED -- saving rejects to file sympy/parsing/mathematica.py.rej
+
+Check (logs/run_evaluation/study2026/a1/sympy__sympy-24102/run_instance.log) for more information.
+
+2026-10-21 11:58:34,560 - INFO - Attempting to stop container sweb.eval.sympy__sympy-24102.study2026...
+2026-10-21 11:58:49,769 - INFO - Container sweb.eval.sympy__sympy-24102.study2026 stopped successfully.
+2026-10-21 11:58:49,769 - INFO - Attempting to remove container sweb.eval.sympy__sympy-24102.study2026...
+2026-10-21 11:58:49,833 - INFO - Container sweb.eval.sympy__sympy-24102.study2026 removed successfully.

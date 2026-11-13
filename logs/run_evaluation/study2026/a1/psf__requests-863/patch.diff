@@ -1,0 +1,35 @@
+diff --git a/requests/models.py b/requests/models.py
+index 1f2d8a0..b6e3d1f 100644
+--- a/requests/models.py
++++ b/requests/models.py
+@@ -180,7 +180,15 @@ class Request(object):
+         for event in HOOKS:
+             self.hooks[event] = []
+ 
+-        hooks = hooks or {}
++        hooks = hooks or {}
++
++        # Process hooks dictionary, allowing list values
++        processed_hooks = {}
++        for (k, v) in list(hooks.items()):
++            if isinstance(v, list):
++                processed_hooks[k] = v
++            else:
++                processed_hooks[k] = [v]
+ 
+         for (k, v) in list(hooks.items()):
+             self.register_hook(event=k, hook=v)
+@@ -294,6 +302,11 @@ class Request(object):
+     def register_hook(self, event, hook):
+         """Properly register a hook."""
+-
+-        self.hooks[event].append(hook)
++        if isinstance(hook, list):
++            for h in hook:
++                if h not in self.hooks[event]:
++                    self.hooks[event].append(h)
++        else:
++            if hook not in self.hooks[event]:
++                self.hooks[event].append(hook)
+ 
+     def deregister_hook(self, event, hook):

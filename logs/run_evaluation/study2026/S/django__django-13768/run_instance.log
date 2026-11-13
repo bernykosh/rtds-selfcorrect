@@ -1,0 +1,83 @@
+2026-10-21 12:55:41,102 - INFO - Creating container for django__django-13768...
+2026-10-21 12:55:41,203 - INFO - Container for django__django-13768 created: 297d8965bb5b63b471906a19424fb74c2901e2582674f8a097a2c5ffb2eafeef
+2026-10-21 12:55:41,631 - INFO - Container for django__django-13768 started: 297d8965bb5b63b471906a19424fb74c2901e2582674f8a097a2c5ffb2eafeef
+2026-10-21 12:55:41,632 - INFO - Intermediate patch for django__django-13768 written to logs/run_evaluation/study2026/S/django__django-13768/patch.diff, now applying to container...
+2026-10-21 12:55:42,200 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:56:07,832 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:56:08,204 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:56:08,589 - INFO - >>>>> Applied Patch:
+patching file django/dispatch/dispatcher.py
+Hunk #1 succeeded at 1 with fuzz 3.
+Hunk #2 succeeded at 13 with fuzz 2 (offset 2 lines).
+Hunk #3 succeeded at 211 (offset 33 lines).
+
+2026-10-21 12:56:08,724 - INFO - Git diff before:
+diff --git a/django/dispatch/dispatcher.py b/django/dispatch/dispatcher.py
+index b7d9d26389..d605d8e50a 100755
+--- a/django/dispatch/dispatcher.py
++++ b/django/dispatch/dispatcher.py
+@@ -1,3 +1,5 @@
++import logging
++import threading
+ import threading
+ import warnings
+ import weakref
+@@ -11,6 +13,8 @@ def _make_id(target):
+         return (id(target.__self__), id(target.__func__))
+     return id(target)
+ 
++logger = logging.getLogger('django.dispatch')
++
+ 
+ NONE_ID = _make_id(None)
+ 
+@@ -208,6 +212,9 @@ class Signal:
+             try:
+                 response = receiver(signal=self, sender=sender, **named)
+             except Exception as err:
++                logger.exception(
++                    "Error calling %s in Signal.send_robust()", receiver,
++                )
+                 responses.append((receiver, err))
+             else:
+                 responses.append((receiver, response))
+2026-10-21 12:56:08,726 - INFO - Eval script for django__django-13768 written to logs/run_evaluation/study2026/S/django__django-13768/eval.sh; copying to container...
+2026-10-21 12:56:26,766 - INFO - Test runtime: 17.94 seconds
+2026-10-21 12:56:26,768 - INFO - Test output for django__django-13768 written to logs/run_evaluation/study2026/S/django__django-13768/test_output.txt
+2026-10-21 12:56:26,930 - INFO - Git diff after:
+diff --git a/django/dispatch/dispatcher.py b/django/dispatch/dispatcher.py
+index b7d9d26389..d605d8e50a 100755
+--- a/django/dispatch/dispatcher.py
++++ b/django/dispatch/dispatcher.py
+@@ -1,3 +1,5 @@
++import logging
++import threading
+ import threading
+ import warnings
+ import weakref
+@@ -11,6 +13,8 @@ def _make_id(target):
+         return (id(target.__self__), id(target.__func__))
+     return id(target)
+ 
++logger = logging.getLogger('django.dispatch')
++
+ 
+ NONE_ID = _make_id(None)
+ 
+@@ -208,6 +212,9 @@ class Signal:
+             try:
+                 response = receiver(signal=self, sender=sender, **named)
+             except Exception as err:
++                logger.exception(
++                    "Error calling %s in Signal.send_robust()", receiver,
++                )
+                 responses.append((receiver, err))
+             else:
+                 responses.append((receiver, response))
+2026-10-21 12:56:26,930 - INFO - Grading answer for django__django-13768...
+2026-10-21 12:56:26,946 - INFO - report: {'django__django-13768': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_send_robust_fail (dispatch.tests.DispatcherTests)']}, 'PASS_TO_PASS': {'success': ['test_receiver_signal_list (dispatch.tests.ReceiverTestCase)', 'test_receiver_single_signal (dispatch.tests.ReceiverTestCase)', 'test_cached_garbaged_collected (dispatch.tests.DispatcherTests)', 'test_cannot_connect_no_kwargs (dispatch.tests.DispatcherTests)', 'test_cannot_connect_non_callable (dispatch.tests.DispatcherTests)', 'test_disconnection (dispatch.tests.DispatcherTests)', 'test_garbage_collected (dispatch.tests.DispatcherTests)', 'test_has_listeners (dispatch.tests.DispatcherTests)', 'test_multiple_registration (dispatch.tests.DispatcherTests)', 'test_send (dispatch.tests.DispatcherTests)', 'test_send_connected_no_sender (dispatch.tests.DispatcherTests)', 'test_send_different_no_sender (dispatch.tests.DispatcherTests)', 'test_send_no_receivers (dispatch.tests.DispatcherTests)', 'test_send_robust_ignored_sender (dispatch.tests.DispatcherTests)', 'test_send_robust_no_receivers (dispatch.tests.DispatcherTests)', 'test_send_robust_success (dispatch.tests.DispatcherTests)', 'test_uid_registration (dispatch.tests.DispatcherTests)', 'test_values_returned_by_disconnection (dispatch.tests.DispatcherTests)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-13768: resolved: False
+2026-10-21 12:56:26,947 - INFO - Attempting to stop container sweb.eval.django__django-13768.study2026...
+2026-10-21 12:56:42,374 - INFO - Container sweb.eval.django__django-13768.study2026 stopped successfully.
+2026-10-21 12:56:42,375 - INFO - Attempting to remove container sweb.eval.django__django-13768.study2026...
+2026-10-21 12:56:42,586 - INFO - Container sweb.eval.django__django-13768.study2026 removed successfully.

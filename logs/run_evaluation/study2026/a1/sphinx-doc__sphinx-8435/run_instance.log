@@ -1,0 +1,210 @@
+2026-10-21 11:55:58,627 - INFO - Creating container for sphinx-doc__sphinx-8435...
+2026-10-21 11:55:58,652 - INFO - Container for sphinx-doc__sphinx-8435 created: 789b1fc3d086882b5f531ff7a226928aa8f9b7a02b3de173bc5bb5754d8c4fd6
+2026-10-21 11:55:58,797 - INFO - Container for sphinx-doc__sphinx-8435 started: 789b1fc3d086882b5f531ff7a226928aa8f9b7a02b3de173bc5bb5754d8c4fd6
+2026-10-21 11:55:58,798 - INFO - Intermediate patch for sphinx-doc__sphinx-8435 written to logs/run_evaluation/study2026/a1/sphinx-doc__sphinx-8435/patch.diff, now applying to container...
+2026-10-21 11:55:58,953 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 11:55:59,553 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 11:55:59,886 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 11:56:00,217 - INFO - >>>>> Applied Patch:
+patching file sphinx/ext/autodoc/__init__.py
+Hunk #1 succeeded at 1703 (offset -287 lines).
+Hunk #2 succeeded at 1719 with fuzz 3 (offset -281 lines).
+Hunk #3 succeeded at 2115 (offset -76 lines).
+Hunk #4 succeeded at 2131 with fuzz 3 (offset -70 lines).
+
+2026-10-21 11:56:00,311 - INFO - Git diff before:
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index 171a3e7b0..8897bc0e8 100755
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -1703,7 +1703,7 @@ class DataDocumenter(ModuleLevelDocumenter):
+             # obtain annotation for this data
+             try:
+                 annotations = get_type_hints(self.parent)
+-            except NameError:
++            except (NameError, KeyError):
+                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                 annotations = safe_getattr(self.parent, '__annotations__', {})
+             except TypeError:
+@@ -1718,11 +1718,32 @@ class DataDocumenter(ModuleLevelDocumenter):
+             if self.objpath[-1] in annotations:
+                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+                 self.add_line('   :type: ' + objrepr, sourcename)
++            else:
++                # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
++                annotations = {}
++
++            # Apply autodoc_type_aliases to annotations
++            if self.objpath[-1] in annotations:
++                annotation = annotations[self.objpath[-1]]
++                if hasattr(annotation, '__name__'):
++                    alias = annotation.__name__
++                else:
++                    alias = str(annotation)
++                if alias in self.config.autodoc_type_aliases:
++                    objrepr = self.config.autodoc_type_aliases[alias]
++                else:
++                    objrepr = stringify_typehint(annotation)
++                self.add_line('   :type: ' + objrepr, sourcename)
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
++                    annotation_str = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to string annotations
++                    if annotation_str in self.config.autodoc_type_aliases:
++                        objrepr = self.config.autodoc_type_aliases[annotation_str]
++                    else:
++                        objrepr = annotation_str
++                    self.add_line('   :type: ' + objrepr, sourcename)
+ 
+             try:
+                 if self.object is UNINITIALIZED_ATTR:
+@@ -2094,7 +2115,7 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             # obtain type annotation for this attribute
+             try:
+                 annotations = get_type_hints(self.parent)
+-            except NameError:
++            except (NameError, KeyError):
+                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                 annotations = safe_getattr(self.parent, '__annotations__', {})
+             except TypeError:
+@@ -2109,11 +2130,32 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             if self.objpath[-1] in annotations:
+                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+                 self.add_line('   :type: ' + objrepr, sourcename)
++            else:
++                # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
++                annotations = {}
++
++            # Apply autodoc_type_aliases to annotations
++            if self.objpath[-1] in annotations:
++                annotation = annotations[self.objpath[-1]]
++                if hasattr(annotation, '__name__'):
++                    alias = annotation.__name__
++                else:
++                    alias = str(annotation)
++                if alias in self.config.autodoc_type_aliases:
++                    objrepr = self.config.autodoc_type_aliases[alias]
++                else:
++                    objrepr = stringify_typehint(annotation)
++                self.add_line('   :type: ' + objrepr, sourcename)
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
++                    annotation_str = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to string annotations
++                    if annotation_str in self.config.autodoc_type_aliases:
++                        objrepr = self.config.autodoc_type_aliases[annotation_str]
++                    else:
++                        objrepr = annotation_str
++                    self.add_line('   :type: ' + objrepr, sourcename)
+ 
+             # data descriptors do not have useful values
+             if not self._datadescriptor:
+2026-10-21 11:56:00,313 - INFO - Eval script for sphinx-doc__sphinx-8435 written to logs/run_evaluation/study2026/a1/sphinx-doc__sphinx-8435/eval.sh; copying to container...
+2026-10-21 11:56:06,906 - INFO - Test runtime: 6.51 seconds
+2026-10-21 11:56:06,907 - INFO - Test output for sphinx-doc__sphinx-8435 written to logs/run_evaluation/study2026/a1/sphinx-doc__sphinx-8435/test_output.txt
+2026-10-21 11:56:07,019 - INFO - Git diff after:
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index 171a3e7b0..8897bc0e8 100755
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -1703,7 +1703,7 @@ class DataDocumenter(ModuleLevelDocumenter):
+             # obtain annotation for this data
+             try:
+                 annotations = get_type_hints(self.parent)
+-            except NameError:
++            except (NameError, KeyError):
+                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                 annotations = safe_getattr(self.parent, '__annotations__', {})
+             except TypeError:
+@@ -1718,11 +1718,32 @@ class DataDocumenter(ModuleLevelDocumenter):
+             if self.objpath[-1] in annotations:
+                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+                 self.add_line('   :type: ' + objrepr, sourcename)
++            else:
++                # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
++                annotations = {}
++
++            # Apply autodoc_type_aliases to annotations
++            if self.objpath[-1] in annotations:
++                annotation = annotations[self.objpath[-1]]
++                if hasattr(annotation, '__name__'):
++                    alias = annotation.__name__
++                else:
++                    alias = str(annotation)
++                if alias in self.config.autodoc_type_aliases:
++                    objrepr = self.config.autodoc_type_aliases[alias]
++                else:
++                    objrepr = stringify_typehint(annotation)
++                self.add_line('   :type: ' + objrepr, sourcename)
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
++                    annotation_str = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to string annotations
++                    if annotation_str in self.config.autodoc_type_aliases:
++                        objrepr = self.config.autodoc_type_aliases[annotation_str]
++                    else:
++                        objrepr = annotation_str
++                    self.add_line('   :type: ' + objrepr, sourcename)
+ 
+             try:
+                 if self.object is UNINITIALIZED_ATTR:
+@@ -2094,7 +2115,7 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             # obtain type annotation for this attribute
+             try:
+                 annotations = get_type_hints(self.parent)
+-            except NameError:
++            except (NameError, KeyError):
+                 # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+                 annotations = safe_getattr(self.parent, '__annotations__', {})
+             except TypeError:
+@@ -2109,11 +2130,32 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             if self.objpath[-1] in annotations:
+                 objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+                 self.add_line('   :type: ' + objrepr, sourcename)
++            else:
++                # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
++                annotations = {}
++
++            # Apply autodoc_type_aliases to annotations
++            if self.objpath[-1] in annotations:
++                annotation = annotations[self.objpath[-1]]
++                if hasattr(annotation, '__name__'):
++                    alias = annotation.__name__
++                else:
++                    alias = str(annotation)
++                if alias in self.config.autodoc_type_aliases:
++                    objrepr = self.config.autodoc_type_aliases[alias]
++                else:
++                    objrepr = stringify_typehint(annotation)
++                self.add_line('   :type: ' + objrepr, sourcename)
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
++                    annotation_str = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to string annotations
++                    if annotation_str in self.config.autodoc_type_aliases:
++                        objrepr = self.config.autodoc_type_aliases[annotation_str]
++                    else:
++                        objrepr = annotation_str
++                    self.add_line('   :type: ' + objrepr, sourcename)
+ 
+             # data descriptors do not have useful values
+             if not self._datadescriptor:
+2026-10-21 11:56:07,019 - INFO - Grading answer for sphinx-doc__sphinx-8435...
+2026-10-21 11:56:07,031 - INFO - report: {'sphinx-doc__sphinx-8435': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['tests/test_ext_autodoc_configs.py::test_autodoc_type_aliases']}, 'PASS_TO_PASS': {'success': ['tests/test_ext_autodoc_configs.py::test_autoclass_content_class', 'tests/test_ext_autodoc_configs.py::test_autoclass_content_init', 'tests/test_ext_autodoc_configs.py::test_autoclass_content_both', 'tests/test_ext_autodoc_configs.py::test_autodoc_inherit_docstrings', 'tests/test_ext_autodoc_configs.py::test_autodoc_docstring_signature', 'tests/test_ext_autodoc_configs.py::test_autoclass_content_and_docstring_signature_class', 'tests/test_ext_autodoc_configs.py::test_autoclass_content_and_docstring_signature_init', 'tests/test_ext_autodoc_configs.py::test_autoclass_content_and_docstring_signature_both', 'tests/test_ext_autodoc_configs.py::test_mocked_module_imports', 'tests/test_ext_autodoc_configs.py::test_autodoc_typehints_signature', 'tests/test_ext_autodoc_configs.py::test_autodoc_typehints_none', 'tests/test_ext_autodoc_configs.py::test_autodoc_typehints_none_for_overload', 'tests/test_ext_autodoc_configs.py::test_autodoc_typehints_description', 'tests/test_ext_autodoc_configs.py::test_autodoc_typehints_description_for_invalid_node', 'tests/test_ext_autodoc_configs.py::test_autodoc_default_options', 'tests/test_ext_autodoc_configs.py::test_autodoc_default_options_with_values'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sphinx-doc__sphinx-8435: resolved: False
+2026-10-21 11:56:07,031 - INFO - Attempting to stop container sweb.eval.sphinx-doc__sphinx-8435.study2026...
+2026-10-21 11:56:22,206 - INFO - Container sweb.eval.sphinx-doc__sphinx-8435.study2026 stopped successfully.
+2026-10-21 11:56:22,206 - INFO - Attempting to remove container sweb.eval.sphinx-doc__sphinx-8435.study2026...
+2026-10-21 11:56:22,280 - INFO - Container sweb.eval.sphinx-doc__sphinx-8435.study2026 removed successfully.

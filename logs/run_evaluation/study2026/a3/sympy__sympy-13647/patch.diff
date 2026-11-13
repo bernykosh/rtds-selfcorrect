@@ -1,0 +1,15 @@
+--- a/sympy/matrices/common.py
++++ b/sympy/matrices/common.py
+@@ -72,9 +72,9 @@ def _eval_col_insert(self, pos, other):
+         def entry(i, j):
+             if j < pos:
+                 return self[i, j]
+-            elif pos <= j < pos + other.cols:
++            elif pos <= j < pos + other.cols and i < other.rows:
+                 return other[i, j - pos]
+-            return self[i, j - pos - other.cols]
+-
++            else:
++                return self[i, j - other.cols]
+         return self._new(self.rows, self.cols + other.cols,
+                          lambda i, j: entry(i, j))

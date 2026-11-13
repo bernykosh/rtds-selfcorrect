@@ -1,0 +1,313 @@
+2026-10-21 21:57:54,428 - INFO - Creating container for pydata__xarray-3364...
+2026-10-21 21:57:54,454 - INFO - Container for pydata__xarray-3364 created: 839acfd03f7b59a50f35513cd7d7528e1074c1e6564c122d179fed208005fa0e
+2026-10-21 21:57:54,534 - INFO - Container for pydata__xarray-3364 started: 839acfd03f7b59a50f35513cd7d7528e1074c1e6564c122d179fed208005fa0e
+2026-10-21 21:57:54,535 - INFO - Intermediate patch for pydata__xarray-3364 written to logs/run_evaluation/study2026/ST/pydata__xarray-3364/patch.diff, now applying to container...
+2026-10-21 21:57:54,689 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:57:54,989 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:57:55,250 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:57:55,473 - INFO - >>>>> Applied Patch:
+patching file xarray/core/concat.py
+Hunk #2 succeeded at 17 with fuzz 3 (offset -5 lines).
+Hunk #3 succeeded at 76 with fuzz 3 (offset -5 lines).
+Hunk #4 succeeded at 128 with fuzz 4 (offset 13 lines).
+Hunk #5 succeeded at 279 (offset 58 lines).
+Hunk #6 succeeded at 324 (offset 54 lines).
+Hunk #7 succeeded at 384 with fuzz 2 (offset 61 lines).
+Hunk #8 succeeded at 457 (offset 83 lines).
+
+2026-10-21 21:57:55,570 - INFO - Git diff before:
+diff --git a/xarray/core/concat.py b/xarray/core/concat.py
+index ecae2566..59c2501e 100755
+--- a/xarray/core/concat.py
++++ b/xarray/core/concat.py
+@@ -1,4 +1,5 @@
+ import pandas as pd
++import warnings
+ 
+ from . import dtypes, utils
+ from .alignment import align
+@@ -16,9 +17,13 @@ def concat(
+     positions=None,
+     fill_value=dtypes.NA,
+     join="outer",
++    ignore_missing_vars=False,
+ ):
+     """Concatenate xarray objects along a new or existing dimension.
+ 
++    Parameters
++    """Concatenate xarray objects along a new or existing dimension.
++
+     Parameters
+     ----------
+     objs : sequence of Dataset and DataArray objects
+@@ -71,6 +76,12 @@ def concat(
+           must be equal. The returned dataset then contains the combination
+           of all non-null values.
+         - 'override': skip comparing and pick variable from first dataset
++    ignore_missing_vars : bool, optional
++        If True, variables that are not present in all datasets will be
++        ignored during concatenation. By default, variables that are present
++        in some datasets but not others will result in a ValueError.
++        
++        .. versionadded:: 0.16.0
+     positions : None or list of integer arrays, optional
+         List of integer arrays which specifies the integer positions to which
+         to assign each dataset along the concatenated dimension. If not
+@@ -117,7 +128,7 @@ def concat(
+         raise ValueError(
+             "compat=%r invalid: must be 'broadcast_equals', 'equals', 'identical', 'no_conflicts' or 'override'"
+             % compat
+-        )
++        ) from None
+ 
+     if isinstance(first_obj, DataArray):
+         f = _dataarray_concat
+@@ -268,6 +279,7 @@ def _dataset_concat(
+     compat,
+     positions,
+     fill_value=dtypes.NA,
++    ignore_missing_vars=False,
+     join="outer",
+ ):
+     """
+@@ -312,20 +324,34 @@ def _dataset_concat(
+         to_merge = {var: [] for var in variables_to_merge}
+ 
+         for ds in datasets:
+-            absent_merge_vars = variables_to_merge - set(ds.variables)
+-            if absent_merge_vars:
+-                raise ValueError(
+-                    "variables %r are present in some datasets but not others. "
+-                    % absent_merge_vars
+-                )
++            if ignore_missing_vars:
++                # Only process variables that exist in this dataset
++                for var in variables_to_merge:
++                    if var in ds.variables:
++                        to_merge[var].append(ds.variables[var])
++            else:
++                absent_merge_vars = variables_to_merge - set(ds.variables)
++                if absent_merge_vars:
++                    raise ValueError(
++                        "variables %r are present in some datasets but not others. "
++                        % absent_merge_vars
++                    )
++                
++                for var in variables_to_merge:
++                    to_merge[var].append(ds.variables[var])
+ 
+-            for var in variables_to_merge:
+-                to_merge[var].append(ds.variables[var])
++        # Remove variables that are not present in any dataset when ignoring missing vars
++        if ignore_missing_vars:
++            to_merge = {k: v for k, v in to_merge.items() if len(v) > 0}
+ 
+         for var in variables_to_merge:
+-            result_vars[var] = unique_variable(
+-                var, to_merge[var], compat=compat, equals=equals.get(var, None)
+-            )
++            if ignore_missing_vars and len(to_merge[var]) == 0:
++                # Skip variables that aren't present in any dataset
++                continue
++            else:
++                result_vars[var] = unique_variable(
++                    var, to_merge[var], compat=compat, equals=equals.get(var, None)
++                )
+     else:
+         result_vars = {}
+     result_vars.update(dim_coords)
+@@ -358,14 +384,25 @@ def _dataset_concat(
+     # n.b. this loop preserves variable order, needed for groupby.
+     for k in datasets[0].variables:
+         if k in concat_over:
+-            try:
+-                vars = ensure_common_dims([ds.variables[k] for ds in datasets])
+-            except KeyError:
+-                raise ValueError("%r is not present in all datasets." % k)
+-            combined = concat_vars(vars, dim, positions)
+-            assert isinstance(combined, Variable)
+-            result_vars[k] = combined
+-
++            if ignore_missing_vars:
++                # Only concatenate variables that exist in all datasets
++                vars_list = []
++                for ds in datasets:
++                    if k in ds.variables:
++                        vars_list.append(ds.variables[k])
++                if vars_list:  # Only proceed if variable exists in at least one dataset
++                    vars = ensure_common_dims(vars_list)
++                    combined = concat_vars(vars, dim, positions)
++                    assert isinstance(combined, Variable)
++                    result_vars[k] = combined
++            else:
++                try:
++                    vars = ensure_common_dims([ds.variables[k] for ds in datasets])
++                except KeyError:
++                    raise ValueError("%r is not present in all datasets." % k)
++                combined = concat_vars(vars, dim, positions)
++                assert isinstance(combined, Variable)
++                result_vars[k] = combined
+     result = Dataset(result_vars, attrs=result_attrs)
+     absent_coord_names = coord_names - set(result.variables)
+     if absent_coord_names:
+@@ -421,6 +458,7 @@ def _dataarray_concat(
+         compat,
+         positions,
+         fill_value=fill_value,
++        ignore_missing_vars=ignore_missing_vars,
+         join=join,
+     )
+     return arrays[0]._from_temp_dataset(ds, name)
+2026-10-21 21:57:55,571 - INFO - Eval script for pydata__xarray-3364 written to logs/run_evaluation/study2026/ST/pydata__xarray-3364/eval.sh; copying to container...
+2026-10-21 21:58:02,544 - INFO - Test runtime: 6.91 seconds
+2026-10-21 21:58:02,545 - INFO - Test output for pydata__xarray-3364 written to logs/run_evaluation/study2026/ST/pydata__xarray-3364/test_output.txt
+2026-10-21 21:58:02,644 - INFO - Git diff after:
+diff --git a/xarray/core/concat.py b/xarray/core/concat.py
+index ecae2566..59c2501e 100755
+--- a/xarray/core/concat.py
++++ b/xarray/core/concat.py
+@@ -1,4 +1,5 @@
+ import pandas as pd
++import warnings
+ 
+ from . import dtypes, utils
+ from .alignment import align
+@@ -16,9 +17,13 @@ def concat(
+     positions=None,
+     fill_value=dtypes.NA,
+     join="outer",
++    ignore_missing_vars=False,
+ ):
+     """Concatenate xarray objects along a new or existing dimension.
+ 
++    Parameters
++    """Concatenate xarray objects along a new or existing dimension.
++
+     Parameters
+     ----------
+     objs : sequence of Dataset and DataArray objects
+@@ -71,6 +76,12 @@ def concat(
+           must be equal. The returned dataset then contains the combination
+           of all non-null values.
+         - 'override': skip comparing and pick variable from first dataset
++    ignore_missing_vars : bool, optional
++        If True, variables that are not present in all datasets will be
++        ignored during concatenation. By default, variables that are present
++        in some datasets but not others will result in a ValueError.
++        
++        .. versionadded:: 0.16.0
+     positions : None or list of integer arrays, optional
+         List of integer arrays which specifies the integer positions to which
+         to assign each dataset along the concatenated dimension. If not
+@@ -117,7 +128,7 @@ def concat(
+         raise ValueError(
+             "compat=%r invalid: must be 'broadcast_equals', 'equals', 'identical', 'no_conflicts' or 'override'"
+             % compat
+-        )
++        ) from None
+ 
+     if isinstance(first_obj, DataArray):
+         f = _dataarray_concat
+@@ -268,6 +279,7 @@ def _dataset_concat(
+     compat,
+     positions,
+     fill_value=dtypes.NA,
++    ignore_missing_vars=False,
+     join="outer",
+ ):
+     """
+@@ -312,20 +324,34 @@ def _dataset_concat(
+         to_merge = {var: [] for var in variables_to_merge}
+ 
+         for ds in datasets:
+-            absent_merge_vars = variables_to_merge - set(ds.variables)
+-            if absent_merge_vars:
+-                raise ValueError(
+-                    "variables %r are present in some datasets but not others. "
+-                    % absent_merge_vars
+-                )
++            if ignore_missing_vars:
++                # Only process variables that exist in this dataset
++                for var in variables_to_merge:
++                    if var in ds.variables:
++                        to_merge[var].append(ds.variables[var])
++            else:
++                absent_merge_vars = variables_to_merge - set(ds.variables)
++                if absent_merge_vars:
++                    raise ValueError(
++                        "variables %r are present in some datasets but not others. "
++                        % absent_merge_vars
++                    )
++                
++                for var in variables_to_merge:
++                    to_merge[var].append(ds.variables[var])
+ 
+-            for var in variables_to_merge:
+-                to_merge[var].append(ds.variables[var])
++        # Remove variables that are not present in any dataset when ignoring missing vars
++        if ignore_missing_vars:
++            to_merge = {k: v for k, v in to_merge.items() if len(v) > 0}
+ 
+         for var in variables_to_merge:
+-            result_vars[var] = unique_variable(
+-                var, to_merge[var], compat=compat, equals=equals.get(var, None)
+-            )
++            if ignore_missing_vars and len(to_merge[var]) == 0:
++                # Skip variables that aren't present in any dataset
++                continue
++            else:
++                result_vars[var] = unique_variable(
++                    var, to_merge[var], compat=compat, equals=equals.get(var, None)
++                )
+     else:
+         result_vars = {}
+     result_vars.update(dim_coords)
+@@ -358,14 +384,25 @@ def _dataset_concat(
+     # n.b. this loop preserves variable order, needed for groupby.
+     for k in datasets[0].variables:
+         if k in concat_over:
+-            try:
+-                vars = ensure_common_dims([ds.variables[k] for ds in datasets])
+-            except KeyError:
+-                raise ValueError("%r is not present in all datasets." % k)
+-            combined = concat_vars(vars, dim, positions)
+-            assert isinstance(combined, Variable)
+-            result_vars[k] = combined
+-
++            if ignore_missing_vars:
++                # Only concatenate variables that exist in all datasets
++                vars_list = []
++                for ds in datasets:
++                    if k in ds.variables:
++                        vars_list.append(ds.variables[k])
++                if vars_list:  # Only proceed if variable exists in at least one dataset
++                    vars = ensure_common_dims(vars_list)
++                    combined = concat_vars(vars, dim, positions)
++                    assert isinstance(combined, Variable)
++                    result_vars[k] = combined
++            else:
++                try:
++                    vars = ensure_common_dims([ds.variables[k] for ds in datasets])
++                except KeyError:
++                    raise ValueError("%r is not present in all datasets." % k)
++                combined = concat_vars(vars, dim, positions)
++                assert isinstance(combined, Variable)
++                result_vars[k] = combined
+     result = Dataset(result_vars, attrs=result_attrs)
+     absent_coord_names = coord_names - set(result.variables)
+     if absent_coord_names:
+@@ -421,6 +458,7 @@ def _dataarray_concat(
+         compat,
+         positions,
+         fill_value=fill_value,
++        ignore_missing_vars=ignore_missing_vars,
+         join=join,
+     )
+     return arrays[0]._from_temp_dataset(ds, name)
+2026-10-21 21:58:02,645 - INFO - Grading answer for pydata__xarray-3364...
+2026-10-21 21:58:02,646 - INFO - report: {'pydata__xarray-3364': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine_with_new_variables', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_merge_variables_present_in_some_datasets']}, 'PASS_TO_PASS': {'success': [], 'failure': ['xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_1d', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_2d', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_3d', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_single_dataset', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_redundant_nesting', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_ignore_empty_list', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_uneven_depth_input', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_uneven_length_input', 'xarray/tests/test_combine.py::TestTileIDsFromNestedList::test_infer_from_datasets', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_1d', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_2d', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_no_dimension_coords', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_coord_not_monotonic', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_coord_monotonically_decreasing', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_no_concatenation_needed', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_2d_plus_bystander_dim', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_string_coords', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_lexicographic_sort_string_coords', 'xarray/tests/test_combine.py::TestTileIDsFromCoords::test_datetime_coords', 'xarray/tests/test_combine.py::TestNewTileIDs::test_new_tile_id[old_id0-new_id0]', 'xarray/tests/test_combine.py::TestNewTileIDs::test_new_tile_id[old_id1-new_id1]', 'xarray/tests/test_combine.py::TestNewTileIDs::test_new_tile_id[old_id2-new_id2]', 'xarray/tests/test_combine.py::TestNewTileIDs::test_new_tile_id[old_id3-new_id3]', 'xarray/tests/test_combine.py::TestNewTileIDs::test_new_tile_id[old_id4-new_id4]', 'xarray/tests/test_combine.py::TestNewTileIDs::test_get_new_tile_ids', 'xarray/tests/test_combine.py::TestCombineND::test_concat_once[dim1]', 'xarray/tests/test_combine.py::TestCombineND::test_concat_once[new_dim]', 'xarray/tests/test_combine.py::TestCombineND::test_concat_only_first_dim', 'xarray/tests/test_combine.py::TestCombineND::test_concat_twice[dim1]', 'xarray/tests/test_combine.py::TestCombineND::test_concat_twice[new_dim]', 'xarray/tests/test_combine.py::TestCheckShapeTileIDs::test_check_depths', 'xarray/tests/test_combine.py::TestCheckShapeTileIDs::test_check_lengths', 'xarray/tests/test_combine.py::TestNestedCombine::test_nested_concat', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_join[outer-expected0]', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_join[inner-expected1]', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_join[left-expected2]', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_join[right-expected3]', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_join_exact', 'xarray/tests/test_combine.py::TestNestedCombine::test_empty_input', 'xarray/tests/test_combine.py::TestNestedCombine::test_nested_concat_along_new_dim', 'xarray/tests/test_combine.py::TestNestedCombine::test_nested_merge', 'xarray/tests/test_combine.py::TestNestedCombine::test_concat_multiple_dims', 'xarray/tests/test_combine.py::TestNestedCombine::test_concat_name_symmetry', 'xarray/tests/test_combine.py::TestNestedCombine::test_concat_one_dim_merge_another', 'xarray/tests/test_combine.py::TestNestedCombine::test_auto_combine_2d', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_missing_data_new_dim', 'xarray/tests/test_combine.py::TestNestedCombine::test_invalid_hypercube_input', 'xarray/tests/test_combine.py::TestNestedCombine::test_merge_one_dim_concat_another', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_concat_over_redundant_nesting', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_fill_value[fill_value0]', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_fill_value[2]', 'xarray/tests/test_combine.py::TestNestedCombine::test_combine_nested_fill_value[2.0]', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_by_coords', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_coords_join[outer-expected0]', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_coords_join[inner-expected1]', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_coords_join[left-expected2]', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_coords_join[right-expected3]', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_coords_join_exact', 'xarray/tests/test_combine.py::TestCombineAuto::test_infer_order_from_coords', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_leaving_bystander_dimensions', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_by_coords_previously_failed', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_by_coords_still_fails', 'xarray/tests/test_combine.py::TestCombineAuto::test_combine_by_coords_no_concat', 'xarray/tests/test_combine.py::TestCombineAuto::test_check_for_impossible_ordering', 'xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine', 'xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine_previously_failed', 'xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine_no_concat', 'xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine_order_by_appearance_not_coords', 'xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine_fill_value[fill_value0]', 'xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine_fill_value[2]', 'xarray/tests/test_combine.py::TestAutoCombineOldAPI::test_auto_combine_fill_value[2.0]', 'xarray/tests/test_combine.py::TestAutoCombineDeprecation::test_auto_combine_with_concat_dim', 'xarray/tests/test_combine.py::TestAutoCombineDeprecation::test_auto_combine_with_merge_and_concat', 'xarray/tests/test_combine.py::TestAutoCombineDeprecation::test_auto_combine_with_coords', 'xarray/tests/test_combine.py::TestAutoCombineDeprecation::test_auto_combine_without_coords', 'xarray/tests/test_concat.py::test_concat_compat', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_simple[dim1-different]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_simple[dim1-minimal]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_simple[dim2-different]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_simple[dim2-minimal]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_2', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_coords_kwarg[dim1-different]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_coords_kwarg[dim1-minimal]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_coords_kwarg[dim1-all]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_coords_kwarg[dim2-different]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_coords_kwarg[dim2-minimal]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_coords_kwarg[dim2-all]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_dim_precedence', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_data_vars', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_coords', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_constant_index', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_size0', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_autoalign', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_errors', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_join_kwarg', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_promote_shape', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_do_not_promote', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_dim_is_variable', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_multiindex', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_fill_value[fill_value0]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_fill_value[2]', 'xarray/tests/test_concat.py::TestConcatDataset::test_concat_fill_value[2.0]', 'xarray/tests/test_concat.py::TestConcatDataArray::test_concat', 'xarray/tests/test_concat.py::TestConcatDataArray::test_concat_encoding', 'xarray/tests/test_concat.py::TestConcatDataArray::test_concat_lazy', 'xarray/tests/test_concat.py::TestConcatDataArray::test_concat_fill_value[fill_value0]', 'xarray/tests/test_concat.py::TestConcatDataArray::test_concat_fill_value[2]', 'xarray/tests/test_concat.py::TestConcatDataArray::test_concat_fill_value[2.0]', 'xarray/tests/test_concat.py::TestConcatDataArray::test_concat_join_kwarg']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pydata__xarray-3364: resolved: False
+2026-10-21 21:58:02,647 - INFO - Attempting to stop container sweb.eval.pydata__xarray-3364.study2026...
+2026-10-21 21:58:17,816 - INFO - Container sweb.eval.pydata__xarray-3364.study2026 stopped successfully.
+2026-10-21 21:58:17,816 - INFO - Attempting to remove container sweb.eval.pydata__xarray-3364.study2026...
+2026-10-21 21:58:17,846 - INFO - Container sweb.eval.pydata__xarray-3364.study2026 removed successfully.

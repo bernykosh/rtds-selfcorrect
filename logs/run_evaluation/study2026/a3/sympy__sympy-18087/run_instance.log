@@ -1,0 +1,118 @@
+2026-10-21 12:48:14,362 - INFO - Creating container for sympy__sympy-18087...
+2026-10-21 12:48:14,390 - INFO - Container for sympy__sympy-18087 created: 5861f3b1d39630bb260b9e1bbd95f78c1ad30416293a4729c2249fba238357fe
+2026-10-21 12:48:14,496 - INFO - Container for sympy__sympy-18087 started: 5861f3b1d39630bb260b9e1bbd95f78c1ad30416293a4729c2249fba238357fe
+2026-10-21 12:48:14,497 - INFO - Intermediate patch for sympy__sympy-18087 written to logs/run_evaluation/study2026/a3/sympy__sympy-18087/patch.diff, now applying to container...
+2026-10-21 12:48:14,663 - INFO - >>>>> Applied Patch:
+Checking patch sympy/core/exprtools.py...
+warning: sympy/core/exprtools.py has type 100755, expected 100644
+Hunk #2 succeeded at 1154 (offset -81 lines).
+Hunk #3 succeeded at 1240 (offset -57 lines).
+Hunk #4 succeeded at 1258 (offset -58 lines).
+Applied patch sympy/core/exprtools.py cleanly.
+
+2026-10-21 12:48:15,206 - INFO - Git diff before:
+diff --git a/sympy/core/exprtools.py b/sympy/core/exprtools.py
+index 57fad70407..aa62edfebc 100755
+--- a/sympy/core/exprtools.py
++++ b/sympy/core/exprtools.py
+@@ -1,5 +1,6 @@
+ """Tools for manipulating of large commutative expressions. """
+ 
++
+ from __future__ import print_function, division
+ 
+ from sympy.core.add import Add
+@@ -1153,7 +1154,7 @@ def _factor_sum_int(expr, **kwargs):
+ 
+ 
+ def factor_terms(expr, radical=False, clear=False, fraction=False, sign=True):
+-    """Remove common factors from terms in all arguments without
++    r"""Remove common factors from terms in all arguments without
+     changing the underlying structure of the expr. No expansion or
+     simplification (and no processing of non-commutatives) is performed.
+ 
+@@ -1239,12 +1240,17 @@ def do(expr):
+             # watch out for exp(-(x+2)) which gcd_terms will change to exp(-x-2)
+             special = {}
+             for i, a in enumerate(list_args):
++                if not a.is_commutative:
++                    continue
+                 b, e = a.as_base_exp()
+                 if e.is_Mul and e != Mul(*e.args):
+                     list_args[i] = Dummy()
+                     special[list_args[i]] = a
+             # rebuild p not worrying about the order which gcd_terms will fix
+             p = Add._from_args(list_args)
++            # Only pass special to xreplace if it's not empty to avoid unnecessary operations
++            if special:
++                p = p.xreplace(special)
+             p = gcd_terms(p,
+                 isprimitive=True,
+                 clear=clear,
+@@ -1252,7 +1258,7 @@ def do(expr):
+         elif p.args:
+             p = p.func(
+                 *[do(a) for a in p.args])
+-        rv = _keep_coeff(cont, p, clear=clear, sign=sign)
++        rv = _keep_coeff(cont, p, clear=clear, sign=sign) if cont else p
+         return rv
+     expr = sympify(expr)
+     return do(expr)
+2026-10-21 12:48:15,207 - INFO - Eval script for sympy__sympy-18087 written to logs/run_evaluation/study2026/a3/sympy__sympy-18087/eval.sh; copying to container...
+2026-10-21 12:48:38,961 - INFO - Test runtime: 23.67 seconds
+2026-10-21 12:48:38,963 - INFO - Test output for sympy__sympy-18087 written to logs/run_evaluation/study2026/a3/sympy__sympy-18087/test_output.txt
+2026-10-21 12:48:39,091 - INFO - Git diff after:
+diff --git a/sympy/core/exprtools.py b/sympy/core/exprtools.py
+index 57fad70407..aa62edfebc 100755
+--- a/sympy/core/exprtools.py
++++ b/sympy/core/exprtools.py
+@@ -1,5 +1,6 @@
+ """Tools for manipulating of large commutative expressions. """
+ 
++
+ from __future__ import print_function, division
+ 
+ from sympy.core.add import Add
+@@ -1153,7 +1154,7 @@ def _factor_sum_int(expr, **kwargs):
+ 
+ 
+ def factor_terms(expr, radical=False, clear=False, fraction=False, sign=True):
+-    """Remove common factors from terms in all arguments without
++    r"""Remove common factors from terms in all arguments without
+     changing the underlying structure of the expr. No expansion or
+     simplification (and no processing of non-commutatives) is performed.
+ 
+@@ -1239,12 +1240,17 @@ def do(expr):
+             # watch out for exp(-(x+2)) which gcd_terms will change to exp(-x-2)
+             special = {}
+             for i, a in enumerate(list_args):
++                if not a.is_commutative:
++                    continue
+                 b, e = a.as_base_exp()
+                 if e.is_Mul and e != Mul(*e.args):
+                     list_args[i] = Dummy()
+                     special[list_args[i]] = a
+             # rebuild p not worrying about the order which gcd_terms will fix
+             p = Add._from_args(list_args)
++            # Only pass special to xreplace if it's not empty to avoid unnecessary operations
++            if special:
++                p = p.xreplace(special)
+             p = gcd_terms(p,
+                 isprimitive=True,
+                 clear=clear,
+@@ -1252,7 +1258,7 @@ def do(expr):
+         elif p.args:
+             p = p.func(
+                 *[do(a) for a in p.args])
+-        rv = _keep_coeff(cont, p, clear=clear, sign=sign)
++        rv = _keep_coeff(cont, p, clear=clear, sign=sign) if cont else p
+         return rv
+     expr = sympify(expr)
+     return do(expr)
+2026-10-21 12:48:39,091 - INFO - Grading answer for sympy__sympy-18087...
+2026-10-21 12:48:39,098 - INFO - report: {'sympy__sympy-18087': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_Factors', 'test_fu']}, 'PASS_TO_PASS': {'success': ['test_decompose_power', 'test_Term', 'test_gcd_terms', 'test_xreplace', 'test_factor_nc', 'test_issue_6360', 'test_issue_7903', 'test_issue_8263', 'test_monotonic_sign', 'test_TR1', 'test_TR2', 'test_TR2i', 'test_TR3', 'test__TR56', 'test_TR5', 'test_TR6', 'test_TR7', 'test_TR8', 'test_TR9', 'test_TR10', 'test_TR10i', 'test_TR11', 'test_TR12', 'test_TR13', 'test_L', 'test_objective', 'test_process_common_addends', 'test_trig_split', 'test_TRmorrie', 'test_TRpower', 'test_hyper_as_trig', 'test_TR12i', 'test_TR14', 'test_TR15_16_17'], 'failure': ['test_factor_terms']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-18087: resolved: False
+2026-10-21 12:48:39,099 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18087.study2026...
+2026-10-21 12:48:54,279 - INFO - Container sweb.eval.sympy__sympy-18087.study2026 stopped successfully.
+2026-10-21 12:48:54,279 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18087.study2026...
+2026-10-21 12:48:54,321 - INFO - Container sweb.eval.sympy__sympy-18087.study2026 removed successfully.

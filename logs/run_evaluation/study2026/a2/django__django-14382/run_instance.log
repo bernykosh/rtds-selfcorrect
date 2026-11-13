@@ -1,0 +1,31 @@
+2026-10-21 12:12:45,227 - INFO - Creating container for django__django-14382...
+2026-10-21 12:12:45,270 - INFO - Container for django__django-14382 created: 62f6b54b9d585ae48c98f85b004ceb562cf8bdb5e0d909df181fc81125926cd4
+2026-10-21 12:12:45,362 - INFO - Container for django__django-14382 started: 62f6b54b9d585ae48c98f85b004ceb562cf8bdb5e0d909df181fc81125926cd4
+2026-10-21 12:12:45,363 - INFO - Intermediate patch for django__django-14382 written to logs/run_evaluation/study2026/a2/django__django-14382/patch.diff, now applying to container...
+2026-10-21 12:12:45,533 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:12:48,600 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:12:48,952 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:12:49,305 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 12:12:49,384 - INFO - >>>>> Patch Apply Failed:
+patching file django/core/management/templates.py
+Hunk #1 succeeded at 73 (offset -1 lines).
+Hunk #2 FAILED at 77.
+1 out of 2 hunks FAILED -- saving rejects to file django/core/management/templates.py.rej
+
+2026-10-21 12:12:49,386 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-14382: >>>>> Patch Apply Failed:
+patching file django/core/management/templates.py
+Hunk #1 succeeded at 73 (offset -1 lines).
+Hunk #2 FAILED at 77.
+1 out of 2 hunks FAILED -- saving rejects to file django/core/management/templates.py.rej
+
+Check (logs/run_evaluation/study2026/a2/django__django-14382/run_instance.log) for more information.
+
+2026-10-21 12:12:49,386 - INFO - Attempting to stop container sweb.eval.django__django-14382.study2026...
+2026-10-21 12:13:04,754 - INFO - Container sweb.eval.django__django-14382.study2026 stopped successfully.
+2026-10-21 12:13:04,754 - INFO - Attempting to remove container sweb.eval.django__django-14382.study2026...
+2026-10-21 12:13:04,904 - INFO - Container sweb.eval.django__django-14382.study2026 removed successfully.

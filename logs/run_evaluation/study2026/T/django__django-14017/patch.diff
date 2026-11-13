@@ -1,0 +1,33 @@
+diff --git a/django/db/models/query_utils.py b/django/db/models/query_utils.py
+index 466920f6d7..b8c5c8e2a4 100644
+--- a/django/db/models/query_utils.py
++++ b/django/db/models/query_utils.py
+@@ -90,6 +90,28 @@ class Q(tree.Node):
+     def __and__(self, other):
+         return self._combine(other, self.AND)
+ 
++    def __rand__(self, other):
++        # Handle cases like Exists(...) & Q(...)
++        if not isinstance(other, Q):
++            # When other is not a Q, create a new Q and combine
++            obj = type(self)()
++            obj.connector = self.AND
++            obj.add(other, self.AND)
++            obj.add(self, self.AND)
++            return obj
++        return other._combine(self, other.AND)
++
++    def __ror__(self, other):
++        # Handle cases like Exists(...) | Q(...)
++        if not isinstance(other, Q):
++            # When other is not a Q, create a new Q and combine
++            obj = type(self)()
++            obj.connector = self.OR
++            obj.add(other, self.OR)
++            obj.add(self, self.OR)
++            return obj
++        return other._combine(self, other.OR)
++
+     def __invert__(self, other):
+         obj = type(self)()
+         obj.add(self, self.AND)

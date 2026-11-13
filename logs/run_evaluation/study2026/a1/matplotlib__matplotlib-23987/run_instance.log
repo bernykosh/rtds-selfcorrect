@@ -1,0 +1,33 @@
+2026-10-21 11:49:19,165 - INFO - Creating container for matplotlib__matplotlib-23987...
+2026-10-21 11:49:19,212 - INFO - Container for matplotlib__matplotlib-23987 created: 67dd93cb91466f220014fc8f89a303fab0b121c636923c015348c1b8f17c7eb9
+2026-10-21 11:49:19,334 - INFO - Container for matplotlib__matplotlib-23987 started: 67dd93cb91466f220014fc8f89a303fab0b121c636923c015348c1b8f17c7eb9
+2026-10-21 11:49:19,334 - INFO - Intermediate patch for matplotlib__matplotlib-23987 written to logs/run_evaluation/study2026/a1/matplotlib__matplotlib-23987/patch.diff, now applying to container...
+2026-10-21 11:49:19,641 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 11:49:20,946 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 11:49:21,891 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 11:49:22,229 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 11:49:22,315 - INFO - >>>>> Patch Apply Failed:
+patching file lib/matplotlib/figure.py
+Hunk #1 FAILED at 1090.
+1 out of 1 hunk FAILED -- saving rejects to file lib/matplotlib/figure.py.rej
+patching file lib/matplotlib/figure.py
+Hunk #1 succeeded at 2425 with fuzz 3 (offset 395 lines).
+
+2026-10-21 11:49:22,317 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for matplotlib__matplotlib-23987: >>>>> Patch Apply Failed:
+patching file lib/matplotlib/figure.py
+Hunk #1 FAILED at 1090.
+1 out of 1 hunk FAILED -- saving rejects to file lib/matplotlib/figure.py.rej
+patching file lib/matplotlib/figure.py
+Hunk #1 succeeded at 2425 with fuzz 3 (offset 395 lines).
+
+Check (logs/run_evaluation/study2026/a1/matplotlib__matplotlib-23987/run_instance.log) for more information.
+
+2026-10-21 11:49:22,317 - INFO - Attempting to stop container sweb.eval.matplotlib__matplotlib-23987.study2026...
+2026-10-21 11:49:37,603 - INFO - Container sweb.eval.matplotlib__matplotlib-23987.study2026 stopped successfully.
+2026-10-21 11:49:37,603 - INFO - Attempting to remove container sweb.eval.matplotlib__matplotlib-23987.study2026...
+2026-10-21 11:49:37,750 - INFO - Container sweb.eval.matplotlib__matplotlib-23987.study2026 removed successfully.

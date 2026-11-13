@@ -1,0 +1,69 @@
+2026-10-21 11:57:24,900 - INFO - Creating container for sympy__sympy-18532...
+2026-10-21 11:57:24,928 - INFO - Container for sympy__sympy-18532 created: 7155054ac6f4fcab337f37b6e2809c8045abf38710bc2b64b59e2f93168930cc
+2026-10-21 11:57:25,014 - INFO - Container for sympy__sympy-18532 started: 7155054ac6f4fcab337f37b6e2809c8045abf38710bc2b64b59e2f93168930cc
+2026-10-21 11:57:25,015 - INFO - Intermediate patch for sympy__sympy-18532 written to logs/run_evaluation/study2026/a1/sympy__sympy-18532/patch.diff, now applying to container...
+2026-10-21 11:57:25,185 - INFO - >>>>> Applied Patch:
+Checking patch sympy/core/basic.py...
+Hunk #1 succeeded at 499 (offset -505 lines).
+Applied patch sympy/core/basic.py cleanly.
+
+2026-10-21 11:57:25,607 - INFO - Git diff before:
+diff --git a/sympy/core/basic.py b/sympy/core/basic.py
+index 6866648d4e..852a2bfca9 100755
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -500,11 +500,17 @@ def atoms(self, *types):
+         {I*pi, 2*sin(y + I*pi)}
+ 
+         """
++        # Check if we're looking for atoms with no args (when no types specified)
++        if not types:
++            result = set()
++            for expr in preorder_traversal(self):
++                if not expr.args:
++                    result.add(expr)
++            return result
++
+         if types:
+             types = tuple(
+                 [t if isinstance(t, type) else type(t) for t in types])
+-        else:
+-            types = (Atom,)
+         result = set()
+         for expr in preorder_traversal(self):
+             if isinstance(expr, types):
+2026-10-21 11:57:25,609 - INFO - Eval script for sympy__sympy-18532 written to logs/run_evaluation/study2026/a1/sympy__sympy-18532/eval.sh; copying to container...
+2026-10-21 11:57:30,421 - INFO - Test runtime: 4.74 seconds
+2026-10-21 11:57:30,422 - INFO - Test output for sympy__sympy-18532 written to logs/run_evaluation/study2026/a1/sympy__sympy-18532/test_output.txt
+2026-10-21 11:57:30,524 - INFO - Git diff after:
+diff --git a/sympy/core/basic.py b/sympy/core/basic.py
+index 6866648d4e..852a2bfca9 100755
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -500,11 +500,17 @@ def atoms(self, *types):
+         {I*pi, 2*sin(y + I*pi)}
+ 
+         """
++        # Check if we're looking for atoms with no args (when no types specified)
++        if not types:
++            result = set()
++            for expr in preorder_traversal(self):
++                if not expr.args:
++                    result.add(expr)
++            return result
++
+         if types:
+             types = tuple(
+                 [t if isinstance(t, type) else type(t) for t in types])
+-        else:
+-            types = (Atom,)
+         result = set()
+         for expr in preorder_traversal(self):
+             if isinstance(expr, types):
+2026-10-21 11:57:30,524 - INFO - Grading answer for sympy__sympy-18532...
+2026-10-21 11:57:30,529 - INFO - report: {'sympy__sympy-18532': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_sizeof', 'test_atoms'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_alignof', 'test_CommaOperator', 'test_goto_Label', 'test_PreDecrement', 'test_PostDecrement', 'test_PreIncrement', 'test_PostIncrement', 'test_struct', 'test__aresame', 'test_structure', 'test_equality', 'test_matches_basic', 'test_has', 'test_subs', 'test_subs_with_unicode_symbols', 'test_free_symbols_empty', 'test_doit', 'test_S', 'test_xreplace', 'test_preorder_traversal', 'test_sorted_args', 'test_call', 'test_rewrite', 'test_literal_evalf_is_number_is_zero_is_comparable', 'test_as_Basic', 'test_atomic', 'test_as_dummy', 'test_canonical_variables'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-18532: resolved: True
+2026-10-21 11:57:30,530 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18532.study2026...
+2026-10-21 11:57:45,713 - INFO - Container sweb.eval.sympy__sympy-18532.study2026 stopped successfully.
+2026-10-21 11:57:45,714 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18532.study2026...
+2026-10-21 11:57:45,754 - INFO - Container sweb.eval.sympy__sympy-18532.study2026 removed successfully.

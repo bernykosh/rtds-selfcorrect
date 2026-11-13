@@ -1,0 +1,44 @@
+diff --git a/sympy/assumptions/refine.py b/sympy/assumptions/refine.py
+index 1f1d1a0..b3e6e8d 100644
+--- a/sympy/assumptions/refine.py
++++ b/sympy/assumptions/refine.py
+@@ -198,6 +198,29 @@ def refine_sign(expr, assumptions):
+     return expr
+ 
+ 
++def refine_arg(expr, assumptions):
++    """
++    Handler for arg.
++
++    Examples
++    ========
++
++    >>> from sympy.assumptions.refine import refine_arg
++    >>> from sympy import Q, arg
++    >>> from sympy.abc import x
++    >>> refine_arg(arg(x), Q.positive(x))
++    0
++    >>> refine_arg(arg(x), Q.negative(x))
++    pi
++    """
++    arg = expr.args[0]
++    if ask(Q.positive(arg), assumptions):
++        return S.Zero
++    if ask(Q.negative(arg), assumptions):
++        return S.Pi
++    return expr
++
++
+ def refine_matrixelement(expr, assumptions):
+     """
+     Handler for symmetric part.
+@@ -210,7 +233,8 @@ def refine_matrixelement(expr, assumptions):
+ handlers_dict = {
+     'Abs': refine_abs,
+     'Pow': refine_Pow,
+-    'atan2': refine_atan2,
++    'atan2': refine_atan2,
++    'arg': refine_arg,
+     're': refine_re,
+     'im': refine_im,
+     'sign': refine_sign,

@@ -1,0 +1,89 @@
+2026-10-21 12:13:04,920 - INFO - Creating container for django__django-14667...
+2026-10-21 12:13:05,011 - INFO - Container for django__django-14667 created: 2c09f488690f7442a50973b5518025721e8cfd507b3b7ce848f0a4a5f3692a4d
+2026-10-21 12:13:05,127 - INFO - Container for django__django-14667 started: 2c09f488690f7442a50973b5518025721e8cfd507b3b7ce848f0a4a5f3692a4d
+2026-10-21 12:13:05,127 - INFO - Intermediate patch for django__django-14667 written to logs/run_evaluation/study2026/a2/django__django-14667/patch.diff, now applying to container...
+2026-10-21 12:13:05,300 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:13:09,958 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:13:10,383 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:13:10,704 - INFO - >>>>> Applied Patch:
+patching file django/db/models/sql/query.py
+Hunk #1 succeeded at 2083 with fuzz 3 (offset -167 lines).
+
+2026-10-21 12:13:10,832 - INFO - Git diff before:
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 8837881579..be6cfeee39 100755
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -2083,12 +2083,27 @@ class Query(BaseExpression):
+         existing, defer = self.deferred_loading
+         if defer:
+             # Add to existing deferred names.
+-            self.deferred_loading = existing.union(field_names), True
++            # When chaining defer() after only(), we need to convert to 
++            # immediate loading mode and remove the newly deferred fields
++            # from the existing set
++            new_field_names = set(field_names)
++            if 'pk' in new_field_names:
++                new_field_names.remove('pk')
++                new_field_names.add(self.get_meta().pk.name)
++            self.deferred_loading = existing.difference(new_field_names), False
+         else:
+             # Remove names from the set of any existing "immediate load" names.
+             self.deferred_loading = existing.difference(field_names), False
+ 
+     def add_immediate_loading(self, field_names):
++        """
++        Add the given list of model field names to the set of fields to
++        retrieve when the SQL is executed ("immediate loading" fields). The
++        field names replace any existing immediate loading field names. If
++        there are field names already specified for deferred loading, remove
++        those names from the new field_names before storing the new names
++        for immediate loading. (That is, immediate loading overrides any
++        existing immediate values, but respects existing deferrals.)
+         """
+         Add the given list of model field names to the set of fields to
+         retrieve when the SQL is executed ("immediate loading" fields). The
+2026-10-21 12:13:10,833 - INFO - Eval script for django__django-14667 written to logs/run_evaluation/study2026/a2/django__django-14667/eval.sh; copying to container...
+2026-10-21 12:13:19,241 - INFO - Test runtime: 8.33 seconds
+2026-10-21 12:13:19,242 - INFO - Test output for django__django-14667 written to logs/run_evaluation/study2026/a2/django__django-14667/test_output.txt
+2026-10-21 12:13:19,375 - INFO - Git diff after:
+diff --git a/django/db/models/sql/query.py b/django/db/models/sql/query.py
+index 8837881579..be6cfeee39 100755
+--- a/django/db/models/sql/query.py
++++ b/django/db/models/sql/query.py
+@@ -2083,12 +2083,27 @@ class Query(BaseExpression):
+         existing, defer = self.deferred_loading
+         if defer:
+             # Add to existing deferred names.
+-            self.deferred_loading = existing.union(field_names), True
++            # When chaining defer() after only(), we need to convert to 
++            # immediate loading mode and remove the newly deferred fields
++            # from the existing set
++            new_field_names = set(field_names)
++            if 'pk' in new_field_names:
++                new_field_names.remove('pk')
++                new_field_names.add(self.get_meta().pk.name)
++            self.deferred_loading = existing.difference(new_field_names), False
+         else:
+             # Remove names from the set of any existing "immediate load" names.
+             self.deferred_loading = existing.difference(field_names), False
+ 
+     def add_immediate_loading(self, field_names):
++        """
++        Add the given list of model field names to the set of fields to
++        retrieve when the SQL is executed ("immediate loading" fields). The
++        field names replace any existing immediate loading field names. If
++        there are field names already specified for deferred loading, remove
++        those names from the new field_names before storing the new names
++        for immediate loading. (That is, immediate loading overrides any
++        existing immediate values, but respects existing deferrals.)
+         """
+         Add the given list of model field names to the set of fields to
+         retrieve when the SQL is executed ("immediate loading" fields). The
+2026-10-21 12:13:19,375 - INFO - Grading answer for django__django-14667...
+2026-10-21 12:13:19,594 - INFO - report: {'django__django-14667': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for django__django-14667: resolved: False
+2026-10-21 12:13:19,594 - INFO - Attempting to stop container sweb.eval.django__django-14667.study2026...
+2026-10-21 12:13:34,797 - INFO - Container sweb.eval.django__django-14667.study2026 stopped successfully.
+2026-10-21 12:13:34,797 - INFO - Attempting to remove container sweb.eval.django__django-14667.study2026...
+2026-10-21 12:13:34,987 - INFO - Container sweb.eval.django__django-14667.study2026 removed successfully.

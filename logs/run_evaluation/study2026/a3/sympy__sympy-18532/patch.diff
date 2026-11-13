@@ -1,0 +1,27 @@
+diff --git a/sympy/core/basic.py b/sympy/core/basic.py
+index 4e1e8cb5bd..c0c99d5779 100644
+--- a/sympy/core/basic.py
++++ b/sympy/core/basic.py
+@@ -643,12 +643,19 @@ def atoms(self, *types):
+         """
+         if types:
+             types = tuple(
+-                [t if isinstance(t, type) else type(t) for t in types])
++                [t if isinstance(t, type) else type(t) for t in types])
+         else:
+-            types = (Atom,)
++            # Return objects with no args instead of subclasses of Atom
++            def has_no_args(expr):
++                return not expr.args
++            types = (has_no_args,)
+         result = set()
+         for expr in preorder_traversal(self):
+-            if isinstance(expr, types):
++            if isinstance(types[0], type):
++                # Handle regular type checking
++                if isinstance(expr, types):
++                    result.add(expr)
++            elif types[0](expr):  # It's a callable check
+                 result.add(expr)
+         return result
+ 

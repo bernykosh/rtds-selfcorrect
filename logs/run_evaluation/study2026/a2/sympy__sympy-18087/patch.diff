@@ -1,0 +1,13 @@
+diff --git a/sympy/core/exprtools.py b/sympy/core/exprtools.py
+index 1f2b3a58bd..b6e9e2a8d8 100644
+--- a/sympy/core/exprtools.py
++++ b/sympy/core/exprtools.py
+@@ -1034,7 +1034,7 @@ def _monotonic_sign(self):
+             elif not d.is_number:
+                 if _monotonic_sign(n) is not None:
+                     den = _monotonic_sign(d)
+-            if den is not None and (den.is_positive or den.is_negative):
++            if den is not None and (den.is_positive or den.is_negative) and n.is_finite:
+                 v = n*den
+                 if v.is_positive:
+                     return Dummy('pos', positive=True)

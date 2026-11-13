@@ -1,0 +1,53 @@
+2026-10-21 11:56:24,186 - INFO - Creating container for sympy__sympy-12454...
+2026-10-21 11:56:24,218 - INFO - Container for sympy__sympy-12454 created: 2b3c75505c47f7081a5fe49d4336870b35d4bbc6ef78096fd311510070a6832f
+2026-10-21 11:56:24,298 - INFO - Container for sympy__sympy-12454 started: 2b3c75505c47f7081a5fe49d4336870b35d4bbc6ef78096fd311510070a6832f
+2026-10-21 11:56:24,299 - INFO - Intermediate patch for sympy__sympy-12454 written to logs/run_evaluation/study2026/a1/sympy__sympy-12454/patch.diff, now applying to container...
+2026-10-21 11:56:24,438 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 11:56:24,944 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 11:56:25,309 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 11:56:25,559 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 11:56:25,633 - INFO - >>>>> Patch Apply Failed:
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+
+2026-10-21 11:56:25,637 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for sympy__sympy-12454: >>>>> Patch Apply Failed:
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+patching file sympy/matrices/matrices.py
+Hunk #1 FAILED at 1106.
+1 out of 1 hunk FAILED -- saving rejects to file sympy/matrices/matrices.py.rej
+
+Check (logs/run_evaluation/study2026/a1/sympy__sympy-12454/run_instance.log) for more information.
+
+2026-10-21 11:56:25,637 - INFO - Attempting to stop container sweb.eval.sympy__sympy-12454.study2026...
+2026-10-21 11:56:40,825 - INFO - Container sweb.eval.sympy__sympy-12454.study2026 stopped successfully.
+2026-10-21 11:56:40,826 - INFO - Attempting to remove container sweb.eval.sympy__sympy-12454.study2026...
+2026-10-21 11:56:40,882 - INFO - Container sweb.eval.sympy__sympy-12454.study2026 removed successfully.

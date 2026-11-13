@@ -1,0 +1,47 @@
+2026-10-21 13:10:12,378 - INFO - Creating container for sympy__sympy-22005...
+2026-10-21 13:10:12,410 - INFO - Container for sympy__sympy-22005 created: 084e81537aae658c834a8c045309b3c6dfa2c635c11352fb859f83c4c73f9a5c
+2026-10-21 13:10:12,534 - INFO - Container for sympy__sympy-22005 started: 084e81537aae658c834a8c045309b3c6dfa2c635c11352fb859f83c4c73f9a5c
+2026-10-21 13:10:12,535 - INFO - Intermediate patch for sympy__sympy-22005 written to logs/run_evaluation/study2026/S/sympy__sympy-22005/patch.diff, now applying to container...
+2026-10-21 13:10:12,754 - INFO - >>>>> Applied Patch:
+Checking patch sympy/solvers/polysys.py...
+warning: sympy/solvers/polysys.py has type 100755, expected 100644
+Applied patch sympy/solvers/polysys.py cleanly.
+
+2026-10-21 13:10:13,270 - INFO - Git diff before:
+diff --git a/sympy/solvers/polysys.py b/sympy/solvers/polysys.py
+index b9809fd4e9..674322d4eb 100755
+--- a/sympy/solvers/polysys.py
++++ b/sympy/solvers/polysys.py
+@@ -240,7 +240,7 @@ def _solve_reduced_system(system, gens, entry=False):
+ 
+         univariate = list(filter(_is_univariate, basis))
+ 
+-        if len(univariate) == 1:
++        if len(univariate) == 1 and len(gens) == 1:
+             f = univariate.pop()
+         else:
+             raise NotImplementedError(filldedent('''
+2026-10-21 13:10:13,271 - INFO - Eval script for sympy__sympy-22005 written to logs/run_evaluation/study2026/S/sympy__sympy-22005/eval.sh; copying to container...
+2026-10-21 13:10:20,731 - INFO - Test runtime: 7.39 seconds
+2026-10-21 13:10:20,732 - INFO - Test output for sympy__sympy-22005 written to logs/run_evaluation/study2026/S/sympy__sympy-22005/test_output.txt
+2026-10-21 13:10:20,842 - INFO - Git diff after:
+diff --git a/sympy/solvers/polysys.py b/sympy/solvers/polysys.py
+index b9809fd4e9..674322d4eb 100755
+--- a/sympy/solvers/polysys.py
++++ b/sympy/solvers/polysys.py
+@@ -240,7 +240,7 @@ def _solve_reduced_system(system, gens, entry=False):
+ 
+         univariate = list(filter(_is_univariate, basis))
+ 
+-        if len(univariate) == 1:
++        if len(univariate) == 1 and len(gens) == 1:
+             f = univariate.pop()
+         else:
+             raise NotImplementedError(filldedent('''
+2026-10-21 13:10:20,842 - INFO - Grading answer for sympy__sympy-22005...
+2026-10-21 13:10:20,845 - INFO - report: {'sympy__sympy-22005': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['test_solve_poly_system']}, 'PASS_TO_PASS': {'success': ['test_solve_biquadratic', 'test_solve_triangulated'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for sympy__sympy-22005: resolved: False
+2026-10-21 13:10:20,846 - INFO - Attempting to stop container sweb.eval.sympy__sympy-22005.study2026...
+2026-10-21 13:10:36,018 - INFO - Container sweb.eval.sympy__sympy-22005.study2026 stopped successfully.
+2026-10-21 13:10:36,019 - INFO - Attempting to remove container sweb.eval.sympy__sympy-22005.study2026...
+2026-10-21 13:10:36,077 - INFO - Container sweb.eval.sympy__sympy-22005.study2026 removed successfully.

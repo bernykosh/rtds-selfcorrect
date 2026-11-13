@@ -1,0 +1,69 @@
+2026-10-21 21:58:17,851 - INFO - Creating container for pytest-dev__pytest-7168...
+2026-10-21 21:58:17,882 - INFO - Container for pytest-dev__pytest-7168 created: 61715c65110185ac36e71b9e0570b90dd9ace324730f9d39b932faa62e719335
+2026-10-21 21:58:17,973 - INFO - Container for pytest-dev__pytest-7168 started: 61715c65110185ac36e71b9e0570b90dd9ace324730f9d39b932faa62e719335
+2026-10-21 21:58:17,973 - INFO - Intermediate patch for pytest-dev__pytest-7168 written to logs/run_evaluation/study2026/ST/pytest-dev__pytest-7168/patch.diff, now applying to container...
+2026-10-21 21:58:18,135 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:58:18,471 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:58:18,723 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:58:18,969 - INFO - >>>>> Applied Patch:
+patching file src/_pytest/_io/saferepr.py
+Hunk #1 succeeded at 20 with fuzz 3.
+
+2026-10-21 21:58:19,070 - INFO - Git diff before:
+diff --git a/src/_pytest/_io/saferepr.py b/src/_pytest/_io/saferepr.py
+index 23af4d0bb..067ef5e7b 100755
+--- a/src/_pytest/_io/saferepr.py
++++ b/src/_pytest/_io/saferepr.py
+@@ -20,9 +20,17 @@ def _format_repr_exception(exc: BaseException, obj: Any) -> str:
+     except BaseException as exc:
+         exc_info = "unpresentable exception ({})".format(_try_repr_or_str(exc))
+     return "<[{} raised in repr()] {} object at 0x{:x}>".format(
+-        exc_info, obj.__class__.__name__, id(obj)
++        exc_info, _try_repr_or_str_class_name(obj), id(obj)
+     )
+ 
++def _try_repr_or_str_class_name(obj):
++    try:
++        return obj.__class__.__name__
++    except (KeyboardInterrupt, SystemExit):
++        raise
++    except BaseException:
++        return type(obj).__name__
++
+ 
+ def _ellipsize(s: str, maxsize: int) -> str:
+     if len(s) > maxsize:
+2026-10-21 21:58:19,071 - INFO - Eval script for pytest-dev__pytest-7168 written to logs/run_evaluation/study2026/ST/pytest-dev__pytest-7168/eval.sh; copying to container...
+2026-10-21 21:58:25,151 - INFO - Test runtime: 6.02 seconds
+2026-10-21 21:58:25,152 - INFO - Test output for pytest-dev__pytest-7168 written to logs/run_evaluation/study2026/ST/pytest-dev__pytest-7168/test_output.txt
+2026-10-21 21:58:25,245 - INFO - Git diff after:
+diff --git a/src/_pytest/_io/saferepr.py b/src/_pytest/_io/saferepr.py
+index 23af4d0bb..067ef5e7b 100755
+--- a/src/_pytest/_io/saferepr.py
++++ b/src/_pytest/_io/saferepr.py
+@@ -20,9 +20,17 @@ def _format_repr_exception(exc: BaseException, obj: Any) -> str:
+     except BaseException as exc:
+         exc_info = "unpresentable exception ({})".format(_try_repr_or_str(exc))
+     return "<[{} raised in repr()] {} object at 0x{:x}>".format(
+-        exc_info, obj.__class__.__name__, id(obj)
++        exc_info, _try_repr_or_str_class_name(obj), id(obj)
+     )
+ 
++def _try_repr_or_str_class_name(obj):
++    try:
++        return obj.__class__.__name__
++    except (KeyboardInterrupt, SystemExit):
++        raise
++    except BaseException:
++        return type(obj).__name__
++
+ 
+ def _ellipsize(s: str, maxsize: int) -> str:
+     if len(s) > maxsize:
+2026-10-21 21:58:25,245 - INFO - Grading answer for pytest-dev__pytest-7168...
+2026-10-21 21:58:25,247 - INFO - report: {'pytest-dev__pytest-7168': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['testing/io/test_saferepr.py::test_simple_repr', 'testing/io/test_saferepr.py::test_maxsize', 'testing/io/test_saferepr.py::test_maxsize_error_on_instance', 'testing/io/test_saferepr.py::test_exceptions', 'testing/io/test_saferepr.py::test_baseexception', 'testing/io/test_saferepr.py::test_buggy_builtin_repr', 'testing/io/test_saferepr.py::test_big_repr', 'testing/io/test_saferepr.py::test_repr_on_newstyle', 'testing/io/test_saferepr.py::test_unicode', 'testing/io/test_saferepr.py::test_pformat_dispatch', 'testing/io/test_saferepr.py::test_broken_getattribute'], 'failure': []}, 'PASS_TO_PASS': {'success': [], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for pytest-dev__pytest-7168: resolved: True
+2026-10-21 21:58:25,247 - INFO - Attempting to stop container sweb.eval.pytest-dev__pytest-7168.study2026...
+2026-10-21 21:58:40,469 - INFO - Container sweb.eval.pytest-dev__pytest-7168.study2026 stopped successfully.
+2026-10-21 21:58:40,469 - INFO - Attempting to remove container sweb.eval.pytest-dev__pytest-7168.study2026...
+2026-10-21 21:58:40,514 - INFO - Container sweb.eval.pytest-dev__pytest-7168.study2026 removed successfully.

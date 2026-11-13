@@ -1,0 +1,96 @@
+diff --git a/sphinx/ext/autodoc/__init__.py b/sphinx/ext/autodoc/__init__.py
+index 5d8d6275a..d6c7a8e4f 100644
+--- a/sphinx/ext/autodoc/__init__.py
++++ b/sphinx/ext/autodoc/__init__.py
+@@ -1990,13 +1990,13 @@ class DataDocumenter(ModuleLevelDocumenter):
+             try:
+                 annotations = get_type_hints(self.parent)
+             except NameError:
+-                # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+-                annotations = safe_getattr(self.parent, '__annotations__', {})
++                # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
++                annotations = safe_getattr(self.parent, '__annotations__', {})
+             except TypeError:
+                 annotations = {}
+             except KeyError:
+-                # a broken class found (refs: https://github.com/sphinx-doc/sphinx/issues/8084)
+-                annotations = {}
++                # a broken class found (refs: https://github.com/sphinx-doc/sphinx/issues/8084)
++                annotations = {}
+             except AttributeError:
+                 # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
+                 annotations = {}
+@@ -2006,10 +2006,23 @@ class DataDocumenter(ModuleLevelDocumenter):
+             if self.objpath[-1] in annotations:
+-                objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+-                self.add_line('   :type: ' + objrepr, sourcename)
++                annotation = annotations[self.objpath[-1]]
++                objrepr = self._stringify_typehint_with_aliases(annotation)
++                self.add_line('   :type: ' + objrepr, sourcename)
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
++                    annotation_str = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to string annotations
++                    if annotation_str in self.config.autodoc_type_aliases:
++                        objrepr = self.config.autodoc_type_aliases[annotation_str]
++                    else:
++                        objrepr = annotation_str
++                    self.add_line('   :type: ' + objrepr, sourcename)
++
++    def _stringify_typehint_with_aliases(self, annotation: Any) -> str:
++        """Stringify type hint with applying autodoc_type_aliases."""
++        objrepr = stringify_typehint(annotation)
++        if objrepr in self.config.autodoc_type_aliases:
++            return self.config.autodoc_type_aliases[objrepr]
++        return objrepr
+ 
+     def document_members(self, all_members: bool = False) -> None:
+@@ -2170,13 +2183,13 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             try:
+                 annotations = get_type_hints(self.parent)
+             except NameError:
+-                # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
+-                annotations = safe_getattr(self.parent, '__annotations__', {})
++                # Failed to evaluate ForwardRef (maybe TYPE_CHECKING)
++                annotations = safe_getattr(self.parent, '__annotations__', {})
+             except TypeError:
+                 annotations = {}
+             except KeyError:
+-                # a broken class found (refs: https://github.com/sphinx-doc/sphinx/issues/8084)
+-                annotations = {}
++                # a broken class found (refs: https://github.com/sphinx-doc/sphinx/issues/8084)
++                annotations = {}
+             except AttributeError:
+                 # AttributeError is raised on 3.5.2 (fixed by 3.5.3)
+                 annotations = {}
+@@ -2186,10 +2199,23 @@ class AttributeDocumenter(DocstringStripSignatureMixin, ClassLevelDocumenter):
+             if self.objpath[-1] in annotations:
+-                objrepr = stringify_typehint(annotations.get(self.objpath[-1]))
+-                self.add_line('   :type: ' + objrepr, sourcename)
++                annotation = annotations[self.objpath[-1]]
++                objrepr = self._stringify_typehint_with_aliases(annotation)
++                self.add_line('   :type: ' + objrepr, sourcename)
+             else:
+                 key = ('.'.join(self.objpath[:-1]), self.objpath[-1])
+                 if self.analyzer and key in self.analyzer.annotations:
+-                    self.add_line('   :type: ' + self.analyzer.annotations[key],
+-                                  sourcename)
++                    annotation_str = self.analyzer.annotations[key]
++                    # Apply autodoc_type_aliases to string annotations
++                    if annotation_str in self.config.autodoc_type_aliases:
++                        objrepr = self.config.autodoc_type_aliases[annotation_str]
++                    else:
++                        objrepr = annotation_str
++                    self.add_line('   :type: ' + objrepr, sourcename)
++
++    def _stringify_typehint_with_aliases(self, annotation: Any) -> str:
++        """Stringify type hint with applying autodoc_type_aliases."""
++        objrepr = stringify_typehint(annotation)
++        if objrepr in self.config.autodoc_type_aliases:
++            return self.config.autodoc_type_aliases[objrepr]
++        return objrepr
+ 
+     def document_members(self, all_members: bool = False) -> None:

@@ -1,0 +1,76 @@
+2026-10-21 12:59:24,233 - INFO - Creating container for django__django-14999...
+2026-10-21 12:59:24,279 - INFO - Container for django__django-14999 created: a439ad3d6f437a9ef4331404a7fb63573f8f054acc57306707a42a43c9fde9fd
+2026-10-21 12:59:24,424 - INFO - Container for django__django-14999 started: a439ad3d6f437a9ef4331404a7fb63573f8f054acc57306707a42a43c9fde9fd
+2026-10-21 12:59:24,425 - INFO - Intermediate patch for django__django-14999 written to logs/run_evaluation/study2026/S/django__django-14999/patch.diff, now applying to container...
+2026-10-21 12:59:24,631 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:59:29,336 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:59:29,759 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:59:30,122 - INFO - >>>>> Applied Patch:
+patching file django/db/migrations/operations/models.py
+Hunk #1 succeeded at 319 (offset -78 lines).
+Hunk #2 succeeded at 352 with fuzz 3 (offset -78 lines).
+
+2026-10-21 12:59:30,278 - INFO - Git diff before:
+diff --git a/django/db/migrations/operations/models.py b/django/db/migrations/operations/models.py
+index 982816be3a..896b348616 100755
+--- a/django/db/migrations/operations/models.py
++++ b/django/db/migrations/operations/models.py
+@@ -319,6 +319,10 @@ class RenameModel(ModelOperation):
+     def database_forwards(self, app_label, schema_editor, from_state, to_state):
+         new_model = to_state.apps.get_model(app_label, self.new_name)
+         if self.allow_migrate_model(schema_editor.connection.alias, new_model):
++            # If the db_table is already correctly set, this is a noop
++            if new_model._meta.db_table == from_state.apps.get_model(app_label, self.old_name)._meta.db_table:
++                return
++
+             old_model = from_state.apps.get_model(app_label, self.old_name)
+             # Move the main table
+             schema_editor.alter_db_table(
+@@ -348,6 +352,10 @@ class RenameModel(ModelOperation):
+             # Rename M2M fields whose name is based on this model's name.
+             fields = zip(old_model._meta.local_many_to_many, new_model._meta.local_many_to_many)
+             for (old_field, new_field) in fields:
++        # If the db_table is already correctly set, this is a noop
++        if to_state.apps.get_model(app_label, self.new_name)._meta.db_table == from_state.apps.get_model(app_label, self.old_name)._meta.db_table:
++            return
++
+                 # Skip self-referential fields as these are renamed above.
+                 if new_field.model == new_field.related_model or not new_field.remote_field.through._meta.auto_created:
+                     continue
+2026-10-21 12:59:30,280 - INFO - Eval script for django__django-14999 written to logs/run_evaluation/study2026/S/django__django-14999/eval.sh; copying to container...
+2026-10-21 12:59:39,888 - INFO - Test runtime: 9.44 seconds
+2026-10-21 12:59:39,891 - INFO - Test output for django__django-14999 written to logs/run_evaluation/study2026/S/django__django-14999/test_output.txt
+2026-10-21 12:59:40,041 - INFO - Git diff after:
+diff --git a/django/db/migrations/operations/models.py b/django/db/migrations/operations/models.py
+index 982816be3a..896b348616 100755
+--- a/django/db/migrations/operations/models.py
++++ b/django/db/migrations/operations/models.py
+@@ -319,6 +319,10 @@ class RenameModel(ModelOperation):
+     def database_forwards(self, app_label, schema_editor, from_state, to_state):
+         new_model = to_state.apps.get_model(app_label, self.new_name)
+         if self.allow_migrate_model(schema_editor.connection.alias, new_model):
++            # If the db_table is already correctly set, this is a noop
++            if new_model._meta.db_table == from_state.apps.get_model(app_label, self.old_name)._meta.db_table:
++                return
++
+             old_model = from_state.apps.get_model(app_label, self.old_name)
+             # Move the main table
+             schema_editor.alter_db_table(
+@@ -348,6 +352,10 @@ class RenameModel(ModelOperation):
+             # Rename M2M fields whose name is based on this model's name.
+             fields = zip(old_model._meta.local_many_to_many, new_model._meta.local_many_to_many)
+             for (old_field, new_field) in fields:
++        # If the db_table is already correctly set, this is a noop
++        if to_state.apps.get_model(app_label, self.new_name)._meta.db_table == from_state.apps.get_model(app_label, self.old_name)._meta.db_table:
++            return
++
+                 # Skip self-referential fields as these are renamed above.
+                 if new_field.model == new_field.related_model or not new_field.remote_field.through._meta.auto_created:
+                     continue
+2026-10-21 12:59:40,041 - INFO - Grading answer for django__django-14999...
+2026-10-21 12:59:40,277 - INFO - report: {'django__django-14999': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for django__django-14999: resolved: False
+2026-10-21 12:59:40,278 - INFO - Attempting to stop container sweb.eval.django__django-14999.study2026...
+2026-10-21 12:59:57,013 - INFO - Container sweb.eval.django__django-14999.study2026 stopped successfully.
+2026-10-21 12:59:57,013 - INFO - Attempting to remove container sweb.eval.django__django-14999.study2026...
+2026-10-21 12:59:57,277 - INFO - Container sweb.eval.django__django-14999.study2026 removed successfully.

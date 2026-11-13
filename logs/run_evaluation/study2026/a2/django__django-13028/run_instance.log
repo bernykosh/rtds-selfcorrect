@@ -1,0 +1,35 @@
+2026-10-21 12:01:41,238 - INFO - Creating container for django__django-13028...
+2026-10-21 12:01:41,285 - INFO - Container for django__django-13028 created: 59b09f8f8d038e35c80bfb8989d721d5f4d97e67ffef03b8395da9c74c4d1af9
+2026-10-21 12:01:41,568 - INFO - Container for django__django-13028 started: 59b09f8f8d038e35c80bfb8989d721d5f4d97e67ffef03b8395da9c74c4d1af9
+2026-10-21 12:01:41,569 - INFO - Intermediate patch for django__django-13028 written to logs/run_evaluation/study2026/a2/django__django-13028/patch.diff, now applying to container...
+2026-10-21 12:01:41,729 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 12:01:44,904 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 12:01:45,322 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 12:01:45,642 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 12:01:45,718 - INFO - >>>>> Patch Apply Failed:
+patching file django/db/models/sql/query.py
+Hunk #1 succeeded at 1125 (offset -3 lines).
+Hunk #2 FAILED at 1132.
+misordered hunks! output would be garbled
+Hunk #3 FAILED at 1127.
+2 out of 3 hunks FAILED -- saving rejects to file django/db/models/sql/query.py.rej
+
+2026-10-21 12:01:45,734 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-13028: >>>>> Patch Apply Failed:
+patching file django/db/models/sql/query.py
+Hunk #1 succeeded at 1125 (offset -3 lines).
+Hunk #2 FAILED at 1132.
+misordered hunks! output would be garbled
+Hunk #3 FAILED at 1127.
+2 out of 3 hunks FAILED -- saving rejects to file django/db/models/sql/query.py.rej
+
+Check (logs/run_evaluation/study2026/a2/django__django-13028/run_instance.log) for more information.
+
+2026-10-21 12:01:45,738 - INFO - Attempting to stop container sweb.eval.django__django-13028.study2026...
+2026-10-21 12:02:01,022 - INFO - Container sweb.eval.django__django-13028.study2026 stopped successfully.
+2026-10-21 12:02:01,023 - INFO - Attempting to remove container sweb.eval.django__django-13028.study2026...
+2026-10-21 12:02:01,188 - INFO - Container sweb.eval.django__django-13028.study2026 removed successfully.

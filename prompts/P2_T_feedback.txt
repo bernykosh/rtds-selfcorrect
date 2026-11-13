@@ -1,0 +1,36 @@
+You are fixing a bug in a Python repository.
+
+Repository: {repo}
+Base commit: {base_commit}
+
+Issue text:
+<issue>
+{problem_statement}
+</issue>
+
+The file below is the file you must change. Change no other file.
+<file path="{file_path}">
+{file_content}
+</file>
+
+A patch for this issue was written earlier:
+<patch>
+{previous_patch}
+</patch>
+
+The patch was applied and run. This is the output:
+<feedback>
+Apply result: {apply_result}
+Reproduction script before the patch: {repro_before}
+Reproduction script after the patch: {repro_after}
+Test output for the changed file (cut to 60 lines):
+{test_output}
+</feedback>
+
+Task:
+Change the patch only to fix a failure that the output above reports. If the output reports no failure, return the patch unchanged.
+
+Output format. Use exactly this block and nothing after it:
+<patch>
+(the unified diff, with paths relative to the repository root, that git apply accepts)
+</patch>

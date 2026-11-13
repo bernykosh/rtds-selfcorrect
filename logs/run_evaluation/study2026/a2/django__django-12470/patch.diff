@@ -1,0 +1,41 @@
+diff --git a/django/db/models/sql/compiler.py b/django/db/models/sql/compiler.py
+index 1234567..89abcde 100644
+--- a/django/db/models/sql/compiler.py
++++ b/django/db/models/sql/compiler.py
+@@ -215,7 +215,7 @@ class SQLCompiler:
+         elif self.query.get_meta().ordering:
+             ordering = self.query.get_meta().ordering
+             self._meta_ordering = ordering
+-        else:
++        else:
+             ordering = []
+         if self.query.standard_ordering:
+             asc, desc = ORDER_DIR['ASC']
+@@ -253,6 +253,10 @@ class SQLCompiler:
+                 # '-field1__field2__field', etc.
+                 order_by.extend(self.find_ordering_name(
+                     field, self.query.get_meta(), default_order=asc))
++                # Handle inherited model ordering with -pk correctly
++                if field.startswith('-') and field[1:] == 'pk':
++                    # Already handled by find_ordering_name, no additional action needed
++                    continue
+             else:
+                 if col not in self.query.extra_select:
+                     order_by.append((
+@@ -592,6 +596,16 @@ class SQLCompiler:
+         name, order = get_order_dir(name, default_order)
+         descending = order == 'DESC'
+         pieces = name.split(LOOKUP_SEP)
++
++        # Special handling for 'pk' ordering in inherited models
++        if name == '-pk' and opts.pk.name != 'pk':
++            # For inherited models, 'pk' refers to the parent's pk
++            # but we need to ensure the ordering direction is preserved
++            real_pk_name = opts.pk.name
++            name = '-' + real_pk_name
++            pieces = [real_pk_name]
++            descending = True
++
+         field, targets, alias, joins, path, opts, transform_function = self._setup_joins(pieces, opts, alias)
+ 
+         # If we get to this point and the field is a relation to another model,

@@ -1,0 +1,61 @@
+2026-10-21 22:00:19,730 - INFO - Creating container for sympy__sympy-18189...
+2026-10-21 22:00:19,754 - INFO - Container for sympy__sympy-18189 created: ec3e941213e04cc622158e1793bd2bab10a8f988ff3217a867d21c3045a4f2e7
+2026-10-21 22:00:19,835 - INFO - Container for sympy__sympy-18189 started: ec3e941213e04cc622158e1793bd2bab10a8f988ff3217a867d21c3045a4f2e7
+2026-10-21 22:00:19,838 - INFO - Intermediate patch for sympy__sympy-18189 written to logs/run_evaluation/study2026/ST/sympy__sympy-18189/patch.diff, now applying to container...
+2026-10-21 22:00:20,007 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 22:00:20,629 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 22:00:21,058 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 22:00:21,471 - INFO - >>>>> Applied Patch:
+patching file sympy/solvers/diophantine.py
+Hunk #1 succeeded at 180 with fuzz 3 (offset -42 lines).
+
+2026-10-21 22:00:21,576 - INFO - Git diff before:
+diff --git a/sympy/solvers/diophantine.py b/sympy/solvers/diophantine.py
+index 6092e35dab..07ab44c5c2 100755
+--- a/sympy/solvers/diophantine.py
++++ b/sympy/solvers/diophantine.py
+@@ -180,14 +180,25 @@ def diophantine(eq, param=symbols("t", integer=True), syms=None,
+                     'syms should be given as a sequence, e.g. a list')
+             syms = [i for i in syms if i in var]
+             if syms != var:
+-                dict_sym_index = dict(zip(syms, range(len(syms))))
+-                return {tuple([t[dict_sym_index[i]] for i in var])
+-                            for t in diophantine(eq, param)}
++                # Pass the equation with symbols in the order specified by syms
++                # This ensures that the internal processing respects the syms order
++                eq = eq.subs(list(zip(var, [Symbol(str(s), **s.assumptions0) for s in syms])))
++                # Get the solutions with the new symbol order
++                result = diophantine(eq, param=param, syms=None, permute=permute)
++                # Create mapping from old symbols to new symbols
++                sym_map = dict(zip(syms, [Symbol(str(s), **s.assumptions0) for s in syms]))
++                inv_sym_map = {v: k for k, v in sym_map.items()}
++                # Convert back to original symbols maintaining the syms order
++                final_result = set()
++                for sol in result:
++                    mapped_sol = tuple([sol[i].xreplace(inv_sym_map) for i in range(len(sol))])
++                    final_result.add(mapped_sol)
++                return final_result
+         n, d = eq.as_numer_denom()
+         if n.is_number:
+             return set()
+         if not d.is_number:
+-            dsol = diophantine(d)
++            dsol = diophantine(d, syms=syms, permute=permute)
+             good = diophantine(n) - dsol
+             return {s for s in good if _mexpand(d.subs(zip(var, s)))}
+         else:
+2026-10-21 22:00:21,580 - INFO - Eval script for sympy__sympy-18189 written to logs/run_evaluation/study2026/ST/sympy__sympy-18189/eval.sh; copying to container...
+2026-10-21 22:30:21,714 - INFO - Test runtime: 1_800.07 seconds
+2026-10-21 22:30:21,717 - INFO - Test output for sympy__sympy-18189 written to logs/run_evaluation/study2026/ST/sympy__sympy-18189/test_output.txt
+2026-10-21 22:30:21,722 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 377, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for sympy__sympy-18189: Test timed out after 1800 seconds.
+Check (logs/run_evaluation/study2026/ST/sympy__sympy-18189/run_instance.log) for more information.
+
+2026-10-21 22:30:21,722 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18189.study2026...
+2026-10-21 22:30:37,733 - INFO - Container sweb.eval.sympy__sympy-18189.study2026 stopped successfully.
+2026-10-21 22:30:37,733 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18189.study2026...
+2026-10-21 22:30:37,838 - INFO - Container sweb.eval.sympy__sympy-18189.study2026 removed successfully.

@@ -1,0 +1,31 @@
+2026-10-21 22:00:15,337 - INFO - Creating container for sympy__sympy-18087...
+2026-10-21 22:00:15,361 - INFO - Container for sympy__sympy-18087 created: 7e3c956758d69ab40f9872cb9c8eefb4965b51d3ed0a0bd270346d319c7b24cb
+2026-10-21 22:00:15,445 - INFO - Container for sympy__sympy-18087 started: 7e3c956758d69ab40f9872cb9c8eefb4965b51d3ed0a0bd270346d319c7b24cb
+2026-10-21 22:00:15,446 - INFO - Intermediate patch for sympy__sympy-18087 written to logs/run_evaluation/study2026/ST/sympy__sympy-18087/patch.diff, now applying to container...
+2026-10-21 22:00:15,599 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 22:00:16,208 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 22:00:16,462 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 22:00:16,714 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 22:00:16,789 - INFO - >>>>> Patch Apply Failed:
+patching file sympy/core/exprtools.py
+Hunk #1 succeeded at 1153 (offset 31 lines).
+Hunk #2 FAILED at 1174.
+1 out of 2 hunks FAILED -- saving rejects to file sympy/core/exprtools.py.rej
+
+2026-10-21 22:00:16,790 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for sympy__sympy-18087: >>>>> Patch Apply Failed:
+patching file sympy/core/exprtools.py
+Hunk #1 succeeded at 1153 (offset 31 lines).
+Hunk #2 FAILED at 1174.
+1 out of 2 hunks FAILED -- saving rejects to file sympy/core/exprtools.py.rej
+
+Check (logs/run_evaluation/study2026/ST/sympy__sympy-18087/run_instance.log) for more information.
+
+2026-10-21 22:00:16,790 - INFO - Attempting to stop container sweb.eval.sympy__sympy-18087.study2026...
+2026-10-21 22:00:31,966 - INFO - Container sweb.eval.sympy__sympy-18087.study2026 stopped successfully.
+2026-10-21 22:00:31,967 - INFO - Attempting to remove container sweb.eval.sympy__sympy-18087.study2026...
+2026-10-21 22:00:32,032 - INFO - Container sweb.eval.sympy__sympy-18087.study2026 removed successfully.

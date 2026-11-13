@@ -1,0 +1,9 @@
+{
+    "pallets__flask-4045": {
+        "patch_is_None": false,
+        "patch_exists": true,
+        "patch_successfully_applied": false,
+        "resolved": false,
+        "infra_failure": false
+    }
+}

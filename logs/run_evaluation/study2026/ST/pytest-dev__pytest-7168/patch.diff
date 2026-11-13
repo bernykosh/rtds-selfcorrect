@@ -1,0 +1,20 @@
+diff --git a/src/_pytest/_io/saferepr.py b/src/_pytest/_io/saferepr.py
+index 8d5f8e1..a1d5c5a 100644
+--- a/src/_pytest/_io/saferepr.py
++++ b/src/_pytest/_io/saferepr.py
+@@ -20,6 +20,14 @@ def _format_repr_exception(exc: BaseException, obj: Any) -> str:
+     except BaseException as exc:
+         exc_info = "unpresentable exception ({})".format(_try_repr_or_str(exc))
+     return "<[{} raised in repr()] {} object at 0x{:x}>".format(
+-        exc_info, obj.__class__.__name__, id(obj)
++        exc_info, _try_repr_or_str_class_name(obj), id(obj)
+     )
+ 
++def _try_repr_or_str_class_name(obj):
++    try:
++        return obj.__class__.__name__
++    except (KeyboardInterrupt, SystemExit):
++        raise
++    except BaseException:
++        return type(obj).__name__
++

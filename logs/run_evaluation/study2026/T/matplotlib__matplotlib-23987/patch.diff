@@ -1,0 +1,20 @@
+diff --git a/lib/matplotlib/figure.py b/lib/matplotlib/figure.py
+index 53c99ae8dc..c15210d3d8 100644
+--- a/lib/matplotlib/figure.py
++++ b/lib/matplotlib/figure.py
+@@ -2030,8 +2030,13 @@ class Figure(FigureBase):
+             self.set_layout_engine(layout='tight')
+             if isinstance(tight_layout, dict):
+                 self.get_layout_engine().set(**tight_layout)
+-        elif constrained_layout is not None:
+-            self.set_layout_engine(layout='constrained')
++        elif constrained_layout is not None:
++            if constrained_layout:
++                self.set_layout_engine(layout='constrained')
++                if isinstance(constrained_layout, dict):
++                    self.get_layout_engine().set(**constrained_layout)
++            else:
++                self.set_layout_engine(layout='none')
+         else:
+             # everything is None, so use default:
+             self.set_layout_engine(layout=layout)

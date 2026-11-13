@@ -1,0 +1,48 @@
+2026-10-21 12:49:16,357 - INFO - Creating container for sympy__sympy-20212...
+2026-10-21 12:49:16,383 - INFO - Container for sympy__sympy-20212 created: 269ea6aa6b0a86eb421d816437eaf7af50554bd281aa7e5189296248b50cbf67
+2026-10-21 12:49:16,476 - INFO - Container for sympy__sympy-20212 started: 269ea6aa6b0a86eb421d816437eaf7af50554bd281aa7e5189296248b50cbf67
+2026-10-21 12:49:16,477 - INFO - Intermediate patch for sympy__sympy-20212 written to logs/run_evaluation/study2026/a3/sympy__sympy-20212/patch.diff, now applying to container...
+2026-10-21 12:49:16,644 - INFO - >>>>> Applied Patch:
+Checking patch sympy/core/power.py...
+warning: sympy/core/power.py has type 100755, expected 100644
+Hunk #1 succeeded at 298 (offset 129 lines).
+Applied patch sympy/core/power.py cleanly.
+
+2026-10-21 12:49:17,290 - INFO - Git diff before:
+diff --git a/sympy/core/power.py b/sympy/core/power.py
+index 984398c760..567ea2865f 100755
+--- a/sympy/core/power.py
++++ b/sympy/core/power.py
+@@ -299,6 +299,8 @@ def __new__(cls, b, e, evaluate=None):
+                 return b
+             elif e == -1 and not b:
+                 return S.ComplexInfinity
++            elif b.is_zero and e.is_negative and e.is_infinite:
++                return S.ComplexInfinity
+             # Only perform autosimplification if exponent or base is a Symbol or number
+             elif (b.is_Symbol or b.is_number) and (e.is_Symbol or e.is_number) and\
+                 e.is_integer and _coeff_isneg(b):
+2026-10-21 12:49:17,291 - INFO - Eval script for sympy__sympy-20212 written to logs/run_evaluation/study2026/a3/sympy__sympy-20212/eval.sh; copying to container...
+2026-10-21 12:49:21,707 - INFO - Test runtime: 4.32 seconds
+2026-10-21 12:49:21,709 - INFO - Test output for sympy__sympy-20212 written to logs/run_evaluation/study2026/a3/sympy__sympy-20212/test_output.txt
+2026-10-21 12:49:21,817 - INFO - Git diff after:
+diff --git a/sympy/core/power.py b/sympy/core/power.py
+index 984398c760..567ea2865f 100755
+--- a/sympy/core/power.py
++++ b/sympy/core/power.py
+@@ -299,6 +299,8 @@ def __new__(cls, b, e, evaluate=None):
+                 return b
+             elif e == -1 and not b:
+                 return S.ComplexInfinity
++            elif b.is_zero and e.is_negative and e.is_infinite:
++                return S.ComplexInfinity
+             # Only perform autosimplification if exponent or base is a Symbol or number
+             elif (b.is_Symbol or b.is_number) and (e.is_Symbol or e.is_number) and\
+                 e.is_integer and _coeff_isneg(b):
+2026-10-21 12:49:21,818 - INFO - Grading answer for sympy__sympy-20212...
+2026-10-21 12:49:21,901 - INFO - report: {'sympy__sympy-20212': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for sympy__sympy-20212: resolved: False
+2026-10-21 12:49:21,908 - INFO - Attempting to stop container sweb.eval.sympy__sympy-20212.study2026...
+2026-10-21 12:49:37,082 - INFO - Container sweb.eval.sympy__sympy-20212.study2026 stopped successfully.
+2026-10-21 12:49:37,085 - INFO - Attempting to remove container sweb.eval.sympy__sympy-20212.study2026...
+2026-10-21 12:49:37,157 - INFO - Container sweb.eval.sympy__sympy-20212.study2026 removed successfully.

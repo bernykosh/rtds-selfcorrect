@@ -1,0 +1,49 @@
+2026-10-21 13:09:45,493 - INFO - Creating container for sympy__sympy-20212...
+2026-10-21 13:09:45,525 - INFO - Container for sympy__sympy-20212 created: 1721de0f56adcdf4bf7e24a62396b853bf9af4e699bdf5fbb5716e0bcc434c6b
+2026-10-21 13:09:45,610 - INFO - Container for sympy__sympy-20212 started: 1721de0f56adcdf4bf7e24a62396b853bf9af4e699bdf5fbb5716e0bcc434c6b
+2026-10-21 13:09:45,611 - INFO - Intermediate patch for sympy__sympy-20212 written to logs/run_evaluation/study2026/S/sympy__sympy-20212/patch.diff, now applying to container...
+2026-10-21 13:09:45,788 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 13:09:46,596 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 13:09:47,024 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 13:09:47,469 - INFO - >>>>> Applied Patch:
+patching file sympy/core/power.py
+Hunk #1 succeeded at 299 with fuzz 1 (offset 61 lines).
+
+2026-10-21 13:09:47,581 - INFO - Git diff before:
+diff --git a/sympy/core/power.py b/sympy/core/power.py
+index 984398c760..567ea2865f 100755
+--- a/sympy/core/power.py
++++ b/sympy/core/power.py
+@@ -299,6 +299,8 @@ def __new__(cls, b, e, evaluate=None):
+                 return b
+             elif e == -1 and not b:
+                 return S.ComplexInfinity
++            elif b.is_zero and e.is_negative and e.is_infinite:
++                return S.ComplexInfinity
+             # Only perform autosimplification if exponent or base is a Symbol or number
+             elif (b.is_Symbol or b.is_number) and (e.is_Symbol or e.is_number) and\
+                 e.is_integer and _coeff_isneg(b):
+2026-10-21 13:09:47,582 - INFO - Eval script for sympy__sympy-20212 written to logs/run_evaluation/study2026/S/sympy__sympy-20212/eval.sh; copying to container...
+2026-10-21 13:09:51,941 - INFO - Test runtime: 4.30 seconds
+2026-10-21 13:09:51,942 - INFO - Test output for sympy__sympy-20212 written to logs/run_evaluation/study2026/S/sympy__sympy-20212/test_output.txt
+2026-10-21 13:09:52,058 - INFO - Git diff after:
+diff --git a/sympy/core/power.py b/sympy/core/power.py
+index 984398c760..567ea2865f 100755
+--- a/sympy/core/power.py
++++ b/sympy/core/power.py
+@@ -299,6 +299,8 @@ def __new__(cls, b, e, evaluate=None):
+                 return b
+             elif e == -1 and not b:
+                 return S.ComplexInfinity
++            elif b.is_zero and e.is_negative and e.is_infinite:
++                return S.ComplexInfinity
+             # Only perform autosimplification if exponent or base is a Symbol or number
+             elif (b.is_Symbol or b.is_number) and (e.is_Symbol or e.is_number) and\
+                 e.is_integer and _coeff_isneg(b):
+2026-10-21 13:09:52,058 - INFO - Grading answer for sympy__sympy-20212...
+2026-10-21 13:09:52,110 - INFO - report: {'sympy__sympy-20212': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for sympy__sympy-20212: resolved: False
+2026-10-21 13:09:52,110 - INFO - Attempting to stop container sweb.eval.sympy__sympy-20212.study2026...
+2026-10-21 13:10:07,256 - INFO - Container sweb.eval.sympy__sympy-20212.study2026 stopped successfully.
+2026-10-21 13:10:07,257 - INFO - Attempting to remove container sweb.eval.sympy__sympy-20212.study2026...
+2026-10-21 13:10:07,316 - INFO - Container sweb.eval.sympy__sympy-20212.study2026 removed successfully.

@@ -1,0 +1,18 @@
+--- django/utils/autoreload.py
++++ django/utils/autoreload.py
+@@ -124,9 +124,14 @@ def iter_modules_and_files(modules, extra_files):
+         path = Path(filename)
+         try:
+             resolved_path = path.resolve(strict=True).absolute()
+-        except FileNotFoundError:
++        except (FileNotFoundError, ValueError):
+             # The module could have been removed, don't fail loudly if this
+             # is the case.
++            # ValueError can be raised on some platforms with embedded null
++            # bytes in paths, don't fail loudly if this is the case.
+             continue
++        except OSError:
++            # Handle other OS-related errors that might occur during path resolution
++            continue
+         results.add(resolved_path)
+     return frozenset(results)

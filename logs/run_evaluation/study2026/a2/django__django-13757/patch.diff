@@ -1,0 +1,23 @@
+--- django/db/models/fields/json.py
++++ django/db/models/fields/json.py
+@@ -512,10 +512,18 @@ class KeyTransformIsNull(lookups.IsNull):
+     # key__isnull=False is the same as has_key='key'
+     def as_oracle(self, compiler, connection):
+         if not self.rhs:
+-            return HasKey(self.lhs.lhs, self.lhs.key_name).as_oracle(compiler, connection)
++            # For isnull=True, we want items where the key does not exist.
++            # We need to exclude items where the key exists but is null.
++            has_key = HasKey(self.lhs.lhs, self.lhs.key_name)
++            has_key_sql, has_key_params = has_key.as_oracle(compiler, connection)
++            is_null_sql, is_null_params = super().as_sql(compiler, connection)
++            return f'({has_key_sql}) AND NOT ({is_null_sql})', has_key_params + is_null_params
+         return super().as_sql(compiler, connection)
+ 
+     def as_sqlite(self, compiler, connection):
+         if not self.rhs:
+-            return HasKey(self.lhs.lhs, self.lhs.key_name).as_sqlite(compiler, connection)
++            # For isnull=True, we want items where the key does not exist.
++            # We need to exclude items where the key exists but is null.
++            has_key = HasKey(self.lhs.lhs, self.lhs.key_name)
++            return f"JSON_EXTRACT({self.lhs.lhs.alias}.{self.lhs.lhs.field.column}, '$.{self.lhs.key_name}') IS NULL AND NOT ({has_key.as_sqlite(compiler, connection)[0]})", ()
+         return super().as_sql(compiler, connection)

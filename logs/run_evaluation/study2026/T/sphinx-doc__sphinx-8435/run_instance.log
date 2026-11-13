@@ -1,0 +1,31 @@
+2026-10-21 21:40:44,105 - INFO - Creating container for sphinx-doc__sphinx-8435...
+2026-10-21 21:40:44,129 - INFO - Container for sphinx-doc__sphinx-8435 created: 03ba7be31b4174bc8d996259b0cae4fad0529b2d0c4e9e864334e3e97316944b
+2026-10-21 21:40:44,208 - INFO - Container for sphinx-doc__sphinx-8435 started: 03ba7be31b4174bc8d996259b0cae4fad0529b2d0c4e9e864334e3e97316944b
+2026-10-21 21:40:44,209 - INFO - Intermediate patch for sphinx-doc__sphinx-8435 written to logs/run_evaluation/study2026/T/sphinx-doc__sphinx-8435/patch.diff, now applying to container...
+2026-10-21 21:40:44,371 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:40:44,913 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:40:45,271 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:40:45,494 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-10-21 21:40:45,554 - INFO - >>>>> Patch Apply Failed:
+patching file sphinx/ext/autodoc/__init__.py
+Hunk #1 FAILED at 1986.
+Hunk #2 FAILED at 2166.
+2 out of 2 hunks FAILED -- saving rejects to file sphinx/ext/autodoc/__init__.py.rej
+
+2026-10-21 21:40:45,554 - INFO - Traceback (most recent call last):
+  File "/Users/berny/rtds-selfcorrect/.venv/lib/python3.13/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for sphinx-doc__sphinx-8435: >>>>> Patch Apply Failed:
+patching file sphinx/ext/autodoc/__init__.py
+Hunk #1 FAILED at 1986.
+Hunk #2 FAILED at 2166.
+2 out of 2 hunks FAILED -- saving rejects to file sphinx/ext/autodoc/__init__.py.rej
+
+Check (logs/run_evaluation/study2026/T/sphinx-doc__sphinx-8435/run_instance.log) for more information.
+
+2026-10-21 21:40:45,555 - INFO - Attempting to stop container sweb.eval.sphinx-doc__sphinx-8435.study2026...
+2026-10-21 21:41:00,746 - INFO - Container sweb.eval.sphinx-doc__sphinx-8435.study2026 stopped successfully.
+2026-10-21 21:41:00,746 - INFO - Attempting to remove container sweb.eval.sphinx-doc__sphinx-8435.study2026...
+2026-10-21 21:41:00,794 - INFO - Container sweb.eval.sphinx-doc__sphinx-8435.study2026 removed successfully.

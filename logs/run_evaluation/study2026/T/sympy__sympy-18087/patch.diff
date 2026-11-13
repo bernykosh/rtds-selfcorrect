@@ -1,0 +1,32 @@
+diff --git a/sympy/core/exprtools.py b/sympy/core/exprtools.py
+index 7f0d4e21cb..d1d0f0a1d9 100644
+--- a/sympy/core/exprtools.py
++++ b/sympy/core/exprtools.py
+@@ -1122,7 +1122,7 @@ def _factor_sum_int(expr, **kwargs):
+ 
+ 
+ def factor_terms(expr, radical=False, clear=False, fraction=False, sign=True):
+-    """Remove common factors from terms in all arguments without
++    r"""Remove common factors from terms in all arguments without
+     changing the underlying structure of the expr. No expansion or
+     simplification (and no processing of non-commutatives) is performed.
+ 
+@@ -1174,12 +1174,18 @@ def do(expr):
+                 list_args = [-a for a in list_args]
+             # watch out for exp(-(x+2)) which gcd_terms will change to exp(-x-2)
+             special = {}
++            # Track arguments that have been temporarily replaced
+             for i, a in enumerate(list_args):
+                 b, e = a.as_base_exp()
++                # Handle cases like sqrt(sin(x)**2) which should not be simplified
++                # as sin(x) for complex x
+                 if e.is_Mul and e != Mul(*e.args):
+                     list_args[i] = Dummy()
+                     special[list_args[i]] = a
++            
+             # rebuild p not worrying about the order which gcd_terms will fix
++            # We need to preserve the structure of expressions like sqrt(sin(x)**2)
++            # so that they aren't incorrectly simplified during factoring
+             p = Add._from_args(list_args)
+             p = gcd_terms(p,
+                 isprimitive=True,

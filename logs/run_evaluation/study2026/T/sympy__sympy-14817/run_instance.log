@@ -1,0 +1,73 @@
+2026-10-21 21:41:30,850 - INFO - Creating container for sympy__sympy-14817...
+2026-10-21 21:41:30,876 - INFO - Container for sympy__sympy-14817 created: c2fc6e4aca587395e7f8aed859eb68d2f1b56807603eb04da0f5f8aafb51af09
+2026-10-21 21:41:30,941 - INFO - Container for sympy__sympy-14817 started: c2fc6e4aca587395e7f8aed859eb68d2f1b56807603eb04da0f5f8aafb51af09
+2026-10-21 21:41:30,942 - INFO - Intermediate patch for sympy__sympy-14817 written to logs/run_evaluation/study2026/T/sympy__sympy-14817/patch.diff, now applying to container...
+2026-10-21 21:41:31,093 - INFO - >>>>> Applied Patch:
+Checking patch sympy/printing/pretty/pretty.py...
+warning: sympy/printing/pretty/pretty.py has type 100755, expected 100644
+Hunk #1 succeeded at 822 (offset -3 lines).
+Hunk #2 succeeded at 833 (offset -3 lines).
+Applied patch sympy/printing/pretty/pretty.py cleanly.
+
+2026-10-21 21:41:31,545 - INFO - Git diff before:
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index 0545797d5..6429ad80e 100755
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -825,7 +825,7 @@ def _print_MatAdd(self, expr):
+             if s is None:
+                 s = pform     # First element
+             else:
+-                if S(item.args[0]).is_negative:
++                if hasattr(item, 'is_Mul') and len(item.args) >= 1 and item.args[0].is_number and item.args[0].is_negative:
+                     s = prettyForm(*stringPict.next(s, ' '))
+                     pform = self._print(item)
+                 else:
+@@ -834,6 +834,11 @@ def _print_MatAdd(self, expr):
+ 
+         return s
+ 
++    # Import here to avoid circular imports
++    from sympy.matrices import MatMul
++
++
++
+     def _print_MatMul(self, expr):
+         args = list(expr.args)
+         from sympy import Add, MatAdd, HadamardProduct
+2026-10-21 21:41:31,546 - INFO - Eval script for sympy__sympy-14817 written to logs/run_evaluation/study2026/T/sympy__sympy-14817/eval.sh; copying to container...
+2026-10-21 21:41:35,160 - INFO - Test runtime: 3.55 seconds
+2026-10-21 21:41:35,161 - INFO - Test output for sympy__sympy-14817 written to logs/run_evaluation/study2026/T/sympy__sympy-14817/test_output.txt
+2026-10-21 21:41:35,263 - INFO - Git diff after:
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index 0545797d5..6429ad80e 100755
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -825,7 +825,7 @@ def _print_MatAdd(self, expr):
+             if s is None:
+                 s = pform     # First element
+             else:
+-                if S(item.args[0]).is_negative:
++                if hasattr(item, 'is_Mul') and len(item.args) >= 1 and item.args[0].is_number and item.args[0].is_negative:
+                     s = prettyForm(*stringPict.next(s, ' '))
+                     pform = self._print(item)
+                 else:
+@@ -834,6 +834,11 @@ def _print_MatAdd(self, expr):
+ 
+         return s
+ 
++    # Import here to avoid circular imports
++    from sympy.matrices import MatMul
++
++
++
+     def _print_MatMul(self, expr):
+         args = list(expr.args)
+         from sympy import Add, MatAdd, HadamardProduct
+2026-10-21 21:41:35,263 - INFO - Grading answer for sympy__sympy-14817...
+2026-10-21 21:41:35,302 - INFO - report: {'sympy__sympy-14817': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for sympy__sympy-14817: resolved: False
+2026-10-21 21:41:35,302 - INFO - Attempting to stop container sweb.eval.sympy__sympy-14817.study2026...
+2026-10-21 21:41:50,440 - INFO - Container sweb.eval.sympy__sympy-14817.study2026 stopped successfully.
+2026-10-21 21:41:50,440 - INFO - Attempting to remove container sweb.eval.sympy__sympy-14817.study2026...
+2026-10-21 21:41:50,468 - INFO - Container sweb.eval.sympy__sympy-14817.study2026 removed successfully.

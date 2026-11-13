@@ -1,0 +1,104 @@
+diff --git a/xarray/core/concat.py b/xarray/core/concat.py
+index 7f5a9b3..c7e2f3a 100644
+--- a/xarray/core/concat.py
++++ b/xarray/core/concat.py
+@@ -21,6 +21,7 @@ def concat(
+     compat="equals",
+     positions=None,
+     fill_value=dtypes.NA,
++    ignore_missing_vars=False,
+     join="outer",
+ ):
+     """Concatenate xarray objects along a new or existing dimension.
+@@ -62,6 +63,11 @@ def concat(
+         Value to use for newly missing values
+     join : {'outer', 'inner', 'left', 'right', 'exact'}, optional
+         String indicating how to combine differing indexes
++
++    ignore_missing_vars : bool, optional
++        If True, skip variables that are not present in all datasets.
++        Default is False, which raises an error if variables are missing.
++
+         (excluding dim) in objects
+ 
+         - 'outer': use the union of object indexes
+@@ -115,7 +121,7 @@ def concat(
+     elif isinstance(first_obj, Dataset):
+         f = _dataset_concat
+     else:
+-        raise TypeError(
++        raise TypeError(
+             "can only concatenate xarray Dataset and DataArray "
+             "objects, got %s" % type(first_obj)
+         )
+@@ -320,6 +326,8 @@ def _dataset_concat(
+         to_merge = {var: [] for var in variables_to_merge}
+ 
+         for ds in datasets:
++            if ignore_missing_vars:
++                continue
+             absent_merge_vars = variables_to_merge - set(ds.variables)
+             if absent_merge_vars:
+                 raise ValueError(
+@@ -332,6 +340,11 @@ def _dataset_concat(
+             for var in variables_to_merge:
+                 to_merge[var].append(ds.variables[var])
+ 
++        if ignore_missing_vars:
++            # Filter out variables that aren't present in all datasets
++            variables_to_merge = set(var for var in variables_to_merge 
++                                     if all(var in ds.variables for ds in datasets))
++
+         for var in variables_to_merge:
+             result_vars[var] = unique_variable(
+                 var, to_merge[var], compat=compat, equals=equals.get(var, None)
+@@ -365,12 +378,18 @@ def _dataset_concat(
+     # n.b. this loop preserves variable order, needed for groupby.
+     for k in datasets[0].variables:
+         if k in concat_over:
+-            try:
+-                vars = ensure_common_dims([ds.variables[k] for ds in datasets])
+-            except KeyError:
+-                raise ValueError("%r is not present in all datasets." % k)
+-            combined = concat_vars(vars, dim, positions)
+-            assert isinstance(combined, Variable)
++            if ignore_missing_vars:
++                # Skip variables that aren't present in all datasets
++                vars = [ds.variables[k] for ds in datasets if k in ds.variables]
++                if not vars:
++                    continue
++            else:
++                try:
++                    vars = ensure_common_dims([ds.variables[k] for ds in datasets])
++                except KeyError:
++                    raise ValueError("%r is not present in all datasets." % k)
++                combined = concat_vars(vars, dim, positions)
++                assert isinstance(combined, Variable)
+             result_vars[k] = combined
+ 
+     result = Dataset(result_vars, attrs=result_attrs)
+@@ -385,6 +404,5 @@ def _dataset_concat(
+     return result
+-
+-
++    
+ def _dataarray_concat(
+     arrays,
+     dim,
+@@ -396,6 +414,7 @@ def _dataarray_concat(
+     compat,
+     positions,
+     fill_value=dtypes.NA,
++    ignore_missing_vars=False,
+     join="outer",
+ ):
+     arrays = list(arrays)
+@@ -433,6 +452,7 @@ def _dataarray_concat(
+         compat,
+         positions,
+         fill_value=fill_value,
+-        join=join,
++        join=join,
++        ignore_missing_vars=ignore_missing_vars,
+     )
+     return arrays[0]._from_temp_dataset(ds, name)

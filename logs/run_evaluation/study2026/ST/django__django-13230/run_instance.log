@@ -1,0 +1,46 @@
+2026-10-21 21:47:00,621 - INFO - Creating container for django__django-13230...
+2026-10-21 21:47:00,654 - INFO - Container for django__django-13230 created: 85a2487d4856dd9245166d5a9eae2828c9f7ddda0ea87b179e0ceb9d8cdb075e
+2026-10-21 21:47:00,765 - INFO - Container for django__django-13230 started: 85a2487d4856dd9245166d5a9eae2828c9f7ddda0ea87b179e0ceb9d8cdb075e
+2026-10-21 21:47:00,766 - INFO - Intermediate patch for django__django-13230 written to logs/run_evaluation/study2026/ST/django__django-13230/patch.diff, now applying to container...
+2026-10-21 21:47:00,906 - INFO - >>>>> Applied Patch:
+Checking patch django/contrib/syndication/views.py...
+warning: django/contrib/syndication/views.py has type 100755, expected 100644
+Hunk #1 succeeded at 214 (offset 66 lines).
+Applied patch django/contrib/syndication/views.py cleanly.
+
+2026-10-21 21:47:01,523 - INFO - Git diff before:
+diff --git a/django/contrib/syndication/views.py b/django/contrib/syndication/views.py
+index 68ffb0bfe0..a09cc5fe74 100755
+--- a/django/contrib/syndication/views.py
++++ b/django/contrib/syndication/views.py
+@@ -214,6 +214,7 @@ class Feed:
+                 author_link=author_link,
+                 categories=self._get_dynamic_attr('item_categories', item),
+                 item_copyright=self._get_dynamic_attr('item_copyright', item),
++                comments=self._get_dynamic_attr('item_comments', item),
+                 **self.item_extra_kwargs(item)
+             )
+         return feed
+2026-10-21 21:47:01,524 - INFO - Eval script for django__django-13230 written to logs/run_evaluation/study2026/ST/django__django-13230/eval.sh; copying to container...
+2026-10-21 21:47:17,036 - INFO - Test runtime: 15.45 seconds
+2026-10-21 21:47:17,038 - INFO - Test output for django__django-13230 written to logs/run_evaluation/study2026/ST/django__django-13230/test_output.txt
+2026-10-21 21:47:17,174 - INFO - Git diff after:
+diff --git a/django/contrib/syndication/views.py b/django/contrib/syndication/views.py
+index 68ffb0bfe0..a09cc5fe74 100755
+--- a/django/contrib/syndication/views.py
++++ b/django/contrib/syndication/views.py
+@@ -214,6 +214,7 @@ class Feed:
+                 author_link=author_link,
+                 categories=self._get_dynamic_attr('item_categories', item),
+                 item_copyright=self._get_dynamic_attr('item_copyright', item),
++                comments=self._get_dynamic_attr('item_comments', item),
+                 **self.item_extra_kwargs(item)
+             )
+         return feed
+2026-10-21 21:47:17,175 - INFO - Grading answer for django__django-13230...
+2026-10-21 21:47:17,181 - INFO - report: {'django__django-13230': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': True, 'infra_failure': False, 'tests_status': {'FAIL_TO_PASS': {'success': ['test_rss2_feed (syndication_tests.tests.SyndicationFeedTest)'], 'failure': []}, 'PASS_TO_PASS': {'success': ['test_add_domain (syndication_tests.tests.SyndicationFeedTest)', 'test_atom_feed (syndication_tests.tests.SyndicationFeedTest)', 'test_atom_feed_published_and_updated_elements (syndication_tests.tests.SyndicationFeedTest)', 'test_atom_multiple_enclosures (syndication_tests.tests.SyndicationFeedTest)', 'test_atom_single_enclosure (syndication_tests.tests.SyndicationFeedTest)', 'test_aware_datetime_conversion (syndication_tests.tests.SyndicationFeedTest)', 'test_custom_feed_generator (syndication_tests.tests.SyndicationFeedTest)', 'test_feed_generator_language_attribute (syndication_tests.tests.SyndicationFeedTest)', 'test_feed_last_modified_time (syndication_tests.tests.SyndicationFeedTest)', 'test_feed_last_modified_time_naive_date (syndication_tests.tests.SyndicationFeedTest)', 'test_feed_url (syndication_tests.tests.SyndicationFeedTest)', 'test_item_link_error (syndication_tests.tests.SyndicationFeedTest)', 'test_latest_post_date (syndication_tests.tests.SyndicationFeedTest)', 'test_naive_datetime_conversion (syndication_tests.tests.SyndicationFeedTest)', 'test_rss091_feed (syndication_tests.tests.SyndicationFeedTest)', 'test_rss2_feed_guid_permalink_false (syndication_tests.tests.SyndicationFeedTest)', 'test_rss2_feed_guid_permalink_true (syndication_tests.tests.SyndicationFeedTest)', 'test_rss2_multiple_enclosures (syndication_tests.tests.SyndicationFeedTest)', 'test_rss2_single_enclosure (syndication_tests.tests.SyndicationFeedTest)', 'test_secure_urls (syndication_tests.tests.SyndicationFeedTest)', 'test_template_context_feed (syndication_tests.tests.SyndicationFeedTest)', 'test_template_feed (syndication_tests.tests.SyndicationFeedTest)', 'test_title_escaping (syndication_tests.tests.SyndicationFeedTest)'], 'failure': []}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for django__django-13230: resolved: True
+2026-10-21 21:47:17,182 - INFO - Attempting to stop container sweb.eval.django__django-13230.study2026...
+2026-10-21 21:47:32,390 - INFO - Container sweb.eval.django__django-13230.study2026 stopped successfully.
+2026-10-21 21:47:32,390 - INFO - Attempting to remove container sweb.eval.django__django-13230.study2026...
+2026-10-21 21:47:32,421 - INFO - Container sweb.eval.django__django-13230.study2026 removed successfully.

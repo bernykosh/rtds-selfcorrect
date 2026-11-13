@@ -1,0 +1,15 @@
+diff --git a/sklearn/pipeline.py b/sklearn/pipeline.py
+index 1111111..2222222 100644
+--- a/sklearn/pipeline.py
++++ b/sklearn/pipeline.py
+@@ -144,6 +144,10 @@ class Pipeline(_BaseComposition):
+         except TypeError:
+             # Not an int, try get step by name
+             return self.named_steps[ind]
++        return est
++
++    def __len__(self):
++        return len(self.steps)
+ 
+     @property
+     def _estimator_type(self):

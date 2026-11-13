@@ -1,0 +1,59 @@
+2026-10-21 21:41:09,160 - INFO - Creating container for sympy__sympy-12454...
+2026-10-21 21:41:09,201 - INFO - Container for sympy__sympy-12454 created: ab452f36bd8f736e0ca8cab2befdc73afaa625f75fa5fcf916e502fc96e7ab6c
+2026-10-21 21:41:09,362 - INFO - Container for sympy__sympy-12454 started: ab452f36bd8f736e0ca8cab2befdc73afaa625f75fa5fcf916e502fc96e7ab6c
+2026-10-21 21:41:09,364 - INFO - Intermediate patch for sympy__sympy-12454 written to logs/run_evaluation/study2026/T/sympy__sympy-12454/patch.diff, now applying to container...
+2026-10-21 21:41:09,579 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:41:10,297 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:41:10,640 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:41:11,037 - INFO - >>>>> Applied Patch:
+patching file sympy/matrices/matrices.py
+Hunk #1 succeeded at 1071 with fuzz 3 (offset -35 lines).
+
+2026-10-21 21:41:11,201 - INFO - Git diff before:
+diff --git a/sympy/matrices/matrices.py b/sympy/matrices/matrices.py
+index 90ea232fa..66d6a6899 100755
+--- a/sympy/matrices/matrices.py
++++ b/sympy/matrices/matrices.py
+@@ -1071,11 +1071,8 @@ def is_upper_hessenberg(self):
+     @property
+     def is_upper(self):
+         """Check if matrix is an upper triangular matrix. True can be returned
+-        even if the matrix is not square.
+-
+-        Examples
+-        ========
+-
++        even if the matrix is not square."""
++        return all(self[i, j].is_zero for i in range(1, self.rows) for j in range(min(i, self.cols)))
+         >>> from sympy import Matrix
+         >>> m = Matrix(2, 2, [1, 0, 0, 1])
+         >>> m
+2026-10-21 21:41:11,214 - INFO - Eval script for sympy__sympy-12454 written to logs/run_evaluation/study2026/T/sympy__sympy-12454/eval.sh; copying to container...
+2026-10-21 21:41:15,497 - INFO - Test runtime: 4.18 seconds
+2026-10-21 21:41:15,497 - INFO - Test output for sympy__sympy-12454 written to logs/run_evaluation/study2026/T/sympy__sympy-12454/test_output.txt
+2026-10-21 21:41:15,605 - INFO - Git diff after:
+diff --git a/sympy/matrices/matrices.py b/sympy/matrices/matrices.py
+index 90ea232fa..66d6a6899 100755
+--- a/sympy/matrices/matrices.py
++++ b/sympy/matrices/matrices.py
+@@ -1071,11 +1071,8 @@ def is_upper_hessenberg(self):
+     @property
+     def is_upper(self):
+         """Check if matrix is an upper triangular matrix. True can be returned
+-        even if the matrix is not square.
+-
+-        Examples
+-        ========
+-
++        even if the matrix is not square."""
++        return all(self[i, j].is_zero for i in range(1, self.rows) for j in range(min(i, self.cols)))
+         >>> from sympy import Matrix
+         >>> m = Matrix(2, 2, [1, 0, 0, 1])
+         >>> m
+2026-10-21 21:41:15,605 - INFO - Grading answer for sympy__sympy-12454...
+2026-10-21 21:41:15,640 - INFO - report: {'sympy__sympy-12454': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for sympy__sympy-12454: resolved: False
+2026-10-21 21:41:15,640 - INFO - Attempting to stop container sweb.eval.sympy__sympy-12454.study2026...
+2026-10-21 21:41:30,802 - INFO - Container sweb.eval.sympy__sympy-12454.study2026 stopped successfully.
+2026-10-21 21:41:30,803 - INFO - Attempting to remove container sweb.eval.sympy__sympy-12454.study2026...
+2026-10-21 21:41:30,845 - INFO - Container sweb.eval.sympy__sympy-12454.study2026 removed successfully.

@@ -1,0 +1,17 @@
+diff --git a/django/db/models/query_utils.py b/django/db/models/query_utils.py
+index 466920f6d7..8a2c8ab1d7 100644
+--- a/django/db/models/query_utils.py
++++ b/django/db/models/query_utils.py
+@@ -92,6 +92,12 @@ class Q(tree.Node):
+     def __and__(self, other):
+         return self._combine(other, self.AND)
+ 
++    def __rand__(self, other):
++        # Handle cases like Exists(...) & Q()
++        if hasattr(other, '__and__'):
++            return other.__and__(self)
++        raise TypeError(other)
++
+     def __invert__(self, other):
+         obj = type(self)()
+         obj.add(self, self.AND)

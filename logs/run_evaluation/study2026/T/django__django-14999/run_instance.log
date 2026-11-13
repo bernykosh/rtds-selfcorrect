@@ -1,0 +1,55 @@
+2026-10-21 21:31:52,086 - INFO - Creating container for django__django-14999...
+2026-10-21 21:31:52,111 - INFO - Container for django__django-14999 created: b1181dee17a46abbe1696660c9141fc38f7c54646c9a07dbd7ea2b98e6c4c0e8
+2026-10-21 21:31:52,199 - INFO - Container for django__django-14999 started: b1181dee17a46abbe1696660c9141fc38f7c54646c9a07dbd7ea2b98e6c4c0e8
+2026-10-21 21:31:52,203 - INFO - Intermediate patch for django__django-14999 written to logs/run_evaluation/study2026/T/django__django-14999/patch.diff, now applying to container...
+2026-10-21 21:31:52,358 - INFO - Failed to apply patch to container: git apply --verbose
+2026-10-21 21:31:54,494 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-10-21 21:31:54,830 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-10-21 21:31:55,155 - INFO - >>>>> Applied Patch:
+patching file django/db/migrations/operations/models.py
+Hunk #1 succeeded at 397 with fuzz 3.
+
+2026-10-21 21:31:55,279 - INFO - Git diff before:
+diff --git a/django/db/migrations/operations/models.py b/django/db/migrations/operations/models.py
+index 982816be3a..b054fedb73 100755
+--- a/django/db/migrations/operations/models.py
++++ b/django/db/migrations/operations/models.py
+@@ -397,6 +397,11 @@ class RenameModel(ModelOperation):
+                     self.old_name,
+                     operation.new_name,
+                 ),
++            # If the db_table is already correctly set, this is a noop
++            old_model = from_state.apps.get_model(app_label, self.old_name)
++            if new_model._meta.db_table == old_model._meta.db_table:
++                return
++
+             ]
+         # Skip `ModelOperation.reduce` as we want to run `references_model`
+         # against self.new_name.
+2026-10-21 21:31:55,280 - INFO - Eval script for django__django-14999 written to logs/run_evaluation/study2026/T/django__django-14999/eval.sh; copying to container...
+2026-10-21 21:32:09,005 - INFO - Test runtime: 13.67 seconds
+2026-10-21 21:32:09,010 - INFO - Test output for django__django-14999 written to logs/run_evaluation/study2026/T/django__django-14999/test_output.txt
+2026-10-21 21:32:09,159 - INFO - Git diff after:
+diff --git a/django/db/migrations/operations/models.py b/django/db/migrations/operations/models.py
+index 982816be3a..b054fedb73 100755
+--- a/django/db/migrations/operations/models.py
++++ b/django/db/migrations/operations/models.py
+@@ -397,6 +397,11 @@ class RenameModel(ModelOperation):
+                     self.old_name,
+                     operation.new_name,
+                 ),
++            # If the db_table is already correctly set, this is a noop
++            old_model = from_state.apps.get_model(app_label, self.old_name)
++            if new_model._meta.db_table == old_model._meta.db_table:
++                return
++
+             ]
+         # Skip `ModelOperation.reduce` as we want to run `references_model`
+         # against self.new_name.
+2026-10-21 21:32:09,160 - INFO - Grading answer for django__django-14999...
+2026-10-21 21:32:09,390 - INFO - report: {'django__django-14999': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': False, 'resolved': False, 'infra_failure': False}}
+Result for django__django-14999: resolved: False
+2026-10-21 21:32:09,391 - INFO - Attempting to stop container sweb.eval.django__django-14999.study2026...
+2026-10-21 21:32:26,742 - INFO - Container sweb.eval.django__django-14999.study2026 stopped successfully.
+2026-10-21 21:32:26,743 - INFO - Attempting to remove container sweb.eval.django__django-14999.study2026...
+2026-10-21 21:32:26,977 - INFO - Container sweb.eval.django__django-14999.study2026 removed successfully.

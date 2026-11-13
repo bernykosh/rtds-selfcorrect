@@ -1,0 +1,36 @@
+diff --git a/sympy/printing/pretty/pretty.py b/sympy/printing/pretty/pretty.py
+index 9d1f3a0b03..1e52f8f0a1 100644
+--- a/sympy/printing/pretty/pretty.py
++++ b/sympy/printing/pretty/pretty.py
+@@ -825,14 +825,26 @@ def _print_MatAdd(self, expr):
+         s = None
+         for item in expr.args:
+             pform = self._print(item)
+-            if s is None:
+-                s = pform     # First element
++            if s is None:
++                s = pform     # First element
+             else:
+-                if S(item.args[0]).is_negative:
++                # Check if the item (which should be a matrix expression) starts with
++                # a negative sign when printed. We avoid sympifying strings.
++                # The simplest way is to check if the item itself represents a negative
++                # expression (e.g., -A or -2*A). This usually means checking if it's
++                # a Mul with a negative first argument that is a number.
++                # However, for general matrix expressions, we should rely on the internal
++                # representation or printing behavior rather than trying to parse strings.
++                # Let's revert to the previous approach but ensure we don't sympify strings.
++                # Actually, let's just check if the item is inherently negative in structure.
++                # For now, we'll simplify and always add ' + ' unless we know it's negative.
++                # But the real problem was calling S() on non-sympifiable strings.
++                # So we keep the old structure but avoid S().
++                from sympy.core.mul import _coeff_isneg
++                if _coeff_isneg(item):
+                     s = prettyForm(*stringPict.next(s, ' '))
+                     pform = self._print(item)
+                 else:
+                     s = prettyForm(*stringPict.next(s, ' + '))
+                 s = prettyForm(*stringPict.next(s, pform))
+-
+-        return s
++        return s

@@ -1,0 +1,80 @@
+diff --git a/lib/matplotlib/cbook.py b/lib/matplotlib/cbook.py
+index 1234567..89abcde 100644
+--- a/lib/matplotlib/cbook.py
++++ b/lib/matplotlib/cbook.py
+@@ -1530,5 +1530,35 @@ class Grouper:
+     def __init__(self, init=()):
+         self._mapping = {weakref.ref(x): [weakref.ref(x)] for x in init}
+ 
++    def __getstate__(self):
++        # Filter out dead weakrefs and convert live ones to strong references
++        # for pickling to avoid pickle errors with weakref.ReferenceType
++        state = self.__dict__.copy()
++        mapping = {}
++        for key, value in self._mapping.items():
++            key_obj = key()
++            if key_obj is not None:  # Only pickle live references
++                # Convert weakrefs to strong references for pickling
++                strong_key = key_obj
++                strong_value = []
++                for ref in value:
++                    ref_obj = ref()
++                    if ref_obj is not None:
++                        strong_value.append(ref_obj)
++                mapping[strong_key] = strong_value
++        state['_mapping'] = mapping
++        return state
++
++    def __setstate__(self, state):
++        # Restore weak references from strong references in pickled state
++        self.__dict__.update(state)
++        # Convert strong references back to weak references
++        new_mapping = {}
++        for key_obj, value_objs in self._mapping.items():
++            weak_key = weakref.ref(key_obj)
++            weak_values = [weakref.ref(val_obj) for val_obj in value_objs]
++            new_mapping[weak_key] = weak_values
++        self._mapping = new_mapping
++
+     def __contains__(self, item):
+         return weakref.ref(item) in self._mapping
+@@ -1537,6 +1567,10 @@ class Grouper:
+         """Clean dead weak references from the dictionary."""
+         mapping = self._mapping
+         to_drop = [key for key in mapping if key() is None]
++        for key in to_drop:
++            val = mapping.pop(key)
++            val.remove(key)
++
+     def join(self, a, *args):
+         """
+         Join given arguments into the same set.  Accepts one or more arguments.
+@@ -1544,4 +1578,9 @@ class Grouper:
+         """
+         Join given arguments into the same set.  Accepts one or more arguments.
++        
++        Note: After unpickling, previously joined items may need to be rejoined
++        if they were part of different groups, as the weak reference structure
++        is rebuilt.
++        """
+         mapping = self._mapping
+         set_a = mapping.setdefault(weakref.ref(a), [weakref.ref(a)])
+@@ -1589,3 +1628,18 @@ class Grouper:
+     def get_siblings(self, a):
+         """Return all of the items joined with *a*, including itself."""
+         self.clean()
++        # Handle case where _mapping might not exist after unpickling
++        if not hasattr(self, '_mapping'):
++            self._mapping = {}
++            return [a]
++        siblings = self._mapping.get(weakref.ref(a), [weakref.ref(a)])
++        result = []
++        for x in siblings:
++            obj = x()
++            if obj is not None:
++                result.append(obj)
++        # If no live objects found, include the query object itself
++        if not result:
++            result = [a]
++        return result
++
